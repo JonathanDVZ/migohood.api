@@ -7,5 +7,5 @@ insert into type(name,category_id) values("Tourism",4),("Educational",4),("Cultu
 insert into amenites(name,category_id)value("Pets Allowed",1),("Events Allowed",1),("Production (Video or Photography) Allowed",1),("Family Friendly",1),("Business Guest",1),("Smoke free",1),("Gym",1),("Parking",1);
 insert into amenites(name,category_id) values("Wifi",2),("Pets Allowed",2),("Events Allowed.",2),("Production (Video or Photography) Allowed",2),("Smoke free",2),("Gym",2),("Parking",2);
 insert into accommodation(name)values("private"),("Share");
-insert into calendar(day) value("Lunes"),("Martes"),("Miercoles"),("Jueves"),("Viernes"),("Sabado"),("Domingo");
+insert into calendar(day) value("Sunday"),("Monday"),("Tuesday"),("Wednesday"),("Thursday"),("Friday"),("Sturday");
 insert into duration(type) values("Minute"),("Hour"),("Week"),("Month");

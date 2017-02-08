@@ -54,6 +54,10 @@ $app->post('/user/verification','ControllerUser@verificationLogin');
 $app->post('/service/create','ControllerService@CreateService');
 //Agrega  type
 $app->post('/service/add_type','ControllerService@AddTypeService');
+//Agrega en la tabla service-calendar
+$app->post('/service/add_servicecalendar','ControllerService@AddServiceCalendar');
+//Agrega en la service-amenite
+$app->post('/service/add_serviceamenite','ControllerService@AddServiceAmentines');
 /*Read*/
 //Muestra todos los service
 $app->get('/service/read','ControllerService@ReadService');
@@ -61,12 +65,18 @@ $app->get('/service/read','ControllerService@ReadService');
 $app->get('/service/get_service','ControllerService@GetUserService');
 //Muestra la tabla Type-Service
 $app->get('/service/read_type','ControllerService@ReadTypeService');
+//Muestra toda la tabla Calendar-Service
+$app->get('/service/read_readcalendar','ControllerService@ReadCalendarService');
+//Muestra toda la tabla Amenite-Service
+$app->get('/service/read_readameniteservice','ControllerService@ReadServiceAmenite');
 /*Update*/
 //Actualiza un service
 $app->put('/service/update','ControllerService@UpdateService');
 /*Delete*/
 //Elimina un service
 $app->delete('/service/delete','ControllerService@DeleteService');
+//Elimina un type-service
+$app->delete('/service/delete_typeservice','ControllerService@DeleteTypeService');
 
 /*CRUD Paypal y Card*//////////////////////////////////////////////////
 /*Create*/
@@ -99,7 +109,7 @@ $app->get('/service/read_imagen','ControllerCardPaypal@ReadImagen');
 /*Crud Rent*/
 
  
-/* CRUD MESSAGE *////////////////////////////////////////////////////////////
+/* CRUD MESSAGE *////////////////////////////////////////////////////////////En proceso
 $app->get('/user/message','ControllerMessageInbox@ReadMessage');
 
 $app->get('/user/inbox','ControllerMessageInbox@ReadInbox');

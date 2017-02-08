@@ -2,8 +2,12 @@
 namespace App\Http\Controllers;
 use App\Models\Service;
 use App\Models\User;
+use App\Models\Amenite;
+use App\Models\Service_Amenite;
 use App\Models\Service_Type;
 use App\Models\Type;
+use App\Models\Service_Calendar;
+use App\Models\Calendar;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Contracts\Encryption\DecryptException;
@@ -12,13 +16,14 @@ use validator;
 use DB;
 class ControllerService extends Controller
 {
-         public function ReadService(){
-             //Se obtiene todos los servicios que se crean
-             return Service::all();   
-         }
-
-         public function CreateService(Request $request)
-         {   
+    //Muestra todo los service   
+    public function ReadService(){
+    //Se obtiene todos los servicios que se crean
+    return Service::all();   
+    }
+   
+    //Agrega Service
+    public function CreateService(Request $request){   
          //regla de validacion
               $rule=[
                     'name'=>"required|regex:/^[a-zA-Z_áéíóúàèìòùñ'\s]*$/|max:45",
@@ -62,10 +67,10 @@ class ControllerService extends Controller
                       }
                   
                 }
-            }
+    }
 
-            //Actualiza un servicio
-     public function UpdateService(Request $request){
+    //Actualiza un servicio
+    public function UpdateService(Request $request){
             //Regla de validacion       
               $rule=[
                     'name'=>'required|regex:/^[a-zA-Z_áéíóúàèìòùñ\s]*$/|max:45',
@@ -102,11 +107,10 @@ class ControllerService extends Controller
                      return response()->json('Not Service');
                   }
             }
- }
+    } 
 
-
-     public function DeleteService(Request $request)
-    {
+    //Eliminar Service
+    public function DeleteService(Request $request){
            $rule=[
                     'id'=>'required|numeric'
              ];
@@ -116,7 +120,7 @@ class ControllerService extends Controller
              }
              else{
                  $service = Service::select()->where('id',$request->input("id"))->first();
-                 if($service){
+                 if(count($service)>0){
                     DB::table('service')->where('id',$service->id)->delete();
                     return response()->json('Service Delete');
                  }else{
@@ -126,39 +130,60 @@ class ControllerService extends Controller
     }
      
      //Se agrega los tipos de la clase category que selecciono previamente el usuario
-     public function AddTypeService(request $request){
-          $rule=['id_type'=>'required|min:1|max:20'
-
-          ];
-
-          $type=Type::select()->where('id_type',$request->input("id_type"))->first();
-          //$typeservice=Service_Type::select()->where('id_type',$request->input("id_type"))->first();         
-          $service=Service::select()->where('id',$request->input("id"))->first();
-           if(count($service)>0){
-             $typenum=intval($type->category_id);
-             $servicenum=intval($service->category_id);
-                  if (strcmp($typenum,$servicenum)==0){
-                      $typeservice=new Service_Type;
-                      $typeservice->service_id=$service->id;
-                      $typeservice->type_id=$type->id_type;
-                      $typeservice->save();
-                      return response()->json('Add Type');  
+    public function AddTypeService(request $request){
+          $rule=['id_type'=>'required|numeric|min:1|max:20',
+                 'id'=>'required|numeric|min:1'
+            ];
+            $validator=Validator::make($request->all(),$rule);
+            if ($validator->fails()) {
+                return response()->json($validator->errors()->all());
+            }else{
+                 $type=Type::select()->where('id_type',$request->input("id_type"))->first();        
+                 $service=Service::select()->where('id',$request->input("id"))->first();
+                 if(count($service)>0){
+                    $typenum=intval($type->category_id);
+                    $servicenum=intval($service->category_id);
+                    if (strcmp($typenum,$servicenum)==0){
+                       $typeservice=new Service_Type;
+                       $typeservice->service_id=$service->id;
+                       $typeservice->type_id=$type->id_type;
+                       $typeservice->save();
+                       return response()->json('Add Type');  
                     }else{
                       return response()->json('Does not belong to category'); 
                     }
-            }else{
-                return response()->json('Service not found'); 
-            }
-       }
-
-      public function ReadTypeService(request $request){
+                }else{
+                    return response()->json('Service not found'); 
+                }
+             }  
+    }
+       
+      //Muestra todos los type-service
+    public function ReadTypeService(request $request){
           return Service_type::all();
-      } 
+    } 
+      
+      //Elimina un service-type
+    public function DeleteTypeService(request $request){
+          $rule=[
+                    'id'=>'required|numeric'
+             ];
+             $validator=Validator::make($request->all(),$rule);
+             if ($validator->fails()) {
+             return response()->json($validator->errors()->all());
+             }
+             else{
+                 $servicetype = Service_Type::select()->where('id',$request->input("id"))->first();
+                 if($servicetype){
+                    DB::table('service-type')->where('id',$servicetype->id)->delete();
+                    return response()->json('Service-Type Delete');
+                 }else{
+                    return response()->json('Service-Type Not delete');   
+                 }
+              }   
+    }     
           
-          
-
-     
-
+     //Muestra un service con sus caracteristicas seleccionadas (category,dration,accommodation)
      public function GetUserService(){
        $getrent = DB::table('user')->join('service','user.id', '=','service.user_id')
        ->join('category','service.category_id','=','category.id')
@@ -172,4 +197,70 @@ class ControllerService extends Controller
            return response()->json("Rent not fount"); 
        }
     }
-}
+
+    //Agrega a un service un dia de la semana ->tabla (service_calender)
+    public function AddServiceCalendar(request $request){
+          $rule=[
+                 'id'=>'required|numeric|min:1',
+                 'codigo_id'=>'required|numeric|min:1|max:7' 
+            ];
+            $validator=Validator::make($request->all(),$rule);
+            if ($validator->fails()) {
+                return response()->json($validator->errors()->all());
+            }else{
+                 $calendar=Calendar::select()->where('codigo_id',$request->input("codigo_id"))->first();        
+                 $service=Service::select()->where('id',$request->input("id"))->first();
+                 if(count($service)>0){
+                       $newcalendar=new Service_Calendar;
+                       $newcalendar->service_id=$service->id;
+                       $newcalendar->calendar_id=$calendar->codigo_id;
+                       $newcalendar->save();
+                       return response()->json('Added date to service');  
+                    }else{
+                        return response()->json('Service not found'); 
+                    }
+                }
+    }
+
+    //Muestra todos los service-AddServiceCalendar
+    public function ReadCalendarService(){
+           return Service_Calendar::all();
+    }
+
+    //Agrega a un service amenites
+    public function AddServiceAmentines(Request $request){
+        $rule=['codigo'=>'required|numeric|min:1|max:15',
+                 'id'=>'required|numeric'
+            ];
+            $validator=Validator::make($request->all(),$rule);
+            if ($validator->fails()) {
+                return response()->json($validator->errors()->all());
+            }else{
+                 $amenite=Amenite::select()->where('codigo',$request->input("codigo"))->first();        
+                 $service=Service::select()->where('id',$request->input("id"))->first();
+                 if(count($service)>0){
+                    $amenitenum=intval($amenite->category_id);
+                    $servicenum=intval($service->category_id);
+                    if (strcmp($typenum,$servicenum)==0){
+                       $newserviceame=new Service_Amenite;
+                       $newserviceame->service_id=$service->id;
+                       $newserviceame->amenite_id=$amenite->codigo;
+                       $newserviceame->save();
+                       return response()->json('Add Amenite Service');  
+                    }else{
+                      return response()->json('Does not belong to category'); 
+                    }
+                }else{
+                    return response()->json('Service not found'); 
+                }
+             } 
+        }
+
+         //Muestrala tabla  Service-Amenites
+        public function ReadServiceAmenite(){
+            return Service_Amenite::all();
+        }     
+
+    }
+
+    
