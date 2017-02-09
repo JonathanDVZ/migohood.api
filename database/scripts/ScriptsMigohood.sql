@@ -112,8 +112,8 @@ ENGINE = InnoDB;
 -- Table `Migohood`.`duration`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `Migohood`.`duration` (
-  `type` VARCHAR(45) NOT NULL,
   `id` INT NOT NULL AUTO_INCREMENT,
+  `type` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB;
 
@@ -218,7 +218,7 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `Migohood`.`service_amenites` (
   `service_id` INT NOT NULL,
   `amenite_id` INT NOT NULL,
-  `id` INT ZEROFILL NOT NULL,
+  `id` INT NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`id`),
   INDEX `fk_SERVICE_has_AMENITES_AMENITES1_idx` (`amenite_id` ASC),
   INDEX `fk_SERVICE_has_AMENITES_SERVICE1_idx` (`service_id` ASC),

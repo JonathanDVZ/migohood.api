@@ -15,7 +15,6 @@ class ControllerUser extends Controller
    
     public function Create(Request $request)
     {   
-       
         // Ejecutamos el validador, en caso de que falle devolvemos la respuesta
         $rule=[
             'name'=>"required|regex:/^[a-zA-Z_áéíóúàèìòùñ'\s]*$/|max:45",
@@ -31,21 +30,20 @@ class ControllerUser extends Controller
         else{ //devuelve un email
             $user = User::select()->where('email', strtolower($request->input("email")))->first();        
                 if ($user==null){//si es null es por que no esta registrado
-                    $newUser=new User();
-                    $newUser->name=ucwords(strtolower($request->input('name')));
-                    $newUser->email=strtolower($request->input('email'));
-                    $newUser->password=Crypt::encrypt($request->input('password'));
-                    $newUser->thumbnail=$request->input('thumbnail');
-                    $newUser->secondname=ucwords(strtolower($request->input('secondname')));
-                    $newUser->lastname=ucwords(strtolower($request->input('lastname')));
-                    $newUser->remember_token=str_random(100);
-                    $newUser->confirm_token=str_random(100);
-                    $newUser->address=strtolower($request->input('address'));
-                    $newUser->city_id=$request->input('city_id');
-                   
-                    if( $newUser->save()){
-                         return response()->json("User Create"); 
-                    }
+                       $newUser=new User();
+                       $newUser->name=ucwords(strtolower($request->input('name')));
+                       $newUser->email=strtolower($request->input('email'));
+                       $newUser->password=Crypt::encrypt($request->input('password'));
+                       $newUser->thumbnail=$request->input('thumbnail');
+                       $newUser->secondname=ucwords(strtolower($request->input('secondname')));
+                       $newUser->lastname=ucwords(strtolower($request->input('lastname')));
+                       $newUser->remember_token=str_random(100);
+                       $newUser->confirm_token=str_random(100);
+                       $newUser->address=strtolower($request->input('address'));
+                       $newUser->city_id=$request->input('city_id');
+                       if( $newUser->save()){
+                          return response()->json("User Create"); 
+                       }
                     }
                     else{
                          return response()->json("User Existente"); 
@@ -53,12 +51,12 @@ class ControllerUser extends Controller
             }
         }
   
-
+    //Muestra todos los usuarios
     public function Read( ){
         return User::all();
     }
 
-     //Actualiza Nombre
+     //Actualiza Name
     public function UpdateName(Request $request){
       $rule=[
            'id' => 'required|numeric',
@@ -80,7 +78,7 @@ class ControllerUser extends Controller
         }
     } 
  
-   //Actualiza Correo
+   //Actualiza Email
     public function UpdateEmail(Request $request){
       $rule=[
            'id' => 'required|numeric',
@@ -102,7 +100,7 @@ class ControllerUser extends Controller
         }
     } 
     
-      //Actualiza contraseña 
+    //Actualiza Password 
     public function UpdatePassword(Request $request){
       $rule=[
            'id' => 'required|numeric',
@@ -124,7 +122,7 @@ class ControllerUser extends Controller
         }
     } 
 
-      //Actualiza foto de  perfil 
+    //Actualiza thumbnail 
     public function UpdateThumbnail(Request $request){
       $rule=[
            'id' => 'required|numeric',
@@ -145,7 +143,7 @@ class ControllerUser extends Controller
         }
     } 
 
-     //Actualiza Segundo Nombre
+    //Actualiza SecondName
     public function UpdateSecondname(Request $request){
       $rule=[
            'id' => 'required|numeric',
@@ -167,7 +165,7 @@ class ControllerUser extends Controller
         }
     } 
 
-      //Actualiza Apellido
+    //Actualiza LastName
     public function UpdateLastname(Request $request){
       $rule=[
            'id' => 'required|numeric',
@@ -189,7 +187,7 @@ class ControllerUser extends Controller
         }
     } 
 
-   //Actualiza Direccion
+   //Actualiza Address
     public function UpdateAddress(Request $request){
       $rule=[
            'id' => 'required|numeric'
@@ -210,7 +208,7 @@ class ControllerUser extends Controller
         }
     } 
 
-   //Actualiza Ciudad
+   //Actualiza City
     public function UpdateCity(Request $request){
       $rule=[
            'id' => 'required|numeric',
@@ -232,7 +230,7 @@ class ControllerUser extends Controller
         }
     } 
  
-     //Elimina usuario
+    //Elimina User
      public function Delete(Request $request){
         $rule=[
             'id' => 'required|numeric'
@@ -250,7 +248,8 @@ class ControllerUser extends Controller
                }
             }      
        }
-
+     
+     //Verifica si el email y password son correcto es decir si estan registrados
      public function verificationLogin(Request $request)
      {
         $rule=[
@@ -278,7 +277,7 @@ class ControllerUser extends Controller
         }
     }
 
-//Agregar telefono de usuario
+   //Agregar telefono de usuario
    public function AddPhone(request $request)
    {
       $rule=[
@@ -305,7 +304,7 @@ class ControllerUser extends Controller
         }        
    }
 
-//Modificar telefono
+//Modificar Phone
 public function UpdatePhone(Request $request){
       $rule=[
            'id' => 'required|numeric',
@@ -327,13 +326,15 @@ public function UpdatePhone(Request $request){
                   return response()->json('Phone not found ');
                   }
               }
-}     
-    
+ }
+  
+   //Muestra todos los Telefonos de los Usuario    
     public function ReadPhone()
    {
         return Phone::all();  
    }
- //Elimina Usuario
+
+ //Elimina Phone
    public function DeletePhone(Request $request){
        $rule=[
             'id' => 'required|numeric'
@@ -347,15 +348,9 @@ public function UpdatePhone(Request $request){
                   $phone->delete();
                   return response()->json('Phone Delete');
               }else{
-                 return response()->json('User not found');
+                 return response()->json('Phone not found');
                }
             }      
-    }
-
-    //Encuentra telefono del usuario 
-    public function GetUserPhone(request $request){
-      $users = DB::select('select type,number from phone_number where user_id = ?', [$request->input("user_id")]);
-             return response()->json($users);
     }
 
     //Encuentra telefono y usuario 
