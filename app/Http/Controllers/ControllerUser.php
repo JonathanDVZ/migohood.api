@@ -2,6 +2,9 @@
 namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Phone;
+use App\Models\State;
+use App\Models\City;
+use App\Models\Country;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Contracts\Encryption\DecryptException;
@@ -102,23 +105,46 @@ class ControllerUser extends Controller
     
     //Actualiza Password 
     public function UpdatePassword(Request $request){
-      $rule=[
-           'id' => 'required|numeric',
-          'password'=>"required"
-      ];
-      $validator=Validator::make($request->all(),$rule);
-      if ($validator->fails()) {
-        return response()->json($validator->errors()->all());
-        }else{
-             $date=User::where('id','=',$request->input('id'))->first();
-             if($date!=null){
-                  $date->password=Crypt::encrypt($request->input('password'));
-                  if($date->save()){
-                       return response()->json('Update Password');
-                   }
-              }else{
-                  return response()->json('User not found ');
-              }
+       // Creamos las reglas de validación
+        $rules = [
+            'id'  => 'required|numeric',
+            'current-password'  => 'required',
+            'new-password'  => 'required',
+            'confirm-new-password'  => 'required'
+            ];
+        // Ejecutamos el validador, en caso de que falle devolvemos la respuesta
+        $validator = \Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+        }
+        else{
+            // Buscamos el usuario que posea el id ingresado, una vez que se halle entra a la condición
+            $user = User::select()->where('id',$request->input("id"))->first();
+            if ($user){
+                try {
+                    // Desencriptamos la contraseña del usuario y se compara con la contraseña ingresada, si coinciden entra a la condición
+                    $decrypted = Crypt::decrypt($user->password);
+                    if (strcmp($decrypted,$request->input("current-password"))==0){
+
+                        // Se comparan los campos que contienen la contraseña nueva, si coinciden entra a la condición
+                        if (strcmp($request->input("confirm-new-password"),$request->input("new-password"))==0){
+                            //Se actualiza la contraseña del usuario
+                            DB::table('User')->where('id',$user->id)->update(['password' => Crypt::encrypt($request->input('new-password'))]);
+                            return response()->json('Your password has been successfully updated!');
+                        }
+                        else
+                            return response()->json('The respective fields for the new password do not match');  
+
+                    }
+                    else
+                        return response()->json('The password is incorrect');
+                    
+                } catch (DecryptException $e) {
+                    return response()->json($e);
+                }
+            }
+            else
+                return response()->json('The user is not exist!');
         }
     } 
 
@@ -328,10 +354,29 @@ public function UpdatePhone(Request $request){
               }
  }
   
-   //Muestra todos los Telefonos de los Usuario    
-    public function ReadPhone()
+   //Muestra  los Telefonos de un Usuario    
+    public function GetPhone()
    {
-        return Phone::all();  
+      $rule=[
+           'user_id' => 'required|numeric|min:1'
+      ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+        return response()->json($validator->errors()->all());
+        }else{
+            $user=User::where('id','=',$request->input('user_id'))->first();
+            if(count($user)>0){
+                 $phone = DB::select('select * from phone where user_id=?', [$user->id]);
+               if(count($phone)>0){
+                    return response()->json($phone);
+               }else{
+                    return response()->json("The user does not have a registered phone");
+               }
+            }
+            else{
+                return response()->json("User not found");
+            }
+        }
    }
 
  //Elimina Phone
@@ -353,17 +398,85 @@ public function UpdatePhone(Request $request){
             }      
     }
 
-    //Encuentra telefono y usuario 
-    public function GetUserLocation(){
-       $userphone = DB::table('user')->join('city','user.id', '=','city.id')
-       ->join('state','state.id','=','city.id')
-       ->join('country','country.id','=','state.id')
-       ->select('user.name as user','user.secondname','user.email','city.name as city','state.name as state','country.name as country','country.iso','country.iso3','country.numcode','country.phonecode')->get();
-       if(count($userphone)>0){
-            return response()->json($userphone); 
-       }else{
-           return response()->json("Phone not fount"); 
-       }
+    //Devuelve datos de un user en especifico
+    public function GetUser(Request $request){
+            $rule=[
+           'user_id' => 'required|numeric|min:1'
+      ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+        return response()->json($validator->errors()->all());
+        }else{
+            $id=$request->input("user_id");
+            $user= DB::select('select * from user where id = ?',[$id] );
+            if(count($user)>0){
+                 return response()->json($user);
+            }
+            else{
+                return response()->json("User not found");
+            }
+        }
     }
 
+    //Devuelve datos de un city de user
+    public function GetCity(Request $request){
+            $rule=[
+           'user_id' => 'required|numeric|min:1'
+      ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+        return response()->json($validator->errors()->all());
+        }else{
+            $user=User::where('id','=',$request->input('user_id'))->first();
+            if(count($user)>0){
+                $city= DB::select('select * from city where id = ?',[$user->city_id] );
+                 return response()->json($city);
+            }
+            else{
+                return response()->json("User not found");
+            }
+        }
+    }
+
+    public function GetState(Request $request){
+            $rule=[
+           'user_id' => 'required|numeric|min:1'
+      ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+        return response()->json($validator->errors()->all());
+        }else{
+            $user=User::where('id','=',$request->input('user_id'))->first();
+            if(count($user)>0){
+               $city=City::where('id','=',$user->city_id)->first();
+               $state=State::where('id','=',$city->state_id)->first(); 
+               return response()->json($state);
+            }
+            else{
+                return response()->json("User not found");
+            }
+        }
+    }
+
+    public function GetCountry(Request $request){
+            $rule=[
+           'user_id' => 'required|numeric|min:1'
+      ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+        return response()->json($validator->errors()->all());
+        }else{
+            $user=User::where('id','=',$request->input('user_id'))->first();
+            if(count($user)>0){
+               $city=City::where('id','=',$user->city_id)->first();
+               $state=State::where('id','=',$city->state_id)->first();
+               $country=Country::where('id','=',$state->country_id)->first(); 
+               return response()->json($country);
+            }
+            else{
+                return response()->json("User not found");
+            }
+        }
+    }
+    
 }

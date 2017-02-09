@@ -64,7 +64,7 @@ class ControllerCardPaypal extends Controller
                   $addcard->exp_month=$request->input('exp_month');
                   $addcard->exp_year=$request->input('exp_year');
                   $addcard->cvc=$request->input('cvc');
-                  $addcard->name=$request->input('name');
+                  $addcard->name=ucwords(strtolower($request->input('name')));
                   if($addcard->save()){
                        return response()->json('Add Card');
                    }

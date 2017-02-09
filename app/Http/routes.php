@@ -6,14 +6,20 @@
 $app->post('/user/create','ControllerUser@Create');
 //Agrega numero telefonico
 $app->post('/user/add_phone','ControllerUser@AddPhone');
+//muestra un usuario
+$app->post('/user/getuser','ControllerUser@GetUser');
+//muestra un city de un user
+$app->post('/user/getcity','ControllerUser@GetCity');
+//muestra un state de un user
+$app->post('/user/getstate','ControllerUser@GetState');
+//muestra un country de un user
+$app->post('/user/getcountry','ControllerUser@GetCountry');
+//Muestra los phone de un user
+$app->get('/user/get_phone','ControllerUser@GetPhone');
 
 /*Read*/
 //Muestra todos los usuarios
 $app->get('/user/read','ControllerUser@Read');
-//Muestra todos los telefono
-$app->get('/user/read_phone','ControllerUser@ReadPhone');
-//muestra al usuario con la ciudad,state and country
-$app->get('/user/getlocation','ControllerUser@GetUserLocation');
 
 /*Update*/
 //Actualiza name
@@ -56,17 +62,22 @@ $app->post('/service/add_type','ControllerService@AddTypeService');
 $app->post('/service/add_servicecalendar','ControllerService@AddServiceCalendar');
 //Agrega en la service-amenite
 $app->post('/service/add_serviceamenite','ControllerService@AddServiceAmentines');
+//Muestra un service-type en especifico 
+$app->post('/service/get_type','ControllerService@GetTypeService');
+//Muestra un Calendar-Service en especifico
+$app->post('/service/get_readcalendar','ControllerService@ReadCalendarService');
+//Muestra un Amenite-Service en especifico
+$app->post('/service/get_readameniteservice','ControllerService@ReadServiceAmenite');
+
 /*Read*/
-//Muestra todos los service
-$app->get('/service/read','ControllerService@ReadService');
+
 //Muestra al usuario con la category,accommodation,type 
-$app->get('/service/get_service','ControllerService@GetUserService');
+$app->get('/service/get_service_category_type_accommodation','ControllerService@GetUserService');
 //Muestra la tabla Type-Service
 $app->get('/service/read_type','ControllerService@ReadTypeService');
-//Muestra toda la tabla Calendar-Service
-$app->get('/service/read_readcalendar','ControllerService@ReadCalendarService');
-//Muestra toda la tabla Amenite-Service
-$app->get('/service/read_readameniteservice','ControllerService@ReadServiceAmenite');
+$app->get('/service/read_service','ControllerService@ReadService');
+
+
 /*Update*/
 //Actualiza un service
 $app->put('/service/update','ControllerService@UpdateService');
@@ -130,9 +141,9 @@ $app->get('/service/read_imagen','ControllerCardPaypal@ReadImagen');
 $app->post('/service/add_rent','ControllerRent@AddRent');
 //Renta el mismo servicio que esta en renta pero con otra fecha
 $app->post('/service/rent_serv','ControllerRent@VerificationRent');
+//Muestras la renta seleccionda por el usuario
+$app->post('/service/read_rent','ControllerRent@ReadRent');
 /*READ*/
-//Muestras las rentas
-$app->get('/service/read_rent','ControllerRent@ReadRent');
 //Consulta en rent el usuario que solicita el servcio y la fecha que solicito
 $app->get('/service/get_rent','ControllerRent@GetUserServiceRent');
 /*DELETE*/
@@ -145,15 +156,32 @@ $app->delete('/service/delete_rent','ControllerRent@DeleteRent');
 //Agrega un bill
 $app->post('/bill/add_bill','ControllerBill@AddBill');
 //Read  bill
-$app->get('/bill/read_bill','ControllerBill@ReadBill');
+//Muestra una factura en especifico
+$app->post('/bill/get_bill','ControllerBill@ReadBill');
+/*Update*///Lo unico que puede actualizar en bill son total,card,paypal 
+//Actualiza card
+$app->put('/bill/update_card','ControllerBill@UpdateCard');
+//Actualiza paypal
+$app->put('/bill/update_paypal','ControllerBill@UpdatePaypal');
+//Actualiza total
+$app->put('/bill/update_total','ControllerBill@UpdateTotal');
 /*Delete*/
 //Elimina Bill 
 $app->delete('/bill/delete_bill','ControllerBill@DeleteBill');
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
-/* CRUD MESSAGE *////////////////////////////////////////////////////////////En proceso
-$app->get('/user/message','ControllerMessageInbox@ReadMessage');
+/* CRUD MESSAGE *//////////////////////////////////////////////////////////////////////////////
+//Muestra los messages del user en especifico
+$app->post('/user/read_message','ControllerMessageInbox@ReadMessage');
+//Muestra el user que envio y al enviado dependiendo 
+$app->post('/user/read_inbox','ControllerMessageInbox@ReadInbox');
+//envia un message y lo agrega en la inbox
+$app->post('/user/create/add_message_inbox','ControllerMessageInbox@CreateMessageInbox');
+//Elimina un message seleccionado por el user
+$app->delete('/user/message/delete_message','ControllerMessageInbox@DeleteMessage');
+/////////////////////////////////////////////////////////////////////////////////////////////////
 
-$app->get('/user/inbox','ControllerMessageInbox@ReadInbox');
-//En proceso
-//$app->post('/user/create/message','ControllerMessageInbox@CreateMesage');
+/*CRUD PRICE-HISTORY*/
+//Agrega un Price History
+$app->post('/service/add_history','ControllerPriceHistory@AddPryceHistory');
+/**/

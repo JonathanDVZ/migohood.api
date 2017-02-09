@@ -271,8 +271,8 @@ CREATE TABLE IF NOT EXISTS `Migohood`.`inbox` (
   CONSTRAINT `receiver_id`
     FOREIGN KEY (`receiver_id`)
     REFERENCES `Migohood`.`user` (`id`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE,
+    ON DELETE SET NULL
+    ON UPDATE SET NULL,
   CONSTRAINT `transmiter_id`
     FOREIGN KEY (`transmiter_id`)
     REFERENCES `Migohood`.`user` (`id`)
@@ -301,8 +301,8 @@ CREATE TABLE IF NOT EXISTS `Migohood`.`message` (
   CONSTRAINT `fk_MESSAGE_USER1`
     FOREIGN KEY (`user_id`)
     REFERENCES `Migohood`.`user` (`id`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE)
+    ON DELETE SET NULL
+    ON UPDATE SET NULL)
 ENGINE = InnoDB;
 
 

@@ -54,9 +54,23 @@ class ControllerRent extends Controller
             }
     }
     
-    //Muestra las rentas
-    public function ReadRent(){
-        return Rent::all();
+    //Muestra la renta seleccionada
+    public function ReadRent(Request $request){
+        $rule=[
+           'rent_id' => 'required|numeric|min:1'
+      ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+        return response()->json($validator->errors()->all());
+        }else{
+            $rent=Rent::where('id','=',$request->input('rent_id'))->first();
+            if(count($rent)>0){
+               return response()->json($rent);
+                    }
+            else{
+                return response()->json("Rent not found!");
+            }
+        }
     }
     
     //Verifica si una renta esta  reservada para una fecha si lo esta el usuario elegira otra 
