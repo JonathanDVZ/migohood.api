@@ -21,7 +21,7 @@ class ControllerCardPaypal extends Controller
 
     public function AddPaypal(request $request){
         $rule=[
-            'id'=>'required|numeric',
+            'id'=>'required|numeric|min:1',
             'account'=>'required'
             ];
         $validator=Validator::make($request->all(),$rule);
@@ -32,7 +32,7 @@ class ControllerCardPaypal extends Controller
              if($date!=null){
                   $addpaypal=new Paypal();
                   $addpaypal->account=$request->input('account');
-                  $addphone->user_id=$date->id;
+                  $addpaypal->user_id=$date->id;
                   if($addpaypal->save()){
                        return response()->json('Add Paypal');
                    }
@@ -56,15 +56,15 @@ class ControllerCardPaypal extends Controller
       if ($validator->fails()) {
         return response()->json($validator->errors()->all());
         }else{//Busca si el usuario se encuentra registrado
-             $date=User::where('id','=',$request->input('id'))->first();
-             if($date!=null){
+             $date=User::select()->where('id',$request->input("id"))->first(); 
+             if(count($date)>0){
                   $addcard=new Card();
+                  $addcard->user_id=$date->id;
                   $addcard->number=$request->input('number');
                   $addcard->exp_month=$request->input('exp_month');
                   $addcard->exp_year=$request->input('exp_year');
                   $addcard->cvc=$request->input('cvc');
                   $addcard->name=$request->input('name');
-                  $addcard->id=$date->id;
                   if($addcard->save()){
                        return response()->json('Add Card');
                    }

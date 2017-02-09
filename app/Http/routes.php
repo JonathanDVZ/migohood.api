@@ -79,7 +79,9 @@ $app->delete('/service/delete_typeservice','ControllerService@DeleteTypeService'
 $app->delete('/service/delete_ameniteservice','ControllerService@DeleteServiceAmenite');
 //Elimina un service-calendar
 $app->delete('/service/delete_calendar','ControllerService@DeleteServiceCalendar');
-/*CRUD Paypal y Card*//////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
+
+/*CRUD Paypal y Card*///////////////////////////////////////////////////////////////////
 /*Create*/
 //Agrega Card
 $app->post('/user/card/add_card','ControllerCardPaypal@AddCard');
@@ -136,9 +138,18 @@ $app->get('/service/get_rent','ControllerRent@GetUserServiceRent');
 /*DELETE*/
 //Elimina una renta
 $app->delete('/service/delete_rent','ControllerRent@DeleteRent');
+//////////////////////////////////////////////////////////////////////////////////////
 
-
-
+/*CRUD BILL*///////////////////////////////////////////////////////////////////////////////////
+/*CREATE*/
+//Agrega un bill
+$app->post('/bill/add_bill','ControllerBill@AddBill');
+//Read  bill
+$app->get('/bill/read_bill','ControllerBill@ReadBill');
+/*Delete*/
+//Elimina Bill 
+$app->delete('/bill/delete_bill','ControllerBill@DeleteBill');
+///////////////////////////////////////////////////////////////////////////////////////////////
 
 /* CRUD MESSAGE *////////////////////////////////////////////////////////////En proceso
 $app->get('/user/message','ControllerMessageInbox@ReadMessage');
