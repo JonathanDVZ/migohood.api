@@ -241,11 +241,52 @@ class ControllerCardPaypal extends Controller
                }
             }      
     }
+ //Muestra todos los paypal que tiene un user en especifico
+     public function GetUserPaypal(Request $request){
+          $rule=[
+           'user_id' => 'required|numeric|min:1'
+      ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+        return response()->json($validator->errors()->all());
+        }else{
+            $user=User::where('id','=',$request->input('user_id'))->first();
+            if(count($user)>0){
+                 $paypal = DB::select('select * from paypal where user_id=?', [$user->id]);
+               if(count($paypal)>0){
+                    return response()->json($paypal);
+               }else{
+                    return response()->json("The user does not have a registered phone");
+               }
+            }
+            else{
+                return response()->json("User not found");
+            }
+        }
+    }
 
-     public function GetUserCardPaypal(Request $request){
-           
+    public function GetUserCard(Request $request){
+          $rule=[
+           'user_id' => 'required|numeric|min:1'
+      ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+        return response()->json($validator->errors()->all());
+        }else{
+            $user=User::where('id','=',$request->input('user_id'))->first();
+            if(count($user)>0){
+                 $paypal = DB::select('select * from card where user_id=?', [$user->id]);
+               if(count($paypal)>0){
+                    return response()->json($paypal);
+               }else{
+                    return response()->json("The user does not have a registered phone");
+               }
+            }
+            else{
+                return response()->json("User not found");
+            }
+        }
 
-       
     }
 
 }

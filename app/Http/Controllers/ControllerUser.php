@@ -150,22 +150,37 @@ class ControllerUser extends Controller
 
     //Actualiza thumbnail 
     public function UpdateThumbnail(Request $request){
-      $rule=[
-           'id' => 'required|numeric',
-      ];
-      $validator=Validator::make($request->all(),$rule);
-      if ($validator->fails()) {
-        return response()->json($validator->errors()->all());
-        }else{
-             $date=User::where('id','=',$request->input('id'))->first();
-             if($date!=null){
-                  $date->thumbnail=$request->input('thumbnail');
-                  if($date->save()){
-                       return response()->json('Update thumbnail');
-                   }
-              }else{
-                  return response()->json('User not found ');
-              }
+      $rules = array(
+            'id'  => 'required|numeric',
+            'thumbnail' => 'required|image'
+        );
+        $validator = \Validator::make($request->all(), $rules);
+        if($validator->fails())
+        {
+            return response()->json($validator->errors()->all());
+        }
+        else
+        {
+             // Buscamos el usuario que posea el id ingresado, una vez que se halle entra a la condición
+            $user = User::select()->where('id',$request->input("id"))->first();
+            if ($user){
+                try{
+                    // Obtenemos el campo file definido en el formulario
+                    $file = $request->file('thumbnail');            
+                    // Creamos un nombre para nuestro thumnail
+                    $name = 'thumbnail_user_'.Auth::user()->id.'.'.$file->getClientOriginalExtension();            
+                    // Movemos el archivo a la caperta que deseamos
+                    $file->move('files/thumbnails/',$name);
+                    // Actualizamos la fila thumbnail del usuario respectivo
+                    DB::table('user')->where('id', $user->id )->update(['thumbnail' => url('/files/thumbnails/'.$name)]);
+                    return json_encode('Update completed!', true);
+                }
+                catch (\Exception $e){
+                    return response()->json($e->getMessage());
+                }
+            }
+            else
+                return response()->json('The user is not exist!');
         }
     } 
 

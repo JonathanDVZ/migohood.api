@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 use App\Models\Message;
 use App\Models\Inbox;
 use App\Models\User;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Contracts\Encryption\DecryptException;
@@ -79,6 +80,9 @@ class ControllerMessageInbox extends Controller
                            $newmessage->inbox_id=$newinbox->id;
                            $newmessage->save();
                            if($newinbox->save() && $newmessage->save()){
+                                $newnotification=new Notification();
+                                $newnotification->message_id=$request->input("receiver_id");
+                                $newnotification->save();
                                 return response()->json("Message Sent"); 
                            }
                        }

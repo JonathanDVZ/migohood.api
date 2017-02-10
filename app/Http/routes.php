@@ -15,7 +15,7 @@ $app->post('/user/getstate','ControllerUser@GetState');
 //muestra un country de un user
 $app->post('/user/getcountry','ControllerUser@GetCountry');
 //Muestra los phone de un user
-$app->get('/user/get_phone','ControllerUser@GetPhone');
+$app->post('/user/get_phone','ControllerUser@GetPhone');
 
 /*Read*/
 //Muestra todos los usuarios
@@ -42,9 +42,9 @@ $app->put('/user/update_city','ControllerUser@UpdateCity');
 $app->put('/user/update_phone','ControllerUser@UpdatePhone');
 
 /*Delete*/
-//Elimina usuario
+//Elimina un usuario
 $app->delete('/user/delete','ControllerUser@Delete');
-//Elimina telefono
+//Elimina un telefono
 $app->delete('/user/delete_phone','ControllerUser@DeletePhone');
 
 /*Verificar User*/
@@ -98,6 +98,10 @@ $app->delete('/service/delete_calendar','ControllerService@DeleteServiceCalendar
 $app->post('/user/card/add_card','ControllerCardPaypal@AddCard');
 //Agrega Paypal
 $app->post('/user/paypal/add_paypal','ControllerCardPaypal@AddPaypal');
+//Muestra Todo los Paypal que tiene un user en especifico----------------->cambios nuevo
+$app->post('/user/paypal/get_paypal','ControllerCardPaypal@GetUserPaypal');
+//Muestra Todo los Card que tiene un user en especifico------------------>cambios nuevos
+$app->post('/user/card/get_card','ControllerCardPaypal@GetUserCard');
 /*Read*/
 //Muestra Card
 $app->get('/user/card/read_card','ControllerCardPaypal@ReadCard');
@@ -125,13 +129,13 @@ $app->delete('/user/card/delete_card','ControllerCardPaypal@Deletecard');
 
 /*CRUD Imagen*/////////////////////////////////////////////////////////////////////
 /*Create*/
-$app->post('/service/add_imagen','ControllerCardPaypal@AddImagen');
+$app->post('/service/add_imagen','ControllerImagen@AddImagen');
 /*Update*/
-$app->put('/service/update_imagen','ControllerCardPaypal@UpdateImagen');
+$app->put('/service/update_imagen','ControllerImagen@UpdateImagen');
 /*Delete*/
-$app->delete('/service/delete_card','ControllerService@Deletecard');
+$app->delete('/service/delete_imagen','ControllerImagen@DeleteImagen');
 /*Read*/
-$app->get('/service/read_imagen','ControllerCardPaypal@ReadImagen');
+$app->get('/service/read_imagen','ControllerCardImagen@ReadImagen');
 ////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -170,7 +174,7 @@ $app->put('/bill/update_total','ControllerBill@UpdateTotal');
 $app->delete('/bill/delete_bill','ControllerBill@DeleteBill');
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
-/* CRUD MESSAGE *//////////////////////////////////////////////////////////////////////////////
+/* CRUD MESSAGE and Inbox *//////////////////////////////////////////////////////////////////////////////
 //Muestra los messages del user en especifico
 $app->post('/user/read_message','ControllerMessageInbox@ReadMessage');
 //Muestra el user que envio y al enviado dependiendo 
@@ -181,7 +185,18 @@ $app->post('/user/create/add_message_inbox','ControllerMessageInbox@CreateMessag
 $app->delete('/user/message/delete_message','ControllerMessageInbox@DeleteMessage');
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
-/*CRUD PRICE-HISTORY*/
+/*CRUD PRICE-HISTORY*/////////////////////////////////////////////////////////////////////////////
 //Agrega un Price History
 $app->post('/service/add_history','ControllerPriceHistory@AddPryceHistory');
-/**/
+/**//////////////////////////////////////////////////////////////////////////////////////////////
+
+/*Comment*/
+//Agrega un comentario----------------------->nuevo cambio
+$app->post('/service/add_comment','ControllerComment@AddComment');
+
+/*Notification*/
+//Muestra las notification de un user en especifico ------------->nuevo cambio
+$app->post('/service/get_notification','ControllerNotification@GetNotification');
+//Elimina una notification en especifico--------------------->nuevo cambio
+$app->delete('/service/delete_notification','ControllerNotification@DeletetNotification');
+
