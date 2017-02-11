@@ -21,10 +21,10 @@ class ControllerUser extends Controller
         // Ejecutamos el validador, en caso de que falle devolvemos la respuesta
         $rule=[
             'name'=>"required|regex:/^[a-zA-Z_áéíóúàèìòùñ'\s]*$/|max:45",
-            'email'=>'email|required',
+            'email'=>'required',
             'password'=>'required',
             'lastname'=>"required|regex:/^[a-zA-Z_áéíóúàèìòùñ'\s]*$/|max:45",
-            'city_id'=>'numeric'
+            'city_id'=>'numeric|min:1'
         ];
         $validator=Validator::make($request->all(),$rule);
         if ($validator->fails()) {
@@ -37,13 +37,12 @@ class ControllerUser extends Controller
                        $newUser->name=ucwords(strtolower($request->input('name')));
                        $newUser->email=strtolower($request->input('email'));
                        $newUser->password=Crypt::encrypt($request->input('password'));
-                       $newUser->thumbnail=$request->input('thumbnail');
-                       $newUser->secondname=ucwords(strtolower($request->input('secondname')));
+                    // $newUser->thumbnail=$request->input('thumbnail');
                        $newUser->lastname=ucwords(strtolower($request->input('lastname')));
                        $newUser->remember_token=str_random(100);
                        $newUser->confirm_token=str_random(100);
                        $newUser->address=strtolower($request->input('address'));
-                       $newUser->city_id=$request->input('city_id');
+                    // $newUser->city_id=$request->input('city_id');
                        if( $newUser->save()){
                           return response()->json("User Create"); 
                        }
