@@ -369,7 +369,7 @@ public function UpdatePhone(Request $request){
  }
   
    //Muestra  los Telefonos de un Usuario    
-    public function GetPhone()
+    public function GetPhone(Request $request)
    {
       $rule=[
            'user_id' => 'required|numeric|min:1'
