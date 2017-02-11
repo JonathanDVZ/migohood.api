@@ -128,7 +128,7 @@ class ControllerUser extends Controller
                         // Se comparan los campos que contienen la contraseña nueva, si coinciden entra a la condición
                         if (strcmp($request->input("confirm-new-password"),$request->input("new-password"))==0){
                             //Se actualiza la contraseña del usuario
-                            DB::table('User')->where('id',$user->id)->update(['password' => Crypt::encrypt($request->input('new-password'))]);
+                            DB::table('user')->where('id',$user->id)->update(['password' => Crypt::encrypt($request->input('new-password'))]);
                             return response()->json('Your password has been successfully updated!');
                         }
                         else
@@ -251,8 +251,8 @@ class ControllerUser extends Controller
    //Actualiza City
     public function UpdateCity(Request $request){
       $rule=[
-           'id' => 'required|numeric',
-           'city_id'=>'numeric'
+           'id' => 'required|numeric|min:1',
+           'city_id'=>'numeric|min:1'
       ];
       $validator=Validator::make($request->all(),$rule);
       if ($validator->fails()) {
