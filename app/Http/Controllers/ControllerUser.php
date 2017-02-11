@@ -380,7 +380,7 @@ public function UpdatePhone(Request $request){
         }else{
             $user=User::where('id','=',$request->input('user_id'))->first();
             if(count($user)>0){
-                 $phone = DB::select('select * from phone where user_id=?', [$user->id]);
+                 $phone = DB::select('select * from phone_number where user_id=?', [$user->id]);
                if(count($phone)>0){
                     return response()->json($phone);
                }else{
