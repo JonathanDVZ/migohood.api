@@ -9,3 +9,4 @@ insert into amenites(name,category_id) values("Wifi",2),("Pets Allowed",2),("Eve
 insert into accommodation(name)values("private"),("Share");
 insert into calendar(day) value("Sunday"),("Monday"),("Tuesday"),("Wednesday"),("Thursday"),("Friday"),("Sturday");
 insert into duration(type) values("Minute"),("Hour"),("Week"),("Month");
+insert into type_number(type)values("Fixed"),("Cell");

@@ -27,8 +27,8 @@ class ControllerService extends Controller
          //regla de validacion
               $rule=[
                     'name'=>"required|regex:/^[a-zA-Z_áéíóúàèìòùñ'\s]*$/|max:45",
-                    'id'=>'required|numeric|min_1',
-                    'date'=>'required',
+                    'id'=>'required|numeric|min:1',
+                    'date'=>'required|date_format:Y-m-d',
                     'category_id'=>'required|numeric|max:4|min:1',                  
                     'address'=>'required',
                     'title'=>"required|regex:/^[a-zA-Z_áéíóúàèìòùñ'\s]*$/|max:45",
@@ -41,12 +41,12 @@ class ControllerService extends Controller
              return response()->json($validator->errors()->all());
              }
              else{
-                  try{ //Verifico si se encuentra registrado en usuario
-                      $user=User::where('id','=',$request->input('id'))->first();
+                  //Verifico si se encuentra registrado en usuario
+                      $user = User::select()->where('id',$request->input("id"))->first();    
                       if(count($user)>0){
                           $newService=new Service();
                           $newService->name=ucwords(strtolower($request->input('name')));
-                          $newService->user_id=$date->id;
+                          $newService->user_id=$user->id;
                           $newService->date=$request->input('date');
                           $newService->category_id=$request->input('category_id');
                           $newService->address=$request->input('address');
@@ -62,11 +62,7 @@ class ControllerService extends Controller
                       }else{
                           return response()->json('User not Found');
                       }
-                  }catch(exception $e){ 
-                         return response()->json('Service not Create');
-                      }
-                  
-                }
+                  }
     }
 
     //Actualiza un Service
@@ -104,15 +100,16 @@ class ControllerService extends Controller
                             'accommodation_id' => $request->input('accommodation_id')]);
                             return response()->json('Update Service');
                   }else{
-                     return response()->json('Not Service');
+                     return response()->json('Service not found');
                   }
             }
-    } 
+       }
+
 
     //Eliminar Service
     public function DeleteService(Request $request){
            $rule=[
-                    'id'=>'required|numeric'
+                    'id'=>'required|numeric|min:1'
              ];
              $validator=Validator::make($request->all(),$rule);
              if ($validator->fails()) {
@@ -131,7 +128,7 @@ class ControllerService extends Controller
      
      //Se agrega los tipos de la clase category que selecciono previamente el usuario en el servicio
     public function AddTypeService(request $request){
-          $rule=['id_type'=>'required|numeric|min:1|max:20',
+          $rule=['id_type'=>'required|numeric|min:1',
                  'id'=>'required|numeric|min:1'
             ];
             $validator=Validator::make($request->all(),$rule);
@@ -140,47 +137,65 @@ class ControllerService extends Controller
             }else{
                  $type=Type::select()->where('id_type',$request->input("id_type"))->first();        
                  $service=Service::select()->where('id',$request->input("id"))->first();
-                 if(count($service)>0){
-                    $typenum=intval($type->category_id);
-                    $servicenum=intval($service->category_id);
-                    if (strcmp($typenum,$servicenum)==0){
-                       $typeservice=new Service_Type;
-                       $typeservice->service_id=$service->id;
-                       $typeservice->type_id=$type->id_type;
-                       $typeservice->save();
-                       return response()->json('Add Type');  
+                 $val= DB::select('select * from service_type where service_id = ? and type_id=?', [$request->input("id"),$request->input("id_type")]);
+                 if(count($val)==0){
+                   if(count($type)>0){
+                         if(count($service)>0){
+                              $typenum=intval($type->category_id);
+                              $servicenum=intval($service->category_id);
+                              if (strcmp($typenum,$servicenum)==0){
+                                  $typeservice=new Service_Type;
+                                  $typeservice->service_id=$service->id;
+                                  $typeservice->type_id=$type->id_type;
+                                  if($typeservice->save()){
+                                     return response()->json('Add Type');  
+                                   }
+                              }else{
+                                   return response()->json('Does not belong to category'); 
+                        }
                     }else{
-                      return response()->json('Does not belong to category'); 
-                    }
-                }else{
-                    return response()->json('Service not found'); 
-                }
-             }  
+                         return response()->json('Service not found'); 
+                    }   
+            }else{
+                 return response()->json('Type not found'); 
+            }
+                 }else{
+                 if(count($val)==1){
+                   return response()->json('The type was already selected'); 
+                 }
+          }
     }
+
+
+          }
        
     //Muestra todos los type-service
     public function GetTypeService(request $request){
-         $rule=[
-           'type_id' => 'required|numeric|min:1'
+          $rule=[
+           'id' => 'required|numeric|min:1'
       ];
       $validator=Validator::make($request->all(),$rule);
       if ($validator->fails()) {
         return response()->json($validator->errors()->all());
         }else{
-            $servtype=Service_Type::where('id','=',$request->input('type_id'))->first();
-            if(count($servtype)>0){
-              return response()->json($servtype);
-            }
-            else{
-                return response()->json("Service-Type not found");
-            }
+             $service=Service::select()->where('id',$request->input("id"))->first();
+            if(count($service)>0){
+                  $sercal = DB::select('select * from service_type where service_id=?', [$service->id]);
+                  if(count($sercal)>0){
+                      return response()->json($sercal);
+                  }else{
+                        return response()->json("Service-Type not found"); 
+                  }
+            }else{
+                return response()->json("Service not found");
+           }
         }
     } 
       
     //Elimina un service-type
     public function DeleteTypeService(request $request){
           $rule=[
-                    'id'=>'required|numeric'
+                    'id'=>'required|numeric|min:1'
              ];
              $validator=Validator::make($request->all(),$rule);
              if ($validator->fails()) {
@@ -189,7 +204,7 @@ class ControllerService extends Controller
              else{
                  $servicetype = Service_Type::select()->where('id',$request->input("id"))->first();
                  if($servicetype){
-                    DB::table('service-type')->where('id',$servicetype->id)->delete();
+                    DB::table('service_type')->where('id',$servicetype->id)->delete();
                     return response()->json('Service-Type Delete');
                  }else{
                     return response()->json('Service-Type Not delete');   
@@ -238,20 +253,24 @@ class ControllerService extends Controller
 
     //Muestra un service-Calendar en especifico
     public function ReadCalendarService(Request $request){
-            $rule=[
-           'cod' => 'required|numeric|min:1'
+      $rule=[
+           'id' => 'required|numeric|min:1'
       ];
       $validator=Validator::make($request->all(),$rule);
       if ($validator->fails()) {
         return response()->json($validator->errors()->all());
         }else{
-            $servcal=Service_Calendar::where('codigo','=',$request->input('cod'))->first();
-            if(count($servcal)>0){
-              return response()->json($servcal);
-            }
-            else{
-                return response()->json("Service-Calendar not found");
-            }
+             $service=Service::select()->where('id',$request->input("id"))->first();
+            if(count($service)>0){
+                  $sercal = DB::select('select * from service_calendar where service_id=?', [$service->id]);
+                  if(count($sercal)>0){
+                      return response()->json($sercal);
+                  }else{
+                        return response()->json("Service-Calendar not found"); 
+                  }
+            }else{
+                return response()->json("Service not found");
+           }
         }
     }
 
@@ -277,49 +296,63 @@ class ControllerService extends Controller
 
     //Agrega a un service amenites nota:solo category 1 y 2 tienen amenites 
     public function AddServiceAmentines(Request $request){
-        $rule=['codigo'=>'required|numeric|min:1|max:15',
-                 'id'=>'numeric'
+        $rule=['codigo'=>'required|numeric|min:1',
+                 'id'=>'numeric|required'
             ];
             $validator=Validator::make($request->all(),$rule);
             if ($validator->fails()) {
                 return response()->json($validator->errors()->all());
             }else{
                  $amenite=Amenite::select()->where('codigo',$request->input("codigo"))->first();        
+                 if(count($amenite)>0){
                  $service=Service::select()->where('id',$request->input("id"))->first();
-                 if(count($service)>0){
-                    $amenitenum=intval($amenite->category_id);
-                    $servicenum=intval($service->category_id);
-                    if (strcmp($amenitenum,$servicenum)==0){
-                       $newserviceame=new Service_Amenite;
-                       $newserviceame->service_id=$service->id;
-                       $newserviceame->amenite_id=$amenite->codigo;
-                       $newserviceame->save();
-                       return response()->json('Add Amenite Service');  
-                    }else{
-                      return response()->json('Does not belong to category'); 
-                    }
-                }else{
+                 $val= DB::select('select * from service_amenites where service_id = ? and amenite_id=?', [$request->input("id"),$request->input("codigo")]);
+                 if(count($val)==0){
+                    if(count($service)>0){
+                        $amenitenum=intval($amenite->category_id);
+                        $servicenum=intval($service->category_id);
+                        if (strcmp($amenitenum,$servicenum)==0){
+                            $newserviceame=new Service_Amenite;
+                            $newserviceame->service_id=$service->id;
+                            $newserviceame->amenite_id=$amenite->codigo;
+                            $newserviceame->save();
+                            return response()->json('Add Amenite Service');  
+                       }else{
+                           return response()->json('Does not belong to category'); 
+                       }
+                  }else{
                     return response()->json('Service not found'); 
+                }}else{
+                    if(count($val)==1){
+                   return response()->json('The amenite was already selected'); 
                 }
-             } 
+             }
+             }else{
+                  return response()->json('Amenite not found'); 
+             }
+         } 
     }
 
-    //Muestrala tabla  Service-Amenites
+    //Muestra la tabla  Service-Amenites
     public function ReadServiceAmenite(Request $request){
        $rule=[
-           'id_serv_amet' => 'required|numeric|min:1'
+           'id' => 'required|numeric|min:1'
       ];
       $validator=Validator::make($request->all(),$rule);
       if ($validator->fails()) {
         return response()->json($validator->errors()->all());
         }else{
-            $servam=Service_Amenite::where('id','=',$request->input('id_serv_amet'))->first();
-            if(count($servam)>0){
-              return response()->json($servam);
-            }
-            else{
-                return response()->json("Service-Amenite not found");
-            }
+             $service=Service::select()->where('id',$request->input("id"))->first();
+            if(count($service)>0){
+                  $servam = DB::select('select * from service_amenites where service_id=?', [$service->id]);
+                  if(count($servam)>0){
+                      return response()->json($servam);
+                  }else{
+                        return response()->json("Service-Ametine not found"); 
+                  }
+            }else{
+                return response()->json("Service not found");
+           }
         }
     }
      
@@ -341,6 +374,24 @@ class ControllerService extends Controller
                     return response()->json('Service-Amenite Not delete');   
                  }
               }   
+    }
+
+    Public function ReadServiceUser(Request $request){
+            $rule=[
+           'user_id' => 'required|numeric|min:1'
+      ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+        return response()->json($validator->errors()->all());
+        }else{
+              $service = DB::select('select * from service where user_id=?', [$request->input("user_id")]);
+              if(count($service)>0){
+                  return response()->json($service);
+              }else{
+                  return response()->json("service not found");
+              }
+              
+        }
     }  
 }
 

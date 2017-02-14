@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Contracts\Encryption\DecryptException;
 use	Illuminate\Encryption\Encrypter;
 use validator;
+use DateTime;
 use DB;
 
 class ControllerMessageInbox extends Controller
@@ -55,8 +56,7 @@ class ControllerMessageInbox extends Controller
             $rule=[
             'user_id'=>'required|numeric|min:1',
             'receiver_id'=>'required|numeric|min:1',
-            'content'=>'required',
-            'date'=>'required'
+            'content'=>'required'
           ];
         $validator=Validator::make($request->all(),$rule);
         if ($validator->fails()) {
@@ -75,7 +75,8 @@ class ControllerMessageInbox extends Controller
                            $newinbox->transmiter_id=$user->id;
                            $newinbox->save();
                            $newmessage->content=$request->input("content");
-                           $newmessage->date=$request->input("date");
+                           $dt = new DateTime();
+                           $newmessage->date=$dt->format('Y-m-d H:i:s');
                            $newmessage->user_id=$user->id;
                            $newmessage->inbox_id=$newinbox->id;
                            $newmessage->save();
@@ -94,22 +95,21 @@ class ControllerMessageInbox extends Controller
 
         public function DeleteMessage(Request $request){
             $rule=[
-            'message_id' => 'required|numeric'
-            ];
-        $validator=Validator::make($request->all(),$rule);
-         if ($validator->fails()) {
-            return response()->json($validator->errors()->all());
-        }else{
-             $message=Message::where('id','=',$request->input('message_id'))->first();
-             if($message!=null){
-                  $message->delete();
-                  return response()->json('Message Delete');
-              }else{
-                 return response()->json('Message not found');
-               }
-            }      
-
-        }  
+                'message_id' => 'required|numeric|min:1'
+              ];
+             $validator=Validator::make($request->all(),$rule);
+             if ($validator->fails()) {
+                 return response()->json($validator->errors()->all());
+             }else{
+                 $message=Message::where('id','=',$request->input('message_id'))->first();
+                 if($message!=null){
+                      $message->delete();
+                      return response()->json('Message Delete');
+                 }else{
+                    return response()->json('Message not found');
+                  }
+               }      
+           }  
      
 }
 

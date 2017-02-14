@@ -69,14 +69,14 @@ CREATE TABLE IF NOT EXISTS `Migohood`.`user` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NOT NULL,
   `email` VARCHAR(100) NOT NULL,
-  `password` VARCHAR(300) NOT NULL,
-  `thumbnail` VARCHAR(250) NOT NULL,
+  `password` VARCHAR(100) NOT NULL,
+  `thumbnail` VARCHAR(150) NOT NULL,
   `secondname` VARCHAR(45) NULL,
   `lastname` VARCHAR(45) NULL,
   `remember_token` VARCHAR(100) NULL,
   `confirm_token` VARCHAR(100) NULL,
   `address` VARCHAR(80) NULL,
-  `city_id` INT NOT NULL,
+  `city_id` INT NULL,
   UNIQUE INDEX `password_UNIQUE` (`password` ASC),
   PRIMARY KEY (`id`),
   INDEX `fk_USER_CITY1_idx` (`city_id` ASC),
@@ -236,21 +236,21 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `Migohood`.`service-type`
+-- Table `Migohood`.`service_type`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `Migohood`.`service-type` (
+CREATE TABLE IF NOT EXISTS `Migohood`.`service_type` (
   `service_id` INT NOT NULL,
   `type_id` INT NOT NULL,
   `id` INT NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`id`),
   INDEX `fk_SERVICE_has_TYPE_TYPE1_idx` (`type_id` ASC),
   INDEX `fk_SERVICE_has_TYPE_SERVICE1_idx` (`service_id` ASC),
-  CONSTRAINT `fk_SERVICE_has_TYPE_SERVICE1`
+  CONSTRAINT `service_id`
     FOREIGN KEY (`service_id`)
     REFERENCES `Migohood`.`service` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `fk_SERVICE_has_TYPE_TYPE1`
+  CONSTRAINT `type_id`
     FOREIGN KEY (`type_id`)
     REFERENCES `Migohood`.`type` (`id_type`)
     ON DELETE CASCADE
@@ -460,20 +460,36 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
+-- Table `Migohood`.`type_number`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Migohood`.`type_number` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `type` VARCHAR(16) NOT NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
 -- Table `Migohood`.`phone_number`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `Migohood`.`phone_number` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `number` INT NULL,
-  `type` VARCHAR(10) NOT NULL,
+  `number` INT NOT NULL,
   `user_id` INT NOT NULL,
+  `type_id` INT NOT NULL,
   PRIMARY KEY (`id`),
   INDEX `fk_PHONE_NUMBER_USER1_idx` (`user_id` ASC),
+  INDEX `fk_phone_number_type_number1_idx` (`type_id` ASC),
   CONSTRAINT `fk_PHONE_NUMBER_USER1`
     FOREIGN KEY (`user_id`)
     REFERENCES `Migohood`.`user` (`id`)
     ON DELETE CASCADE
-    ON UPDATE CASCADE)
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_phone_number_type_number1`
+    FOREIGN KEY (`type_id`)
+    REFERENCES `Migohood`.`type_number` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 

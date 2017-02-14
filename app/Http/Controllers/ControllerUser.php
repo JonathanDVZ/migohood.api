@@ -252,7 +252,7 @@ class ControllerUser extends Controller
     public function UpdateCity(Request $request){
       $rule=[
            'id' => 'required|numeric|min:1',
-           'city_id'=>'numeric|min:1'
+           'city_id'=>'required|numeric|min:1'
       ];
       $validator=Validator::make($request->all(),$rule);
       if ($validator->fails()) {
@@ -321,9 +321,9 @@ class ControllerUser extends Controller
    public function AddPhone(request $request)
    {
       $rule=[
-            'id'=>'required|numeric',
-            'number'=>'required|min:7',
-            'type'=>'required'
+            'id'=>'required|numeric|min:1',
+            'number'=>'required|numeric|min:7',
+            'type_id'=>'required|numeric|min:1|max:2'
             ];
         $validator=Validator::make($request->all(),$rule);
       if ($validator->fails()) {
@@ -333,10 +333,15 @@ class ControllerUser extends Controller
              if($date!=null){
                   $addphone=new Phone();
                   $addphone->number=$request->input('number');
-                  $addphone->type=$request->input('type');
-                  $addphone->user_id=$date->id;
-                  if($addphone->save()){
-                       return response()->json('Add Phone');
+                  $val= DB::select('select * from phone_number where user_id = ? and number=?', [$request->input("id"),$request->input("number")]);
+                  if(count($val)==0){
+                        $addphone->type_id=$request->input('type_id');
+                        $addphone->user_id=$date->id;
+                        if($addphone->save()){
+                              return response()->json('Add Phone');
+                        }
+                   }else{
+                       return response()->json('This number is already registered');
                    }
               }else{
                    return response()->json('User not found ');
@@ -396,7 +401,7 @@ public function UpdatePhone(Request $request){
  //Elimina Phone
    public function DeletePhone(Request $request){
        $rule=[
-            'id' => 'required|numeric'
+            'id' => 'required|numeric|min:1'
             ];
         $validator=Validator::make($request->all(),$rule);
          if ($validator->fails()) {
@@ -443,8 +448,12 @@ public function UpdatePhone(Request $request){
         }else{
             $user=User::where('id','=',$request->input('user_id'))->first();
             if(count($user)>0){
-                $city= DB::select('select * from city where id = ?',[$user->city_id] );
+                if(count($user->city_id)>0){
+                     $city= DB::select('select * from city where id = ?',[$user->city_id] );
                  return response()->json($city);
+                 }else{
+                    return response()->json("Your city is not registered");
+                 }
             }
             else{
                 return response()->json("User not found");

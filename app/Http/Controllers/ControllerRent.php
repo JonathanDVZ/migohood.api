@@ -17,8 +17,8 @@ class ControllerRent extends Controller
         $rule=[
                 'user_id'=>'required|numeric|min:1',
                 'service_id'=>'required|numeric|min:1',
-                'initial_date'=>'required',
-                'end_date'=>'required'
+                'initial_date'=>'required|date_format:Y-m-d',
+                'end_date'=>'required|date_format:Y-m-d'
             ];
             $validator=Validator::make($request->all(),$rule);
             if ($validator->fails()) {
@@ -26,21 +26,20 @@ class ControllerRent extends Controller
             }else{
                  $user=User::select()->where('id',$request->input("user_id"))->first();        
                  $service=Service::select()->where('id',$request->input("service_id"))->first();
-                 if(count($service)>0){
+                  $val= DB::select('select * from rent where user_id = ? and service_cod=?',[$user->id,$service->id]);
+                  if(count($val)==0){
+                   if(count($service)>0){
                      if(count($user)>0){
                           $newrent=new Rent;
                           $newrent->user_id=$user->id;    
                           $newrent->service_cod=$service->id;
-                          if($service->date<$request->input("initial_date")){
-                              if($request->input("end_date")>$request->input("initial_date")){
+                          if($service->date<=$request->input("initial_date")){
                                $newrent->end_date=$request->input("end_date");
                                $newrent->initial_date=$request->input("initial_date");
                               if($newrent->save()){
-                                return response()->json('Add Rent');           
+                                   return response()->json('Add Rent');           
                                }
-                               }else{
-                                return response()->json('The end date must be greater');
-                            }
+                            
                          }else{
                               return response()->json('Is not on the selected service date');  
                           }                             
@@ -51,32 +50,43 @@ class ControllerRent extends Controller
                }else{
                    return response()->json('Service not found');
                }
+            }else{
+                return response()->json('You already select that income');
+            }
+            
             }
     }
     
     //Muestra la renta seleccionada
     public function ReadRent(Request $request){
-        $rule=[
-           'rent_id' => 'required|numeric|min:1'
+         $rule=[
+           'user_id' => 'required|numeric|min:1'
       ];
       $validator=Validator::make($request->all(),$rule);
       if ($validator->fails()) {
         return response()->json($validator->errors()->all());
         }else{
-            $rent=Rent::where('id','=',$request->input('rent_id'))->first();
-            if(count($rent)>0){
-               return response()->json($rent);
-                    }
+            $user=User::where('id','=',$request->input('user_id'))->first();
+            if(count($user)>0){
+                 $rent= DB::select('select * from rent where user_id=?', [$user->id]);
+               if(count($rent)>0){
+                    return response()->json($rent);
+               }else{
+                    return response()->json("The user does not have a registered phone");
+               }
+            }
             else{
-                return response()->json("Rent not found!");
+                return response()->json("User not found");
             }
         }
     }
     
     //Verifica si una renta esta  reservada para una fecha si lo esta el usuario elegira otra 
     public function VerificationRent(request $request){
-         $rule=[
+            $rule=[
                 'rent_id'=>'required|numeric|min:1',
+                'initial_date'=>'required|date_format:Y-m-d',
+                'end_date'=>'required|date_format:Y-m-d'
             ];
             $validator=Validator::make($request->all(),$rule);
             if ($validator->fails()) {
@@ -85,7 +95,7 @@ class ControllerRent extends Controller
                  $rent=Rent::select()->where('id',$request->input("rent_id"))->first();
                    if(count($rent)>0){  
                       if($request->input("initial_date")>$rent->initial_end){
-                          if($request->input("end_date")>$request->input("initial_date")){
+                          if($request->input("end_date")>=$request->input("initial_date")){
                             $newrent=new Rent();
                             $newrent->user_id=$rent->user_id;
                             $newrent->service_cod=$rent->service_cod;

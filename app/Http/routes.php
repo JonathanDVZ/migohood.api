@@ -67,7 +67,9 @@ $app->post('/service/get_type','ControllerService@GetTypeService');
 //Muestra un Calendar-Service en especifico
 $app->post('/service/get_readcalendar','ControllerService@ReadCalendarService');
 //Muestra un Amenite-Service en especifico
-$app->post('/service/get_readameniteservice','ControllerService@ReadServiceAmenite');
+$app->post('/service/get_readameniteservice','ControllerService@ReadServiceAmenite');//-->13/2/2017
+//Muestra los service de un user en especifico
+$app->post('/service/read_service','ControllerService@ReadServiceUser');//-->13/2/2017
 
 /*Read*/
 
@@ -144,7 +146,7 @@ $app->get('/service/read_imagen','ControllerCardImagen@ReadImagen');
 //Agrega una renta
 $app->post('/service/add_rent','ControllerRent@AddRent');
 //Renta el mismo servicio que esta en renta pero con otra fecha
-$app->post('/service/rent_serv','ControllerRent@VerificationRent');
+$app->post('/service/rent_serv','ControllerRent@VerificationRent');//rent
 //Muestras la renta seleccionda por el usuario
 $app->post('/service/read_rent','ControllerRent@ReadRent');
 /*READ*/
@@ -188,15 +190,23 @@ $app->delete('/user/message/delete_message','ControllerMessageInbox@DeleteMessag
 /*CRUD PRICE-HISTORY*/////////////////////////////////////////////////////////////////////////////
 //Agrega un Price History
 $app->post('/service/add_history','ControllerPriceHistory@AddPryceHistory');
+$app->put('/service/update_end_date','ControllerPriceHistory@UpdateEndDate');//--->13-2-2017
+$app->put('/service/update_price','ControllerPriceHistory@UpdatePrice');//-->13-2-2017
 /**//////////////////////////////////////////////////////////////////////////////////////////////
 
-/*Comment*/
+/*Comment*////////////////////////////////////////////////////////////////////////////////////////
 //Agrega un comentario----------------------->nuevo cambio
 $app->post('/service/add_comment','ControllerComment@AddComment');
 
-/*Notification*/
+$app->post('/service/comment','ControllerComment@ReadCommentUser');//-->13/2/2017
+
+$app->delete('/service/delete_comment','ControllerComment@DeleteComment');//-->13/2/2017
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+/*Notification*///////////////////////////////////////////////////////////////////////////////////////
 //Muestra las notification de un user en especifico ------------->nuevo cambio
 $app->post('/service/get_notification','ControllerNotification@GetNotification');
 //Elimina una notification en especifico--------------------->nuevo cambio
 $app->delete('/service/delete_notification','ControllerNotification@DeletetNotification');
-
+////////////////////////////////////////////////////////////////////////////////////////////////////////
