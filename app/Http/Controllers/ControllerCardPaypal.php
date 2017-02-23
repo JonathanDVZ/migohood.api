@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Contracts\Encryption\DecryptException;
 use	Illuminate\Encryption\Encrypter;
 use validator;
+use DB;
 
 class ControllerCardPaypal extends Controller
 {
@@ -16,26 +17,31 @@ class ControllerCardPaypal extends Controller
     }
     
     public function ReadCard(){
-        return Paypal::all();
+        return Card::all();
     }
 
     public function AddPaypal(request $request){
         $rule=[
-            'id'=>'required|numeric|min:1',
-            'account'=>'required'
+            'user_id'=>'required|numeric|min:1',
+            'account'=>'required|unique:paypal,account'
             ];
         $validator=Validator::make($request->all(),$rule);
       if ($validator->fails()) {
         return response()->json($validator->errors()->all());
         }else{//Busca si el usuario se encuentra registrado
-             $date=User::where('id','=',$request->input('id'))->first();
+             $date=User::where('id','=',$request->input('user_id'))->first();
              if($date!=null){
-                  $addpaypal=new Paypal();
-                  $addpaypal->account=$request->input('account');
-                  $addpaypal->user_id=$date->id;
-                  if($addpaypal->save()){
-                       return response()->json('Add Paypal');
-                   }
+                  $val= DB::select('select * from paypal where user_id=? and account=?',[$date->id,$request->input("account")]);
+                   if(count($val)==0){
+                      $addpaypal=new Paypal();
+                      $addpaypal->account=$request->input('account');
+                      $addpaypal->user_id=$date->id;
+                      if($addpaypal->save()){
+                          return response()->json('Add Paypal');
+                      }
+                   }else{
+                       return response()->json('The paypal is already registered ');
+                   }   
               }else{
                    return response()->json('User not found ');
              }
@@ -45,36 +51,41 @@ class ControllerCardPaypal extends Controller
    //Agrega Card
     public function AddCard(request $request){
         $rule=[
-            'id'=>'required|numeric',
-            'number'=>'required',
+            'user_id'=>'required|numeric|min:1',
+            'number'=>'required|unique:card,number|numeric|min:1',
             'exp_month'=>'required',
             'exp_year'=>'required',
-            'cvc'=>'required',
-            'name'=>'required'            
+            'cvc'=>'required|numeric|unique:card,cvc|min:1',
+            'name'=>'required|string'            
             ];
         $validator=Validator::make($request->all(),$rule);
       if ($validator->fails()) {
         return response()->json($validator->errors()->all());
         }else{//Busca si el usuario se encuentra registrado
-             $date=User::select()->where('id',$request->input("id"))->first(); 
+             $date=User::select()->where('id',$request->input("user_id"))->first(); 
              if(count($date)>0){
-                  $addcard=new Card();
-                  $addcard->user_id=$date->id;
-                  $addcard->number=$request->input('number');
-                  $addcard->exp_month=$request->input('exp_month');
-                  $addcard->exp_year=$request->input('exp_year');
-                  $addcard->cvc=$request->input('cvc');
-                  $addcard->name=ucwords(strtolower($request->input('name')));
-                  if($addcard->save()){
-                       return response()->json('Add Card');
-                   }
-              }else{
-                   return response()->json('User not found ');
-             }
+                 $val= DB::select('select * from card where number=? and user_id=?',[$request->input("number"),$date->id]);
+                 if(count($val)==0){
+                      $addcard=new Card;
+                      $addcard->user_id=$date->id;
+                      $addcard->number=$request->input('number');
+                      $addcard->exp_month=$request->input('exp_month');
+                      $addcard->exp_year=$request->input('exp_year');
+                      $addcard->cvc=$request->input('cvc');
+                      $addcard->name=ucwords(strtolower($request->input('name')));
+                      if($addcard->save()){
+                          return response()->json('Add Card');
+                      }
+                  }else{
+                      return response()->json('The card is already registered ');
+                  }
+                 }else{
+                     return response()->json('User not found ');
+                 }
         } 
     }
 
-    public function UpdatePaypal(request $request){
+  /*  public function UpdatePaypal(request $request){
        $rule=[
            'id_paypal' => 'required|numeric',
            'account'=>'required'
@@ -115,7 +126,7 @@ class ControllerCardPaypal extends Controller
               }
         }
 
-    }
+    }*/
    
     public function UpdateExpMonth(request $request){
         $rule=[
@@ -162,7 +173,7 @@ class ControllerCardPaypal extends Controller
     }
      
     
-    public function UpdateCvc(request $request){
+  /*  public function UpdateCvc(request $request){
           $rule=[
            'id' => 'required|numeric',
            'cvc'=>'required'
@@ -182,12 +193,12 @@ class ControllerCardPaypal extends Controller
               }
         }
         
-    }
+    }*/
      
      public function UpdateName(request $request){
            $rule=[
-           'id' => 'required|numeric',
-           'name'=>'required'
+           'id' => 'required|numeric|min:1',
+           'name'=>'required|string'
       ];
       $validator=Validator::make($request->all(),$rule);
       if ($validator->fails()) {
@@ -208,36 +219,37 @@ class ControllerCardPaypal extends Controller
 
     public function DeletePaypal(Request $request){
         $rule=[
-            'id_paypal' => 'required|numeric'
+            'id_paypal' => 'required|numeric|min:1'
             ];
         $validator=Validator::make($request->all(),$rule);
          if ($validator->fails()) {
             return response()->json($validator->errors()->all());
         }else{
              $paypal=Paypal::where('id_paypal','=',$request->input('id_paypal'))->first();
-             if($paypal!=null){
-                  $paypal->delete();
+             if(count($paypal)>0){
+                 DB::table('paypal')->where('id_paypal',$paypal->id_paypal)->delete();
                   return response()->json('Paypal Delete');
               }else{
-                 return response()->json('User not found');
+                 return response()->json('Paypal not found');
                }
             }      
     }
 
     public function DeleteCard(Request $request){
         $rule=[
-            'id' => 'required|numeric'
+            'card_id' => 'required|numeric|min:1'
             ];
         $validator=Validator::make($request->all(),$rule);
          if ($validator->fails()) {
             return response()->json($validator->errors()->all());
         }else{
-             $paypal=Paypal::where('id','=',$request->input('id'))->first();
-             if($paypal!=null){
-                  $paypal->delete();
+             $card=Card::where('id','=',$request->input('card_id'))->first();
+             if($card!=null){
+                  //$card->delete();
+                   DB::table('card')->where('id',$card->id)->delete();
                   return response()->json('Card Delete');
               }else{
-                 return response()->json('User not found');
+                 return response()->json('Card not found');
                }
             }      
     }

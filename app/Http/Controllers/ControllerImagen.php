@@ -10,27 +10,52 @@ use validator;
 use DB;
 class ControllerImagen extends Controller
 {
-    public function ReadImagen(){
-          return Imagen::all();
+    public function GetImagen(Request $request){
+           $rule=[
+           'service_id' => 'required|numeric|min:1'
+      ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+        return response()->json($validator->errors()->all());
+        }else{
+            $service=Service::where('id','=',$request->input('service_id'))->first();
+            if(count($service)>0){
+                 $imagen = DB::select('select * from imagen where service_id=?', [$service->id]);
+               if(count($imagen)>0){
+                    return response()->json($imagen);
+               }else{
+                    return response()->json("imagen not found");
+               }
+            }
+            else{
+                return response()->json("Service not found");
+            }
+        }
     }
-
+//Agrega una imagen
     public function AddImagen(Request $request){
           $rule=[
-            'id'=>'required|numeric',
+            'service_id'=>'required|numeric|min:1',
             'ruta'=>'required'
             ];
         $validator=Validator::make($request->all(),$rule);
       if ($validator->fails()) {
         return response()->json($validator->errors()->all());
         }else{//Busca si el usuario se encuentra registrado
-             $service=service::where('id','=',$request->input('id'))->first();
-             if($date!=null){
+             $service=Service::where('id','=',$request->input('service_id'))->first();
+             $users = DB::table('imagen')->where('service_id','=',$service->id)->count();
+             if($service!=null){
+                 $imagen = DB::table('imagen')->where('service_id','=',$service->id)->count();
+                 if($imagen<=10){
                   $addimagen=new Imagen();
                   $addimagen->ruta=$request->input('ruta');
-                  $addimagen->user_id=$service->id;
+                  $addimagen->service_id=$service->id;
                   if($addimagen->save()){
-                       return response()->json('Add Ruta');
+                       return response()->json('Add Imagen');
                    }
+                 }else{
+                      return response()->json('Imagen Limit!');
+                 }
               }else{
                    return response()->json('Service not found ');
              }
@@ -39,18 +64,18 @@ class ControllerImagen extends Controller
 
     public function UpdateImagen(Request $request){
          $rule=[
-           'id' => 'required|numeric',
+           'imagen_id' => 'required|numeric|min:1',
            'ruta'=>'required'
       ];
       $validator=Validator::make($request->all(),$rule);
       if ($validator->fails()) {
         return response()->json($validator->errors()->all());
         }else{
-             $updateimagen=Imagen::where('id','=',$request->input('id'))->first();
+             $updateimagen=Imagen::where('id','=',$request->input('imagen_id'))->first();
              if($updateimagen!=null){
                   $updateimagen->ruta=$request->input('ruta');
                   if($updateimagen->save()){
-                       return response()->json('Update ruta');
+                       return response()->json('Update Imagen');
                    }
               }else{
                   return response()->json('Imagen not found ');
@@ -60,13 +85,13 @@ class ControllerImagen extends Controller
 
         public function DeleteImagen(Request $request){
         $rule=[
-            'id' => 'required|numeric'
+            'imagen_id' => 'required|numeric'
             ];
         $validator=Validator::make($request->all(),$rule);
          if ($validator->fails()) {
             return response()->json($validator->errors()->all());
         }else{
-             $deleteimagen=Imagen::where('id','=',$request->input('id'))->first();
+             $deleteimagen=Imagen::where('id','=',$request->input('imagen_id'))->first();
              if($deleteimagen!=null){
                   $deleteimagen->delete();
                   return response()->json('Imagen Delete');

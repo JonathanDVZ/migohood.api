@@ -22,7 +22,7 @@ class ControllerMessageInbox extends Controller
           if ($validator->fails()) {
              return response()->json($validator->errors()->all());
            }else{
-              $usermessage = DB::select('select * from message where user_id=?', [$request->input('user_id')]);
+              $usermessage = DB::select('select content,date from message where user_id=?', [$request->input('user_id')]);
             if(count($usermessage)>0){
                   return response()->json($usermessage);
              }
@@ -41,14 +41,16 @@ class ControllerMessageInbox extends Controller
           if ($validator->fails()) {
              return response()->json($validator->errors()->all());
            }else{
-              $userinbox = DB::select('select * from inbox where transmiter_id=?', [$request->input('user_id')]);
-            if(count($userinbox)>0){
-                  return response()->json($userinbox);
-             }
-            else{
-                return response()->json("Inbox not fount");
-            }
-        }
+                 $getrent = DB::table('inbox')->join('user','inbox.receiver_id','=','user.id')
+         ->where('inbox.transmiter_id','=',$request->input("user_id"))
+         ->select('inbox.transmiter_id','user.name as receiver')
+         ->get();
+         if(count($getrent)>0){
+             return response()->json($getrent); 
+         }else{
+             return response()->json("Rent not fount"); 
+         }
+         }
        }
 
      
@@ -65,12 +67,13 @@ class ControllerMessageInbox extends Controller
         else{
              $user = User::select()->where('id',$request->input("user_id"))->first();        
                 if (count($user)>0){
-                       $newinbox=new Inbox();
-                       $newmessage=new Message();
+                       
                        $receiver = User::select()->where('id',$request->input("receiver_id"))->first();
                        if($receiver==null){
                            return response()->json("Receiver not found");
                        }else{
+                           $newinbox=new Inbox();
+                           $newmessage=new Message();
                            $newinbox->receiver_id=$request->input("receiver_id");
                            $newinbox->transmiter_id=$user->id;
                            $newinbox->save();
@@ -81,8 +84,9 @@ class ControllerMessageInbox extends Controller
                            $newmessage->inbox_id=$newinbox->id;
                            $newmessage->save();
                            if($newinbox->save() && $newmessage->save()){
-                                $newnotification=new Notification();
-                                $newnotification->message_id=$request->input("receiver_id");
+                              $newnotification=new Notification();
+                                $newnotification->user_id=$request->input("receiver_id");
+                                $newnotification->message_id=$newmessage->id;
                                 $newnotification->save();
                                 return response()->json("Message Sent"); 
                            }

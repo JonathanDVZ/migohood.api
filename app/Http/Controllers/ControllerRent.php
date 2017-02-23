@@ -14,48 +14,56 @@ use DB;
 class ControllerRent extends Controller
 {
     public function AddRent(request $request){
-        $rule=[
-                'user_id'=>'required|numeric|min:1',
-                'service_id'=>'required|numeric|min:1',
-                'initial_date'=>'required|date_format:Y-m-d',
-                'end_date'=>'required|date_format:Y-m-d'
-            ];
-            $validator=Validator::make($request->all(),$rule);
-            if ($validator->fails()) {
-                return response()->json($validator->errors()->all());
-            }else{
-                 $user=User::select()->where('id',$request->input("user_id"))->first();        
-                 $service=Service::select()->where('id',$request->input("service_id"))->first();
-                  $val= DB::select('select * from rent where user_id = ? and service_cod=?',[$user->id,$service->id]);
-                  if(count($val)==0){
-                   if(count($service)>0){
-                     if(count($user)>0){
-                          $newrent=new Rent;
-                          $newrent->user_id=$user->id;    
-                          $newrent->service_cod=$service->id;
-                          if($service->date<=$request->input("initial_date")){
-                               $newrent->end_date=$request->input("end_date");
-                               $newrent->initial_date=$request->input("initial_date");
-                              if($newrent->save()){
-                                   return response()->json('Add Rent');           
-                               }
-                            
-                         }else{
-                              return response()->json('Is not on the selected service date');  
-                          }                             
-                              
-                     }else{
-                    return response()->json('User not found'); 
-                  }
+          $rule=[
+              'user_id'=>'required|numeric|min:1',
+              'service_id'=>'required|numeric|min:1',
+           'initial_date'=>'required|date_format:Y-m-d|after:today',
+              'end_date'=>'required|date_format:Y-m-d|after:today'
+          ];
+          $validator=Validator::make($request->all(),$rule);
+          if ($validator->fails()) {
+              return response()->json($validator->errors()->all());
+          }else{
+              $user=User::select()->where('id',$request->input("user_id"))->first();        
+              $service=Service::select()->where('id',$request->input("service_id"))->first();
+              if(count($user)>0 && count($service)>0){
+                   $val= DB::select('select * from rent where user_id = ? and service_cod=?',[$user->id,$service->id]);
+                   if(count($val)>0){
+                          $newserve=DB::select('select * from rent where service_cod=? and ((initial_date<=? and end_date>=?) or (initial_date<=? and end_date>=?))',
+                          [
+                             $service->id,
+                             $request->input("initial_date"),
+                             $request->input("initial_date"),
+                             $request->input("end_date"),
+                             $request->input("end_date")
+                          ]);
+                          if(count($newserve)==0){
+                              $newrent=new Rent();
+                              $newrent->user_id=$user->id;
+                              $newrent->service_cod=$service->id;
+                              $newrent->end_date=$request->input("end_date");
+                              $newrent->initial_date=$request->input("initial_date");
+                              $newrent->save();
+                              return response()->json("Add Rent");
+                          }else{
+                               return response()->json("Can not rent at that time");
+                         }
+                   
+                   }else{
+                           $newrent=new Rent();
+                           $newrent->user_id=$user->id;
+                           $newrent->service_cod=$service->id;
+                           $newrent->end_date=$request->input("end_date");
+                           $newrent->initial_date=$request->input("initial_date");
+                           $newrent->save();
+                           return response()->json("Add Rent");
+                       }
                }else{
-                   return response()->json('Service not found');
+                 return response()->json("User or Service not found");
                }
-            }else{
-                return response()->json('You already select that income');
-            }
-            
-            }
-    }
+           }
+        }
+    
     
     //Muestra la renta seleccionada
     public function ReadRent(Request $request){
@@ -66,67 +74,33 @@ class ControllerRent extends Controller
       if ($validator->fails()) {
         return response()->json($validator->errors()->all());
         }else{
-            $user=User::where('id','=',$request->input('user_id'))->first();
-            if(count($user)>0){
-                 $rent= DB::select('select * from rent where user_id=?', [$user->id]);
-               if(count($rent)>0){
-                    return response()->json($rent);
-               }else{
-                    return response()->json("The user does not have a registered phone");
-               }
-            }
-            else{
-                return response()->json("User not found");
-            }
+             $getrent = DB::table('user')->join('rent','user.id', '=','rent.user_id')
+         ->join('service','service.id','=','rent.service_cod')
+         ->where('rent.user_id','=',$request->input("user_id"))
+         ->select('user.name as user','service.title','rent.end_date','rent.initial_date')
+         ->get();
+         if(count($getrent)>0){
+             return response()->json($getrent); 
+         }else{
+             return response()->json("Rent not fount"); 
+         }
+           
         }
     }
     
-    //Verifica si una renta esta  reservada para una fecha si lo esta el usuario elegira otra 
-    public function VerificationRent(request $request){
-            $rule=[
-                'rent_id'=>'required|numeric|min:1',
-                'initial_date'=>'required|date_format:Y-m-d',
-                'end_date'=>'required|date_format:Y-m-d'
-            ];
-            $validator=Validator::make($request->all(),$rule);
-            if ($validator->fails()) {
-                return response()->json($validator->errors()->all());
-            }else{      
-                 $rent=Rent::select()->where('id',$request->input("rent_id"))->first();
-                   if(count($rent)>0){  
-                      if($request->input("initial_date")>$rent->initial_end){
-                          if($request->input("end_date")>=$request->input("initial_date")){
-                            $newrent=new Rent();
-                            $newrent->user_id=$rent->user_id;
-                            $newrent->service_cod=$rent->service_cod;
-                            $newrent->initial_date=$request->input("initial_date");
-                            $newrent->end_date=$request->input("end_date");
-                            if($newrent->save()){
-                                return response()->json('Add Rent');           
-                               }
-                            }else{
-                                return response()->json('The end date must be greater');
-                            }
-                    }else{
-                       return response()->json('Is not on the selected service date');     
-                     }               
-                 }else{
-                    return response()->json('Rent not found');
-                 }
-           }
-         }
+    
         
         //Elimina Renta
         public function DeleteRent(request $request){
             $rule=[
-                    'id'=>'required|numeric|min:1'
+                    'rent_id'=>'required|numeric|min:1'
              ];
              $validator=Validator::make($request->all(),$rule);
              if ($validator->fails()) {
                 return response()->json($validator->errors()->all());
              }
              else{
-                 $rent = Rent::select()->where('id',$request->input("id"))->first();
+                 $rent = Rent::select()->where('id',$request->input("rent_id"))->first();
                  if(count($rent)>0){
                     DB::table('rent')->where('id',$rent->id)->delete();
                     return response()->json('Rent Delete');
@@ -136,16 +110,5 @@ class ControllerRent extends Controller
               }   
         } 
 
-        //Consulta de la tabla rent con los atributos name de user que lo esta solicitando y la fecha final e inicial
-      public function GetUserServiceRent(){
-          $getrent = DB::table('user')->join('rent','user.id', '=','rent.user_id')
-         ->join('service','service.id','=','rent.service_cod')
-         ->select('user.name as user','service.name as service','rent.end_date','rent.initial_date')
-         ->get();
-         if(count($getrent)>0){
-             return response()->json($getrent); 
-         }else{
-             return response()->json("Rent not fount"); 
-         }
-      }
+
 }
