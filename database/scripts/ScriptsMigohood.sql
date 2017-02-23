@@ -454,8 +454,8 @@ ENGINE = InnoDB;
 -- Table `Migohood`.`price_history`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `Migohood`.`price_history` (
-  `starDate` DATE NOT NULL,
-  `endDate` DATE NULL,
+  `starDate` DATETIME NOT NULL,
+  `endDate` DATETIME NULL,
   `price` FLOAT NOT NULL,
   `service_id` INT NOT NULL,
   PRIMARY KEY (`starDate`, `service_id`),
