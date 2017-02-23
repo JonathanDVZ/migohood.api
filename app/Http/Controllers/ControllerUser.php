@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Contracts\Encryption\DecryptException;
 use	Illuminate\Encryption\Encrypter;
+use Illuminate\Support\Facades\Auth;
 use validator;
 use DB;
 
@@ -20,10 +21,10 @@ class ControllerUser extends Controller
     {   
         // Ejecutamos el validador, en caso de que falle devolvemos la respuesta
         $rule=[
-            'name'=>"required|regex:/^[a-zA-Z_áéíóúàèìòùñ'\s]*$/|max:45",
-            'email'=>'required',
+            'name'=>"required|string|regex:/^[a-zA-Z_áéíóúàèìòùñ'\s]*$/|max:45",
+            'email'=>'required|email|unique:user,email',
             'password'=>'required',
-            'lastname'=>"required|regex:/^[a-zA-Z_áéíóúàèìòùñ'\s]*$/|max:45",
+            'lastname'=>"required|string|regex:/^[a-zA-Z_áéíóúàèìòùñ'\s]*$/|max:45",
             'city_id'=>'numeric|min:1'
         ];
         $validator=Validator::make($request->all(),$rule);
@@ -61,14 +62,14 @@ class ControllerUser extends Controller
      //Actualiza Name
     public function UpdateName(Request $request){
       $rule=[
-           'id' => 'required|numeric',
-          'name'=>"required|regex:/^[a-zA-Z_áéíóúàèìòùñ'\s]*$/|max:45"
+           'user_id' => 'required|numeric|min:1',
+          'name'=>"required|string|regex:/^[a-zA-Z_áéíóúàèìòùñ'\s]*$/|max:45"
       ];
       $validator=Validator::make($request->all(),$rule);
       if ($validator->fails()) {
         return response()->json($validator->errors()->all());
         }else{
-             $date=User::where('id','=',$request->input('id'))->first();
+             $date=User::where('id','=',$request->input('user_id'))->first();
              if($date!=null){
                   $date->name=ucwords(strtolower($request->input('name')));
                   if($date->save()){
@@ -83,14 +84,14 @@ class ControllerUser extends Controller
    //Actualiza Email
     public function UpdateEmail(Request $request){
       $rule=[
-           'id' => 'required|numeric',
-          'email'=>"required|email"
+           'user_id' => 'required|numeric|min:1',
+           'email'=>'required|email|unique:user,email'
       ];
       $validator=Validator::make($request->all(),$rule);
       if ($validator->fails()) {
         return response()->json($validator->errors()->all());
         }else{
-             $date=User::where('id','=',$request->input('id'))->first();
+             $date=User::where('id','=',$request->input('user_id'))->first();
              if($date!=null){
                   $date->email=strtolower($request->input('email'));
                   if($date->save()){
@@ -104,7 +105,7 @@ class ControllerUser extends Controller
     
     //Actualiza Password 
     public function UpdatePassword(Request $request){
-       // Creamos las reglas de validación
+        // Creamos las reglas de validación
         $rules = [
             'id'  => 'required|numeric',
             'current-password'  => 'required',
@@ -128,7 +129,7 @@ class ControllerUser extends Controller
                         // Se comparan los campos que contienen la contraseña nueva, si coinciden entra a la condición
                         if (strcmp($request->input("confirm-new-password"),$request->input("new-password"))==0){
                             //Se actualiza la contraseña del usuario
-                            DB::table('user')->where('id',$user->id)->update(['password' => Crypt::encrypt($request->input('new-password'))]);
+                            DB::table('User')->where('id',$user->id)->update(['password' => Crypt::encrypt($request->input('new-password'))]);
                             return response()->json('Your password has been successfully updated!');
                         }
                         else
@@ -150,8 +151,8 @@ class ControllerUser extends Controller
     //Actualiza thumbnail 
     public function UpdateThumbnail(Request $request){
       $rules = array(
-            'id'  => 'required|numeric',
-            'thumbnail' => 'required|image'
+            'user_id'  => 'required|numeric|min:1',
+            'thumbnail' => 'image'
         );
         $validator = \Validator::make($request->all(), $rules);
         if($validator->fails())
@@ -161,7 +162,7 @@ class ControllerUser extends Controller
         else
         {
              // Buscamos el usuario que posea el id ingresado, una vez que se halle entra a la condición
-            $user = User::select()->where('id',$request->input("id"))->first();
+            $user = User::select()->where('id',$request->input("user_id"))->first();
             if ($user){
                 try{
                     // Obtenemos el campo file definido en el formulario
@@ -186,8 +187,8 @@ class ControllerUser extends Controller
     //Actualiza SecondName
     public function UpdateSecondname(Request $request){
       $rule=[
-           'id' => 'required|numeric',
-           'secondname'=>"regex:/^[a-zA-Z_áéíóúàèìòùñ'\s]*$/|max:45"
+           'id' => 'required|numeric|min:1',
+           'secondname'=>"string|regex:/^[a-zA-Z_áéíóúàèìòùñ'\s]*$/|max:45"
       ];
       $validator=Validator::make($request->all(),$rule);
       if ($validator->fails()) {
@@ -208,8 +209,8 @@ class ControllerUser extends Controller
     //Actualiza LastName
     public function UpdateLastname(Request $request){
       $rule=[
-           'id' => 'required|numeric',
-           'lastname' => "required|regex:/^[a-zA-Z_áéíóúàèìòùñ'\s]*$/|max:45",
+           'id' => 'required|numeric|min:1',
+           'lastname' => "required|string|regex:/^[a-zA-Z_áéíóúàèìòùñ'\s]*$/|max:45",
       ];
       $validator=Validator::make($request->all(),$rule);
       if ($validator->fails()) {
@@ -230,7 +231,7 @@ class ControllerUser extends Controller
    //Actualiza Address
     public function UpdateAddress(Request $request){
       $rule=[
-           'id' => 'required|numeric'
+           'id' => 'required|numeric|min:1'
       ];
       $validator=Validator::make($request->all(),$rule);
       if ($validator->fails()) {
@@ -252,7 +253,7 @@ class ControllerUser extends Controller
     public function UpdateCity(Request $request){
       $rule=[
            'id' => 'required|numeric|min:1',
-           'city_id'=>'required|numeric|min:1'
+           'city_id'=>'numeric|min:1'
       ];
       $validator=Validator::make($request->all(),$rule);
       if ($validator->fails()) {
@@ -322,7 +323,7 @@ class ControllerUser extends Controller
    {
       $rule=[
             'id'=>'required|numeric|min:1',
-            'number'=>'required|numeric|min:7',
+            'number'=>'required|numeric|min:1',
             'type_id'=>'required|numeric|min:1|max:2'
             ];
         $validator=Validator::make($request->all(),$rule);
@@ -352,19 +353,19 @@ class ControllerUser extends Controller
 //Modificar Phone
 public function UpdatePhone(Request $request){
       $rule=[
-           'id' => 'required|numeric',
-           'number'=>'required|numeric|min:7',
-           'type'=>'required'
+           'phone_id' => 'required|numeric|min:1',
+           'number'=>'required|numeric|min:1',
+           'type_id'=>'required|numeric|min:1|max:2'
       ];
       $validator=Validator::make($request->all(),$rule);
       if ($validator->fails()) {
         return response()->json($validator->errors()->all());
         }else{
-               $phone = Phone::select()->where('id',$request->input("id"))->first();
+               $phone = Phone::select()->where('id',$request->input("phone_id"))->first();
                  if (count($phone)>0){
                       DB::table('phone_number')->where('id',$phone->id)->update(
                             ['number'=>$request->input("number"),
-                              'type'=>$request->input("type"),
+                              'type_id'=>$request->input("type_id")
                             ]);
                        return response()->json('Update Phone ');     
                   }else{
@@ -385,7 +386,7 @@ public function UpdatePhone(Request $request){
         }else{
             $user=User::where('id','=',$request->input('user_id'))->first();
             if(count($user)>0){
-                 $phone = DB::select('select * from phone_number where user_id=?', [$user->id]);
+                 $phone = DB::select('select number,type_id from phone_number where user_id=?', [$user->id]);
                if(count($phone)>0){
                     return response()->json($phone);
                }else{
@@ -472,8 +473,12 @@ public function UpdatePhone(Request $request){
             $user=User::where('id','=',$request->input('user_id'))->first();
             if(count($user)>0){
                $city=City::where('id','=',$user->city_id)->first();
-               $state=State::where('id','=',$city->state_id)->first(); 
-               return response()->json($state);
+               if(count($city)>0){
+                     $state=State::where('id','=',$city->state_id)->first(); 
+                     return response()->json($state);
+               }else{
+                      return response()->json("Your state is not registered");
+               }
             }
             else{
                 return response()->json("User not found");
@@ -492,14 +497,19 @@ public function UpdatePhone(Request $request){
             $user=User::where('id','=',$request->input('user_id'))->first();
             if(count($user)>0){
                $city=City::where('id','=',$user->city_id)->first();
-               $state=State::where('id','=',$city->state_id)->first();
-               $country=Country::where('id','=',$state->country_id)->first(); 
+               if(count($city)>0){
+                     $state=State::where('id','=',$city->state_id)->first();
+                     $country=Country::where('id','=',$state->country_id)->first(); 
                return response()->json($country);
+               }else{
+                   return response()->json("Your country is not registered");
+               }
             }
             else{
                 return response()->json("User not found");
             }
         }
     }
+
     
 }
