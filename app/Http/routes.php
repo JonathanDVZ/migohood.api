@@ -188,7 +188,7 @@ $app->post('/price_history/add_history','ControllerPriceHistory@AddPryceHistory'
 /*Stripe*/
 $app->post('/stripe/add_stripe','ControllerStripe@stripePayment');
 
-/*_______________________________________________________________________________________________________________*/
+/*_______________________________________________________________________________________________________________
 //Actualiza un price
 $app->put('/price_history/update_price','ControllerPriceHistory@UpdatePrice');//-->13-2-2017
 /**//////////////////////////////////////////////////////////////////////////////////////////////
@@ -197,7 +197,7 @@ $app->put('/price_history/update_price','ControllerPriceHistory@UpdatePrice');//
 
 
 
-/*Lista de Datos para el Combobox    --->Arreglar*/
+/*Lista de Datos para el Combobox    --->Arreglar
 //Muestra la Category
 $app->post('/service/get_category','ControllerCombobox@GetCategory');
 //Muestra todos los GetAmenites
@@ -207,3 +207,4 @@ $app->post('/service/get_amenite','ControllerCombobox@GetAmenites');
 //Muestra los accommodation 
 $app->get('/service/get_accommodation','ControllerCombobox@GetAcommodation');
 
+*/
