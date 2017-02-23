@@ -219,4 +219,6 @@ $app->get('/duration/get-duration','ControllerCombobox@GetDuration');
 //Muestra todas las ciudades
 $app->post('/city/get-city','ControllerCombobox@GetCity');
 
+$app->post('/city/get-city','ControllerCombobox@GetCity');
+
 
