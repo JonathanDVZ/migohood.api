@@ -188,23 +188,25 @@ $app->post('/price_history/add_history','ControllerPriceHistory@AddPryceHistory'
 /*Stripe*/
 $app->post('/stripe/add_stripe','ControllerStripe@stripePayment');
 
+/*Lista de Datos para el Combobox*/
+//Muestra la Category
+$app->get('/category/get_category','ControllerCombobox@GetCategory');
+//Muestra todos los GetAmenities
+$app->get('/amenitie/get_amenitie','ControllerCombobox@GetAmenities');
+//Muestra todos los alojamientos
+$app->get('/accommodation/get_accommodation','ControllerCombobox@GetAccommodation');
+//Muestra todos los dias de la semana
+$app->get('/calendar/get_calendar','ControllerCombobox@GetCalendar');
+//Muestra todos los tipos
+$app->get('/type/get_type','ControllerCombobox@GetType');
+//Muestra todas las duraciones
+$app->get('/duration/get_duration','ControllerCombobox@GetDuration');
+//Muestra todas las ciudades
+$app->post('/city/get_city','ControllerCombobox@GetCity');
+
+
 /*_______________________________________________________________________________________________________________
 //Actualiza un price
 $app->put('/price_history/update_price','ControllerPriceHistory@UpdatePrice');//-->13-2-2017
 /**//////////////////////////////////////////////////////////////////////////////////////////////
 
-
-
-
-
-/*Lista de Datos para el Combobox    --->Arreglar
-//Muestra la Category
-$app->post('/service/get_category','ControllerCombobox@GetCategory');
-//Muestra todos los GetAmenites
-$app->post('/service/get_amenite','ControllerCombobox@GetAmenites');
-//Muestra todos lo GetType
-//$app->post('/service/get_type','ControllerCombobox@GetType');
-//Muestra los accommodation 
-$app->get('/service/get_accommodation','ControllerCombobox@GetAcommodation');
-
-*/
