@@ -1,4 +1,4 @@
-INSERT INTO `Country` (`id`, `iso`, `name`, `iso3`, `numcode`, `phonecode`) VALUES
+INSERT INTO `country` (`id`, `iso`, `name`, `iso3`, `numcode`, `phonecode`) VALUES
 (1, 'AF', 'Afghanistan', 'AFG', 4, 93),
 (2, 'AL', 'Albania', 'ALB', 8, 355),
 (3, 'DZ', 'Algeria', 'DZA', 12, 213),
