@@ -1,12 +1,12 @@
- use migohood;
-insert into category(name) value("Space"),("Workspace"),("Parking Space"),("Service");
+use Migohood;
+insert into category(id,name) value(1,"Space"),(2,"Workspace"),(3,"Parking Space"),(4,"Service");
 insert into type(name,category_id) values("Apartament",1),("House",1),("B&B",1),("Room",1),("Other",1);
 insert into type(name,category_id) values("Bussiness Center",2),("Corporate Office",2),("Coworking Space",2),("Other Workspace",2);
 insert into type(name,category_id) values("Driveway",3),("Garage",3),("Car Park",3),("Other",3);
 insert into type(name,category_id) values("Tourism",4),("Educational",4),("Cultural",4),("Recreational",4),("Eco",4),("Adventure",4),("Fitness",4);
 insert into amenities(name,category_id)value("Pets Allowed",1),("Events Allowed",1),("Production (Video or Photography) Allowed",1),("Family Friendly",1),("Business Guest",1),("Smoke free",1),("Gym",1),("Parking",1);
 insert into amenities(name,category_id) values("Wifi",2),("Pets Allowed",2),("Events Allowed.",2),("Production (Video or Photography) Allowed",2),("Smoke free",2),("Gym",2),("Parking",2);
-insert into accommodation(name)values("private"),("Share");
-insert into calendar(day) value("All Days"),("Sunday"),("Monday"),("Tuesday"),("Wednesday"),("Thursday"),("Friday"),("Sturday");
-insert into duration(type) values("Minute"),("Hour"),("Week"),("Month");
-insert into type_number(type)values("Fixed"),("Cell");
+insert into accommodation(id,name)values(1,"Private"),(2,"Share");
+insert into calendar(codigo_id,day) value(1,"All Days"),(2,"Sunday"),(3,"Monday"),(4,"Tuesday"),(5,"Wednesday"),(6,"Thursday"),(7,"Friday"),(8,"Saturday");
+insert into duration(id,type) values(1,"Minute"),(2,"Hour"),(3,"Week"),(4,"Month");
+insert into type_number(id,type)values(1,"Fixed"),(2,"Cell");
