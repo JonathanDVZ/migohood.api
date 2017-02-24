@@ -216,9 +216,10 @@ $app->get('/calendar/get-calendar','ControllerCombobox@GetCalendar');
 $app->get('/type/get-type','ControllerCombobox@GetType');
 //Muestra todas las duraciones
 $app->get('/duration/get-duration','ControllerCombobox@GetDuration');
+$app->get('/duration/get-duration','ControllerCombobox@GetDuration');
 //Muestra todas las ciudades
 $app->post('/city/get-city','ControllerCombobox@GetCity');
 
-$app->post('/city/get-city','ControllerCombobox@GetCity');
+//$app->post('/city/get-city','ControllerCombobox@GetCity');
 
 
