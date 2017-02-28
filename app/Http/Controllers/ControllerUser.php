@@ -25,7 +25,6 @@ class ControllerUser extends Controller
             'email'=>'required|email|unique:user,email',
             'password'=>'required',
             'lastname'=>"required|string|regex:/^[a-zA-Z_áéíóúàèìòùñ'\s]*$/|max:45",
-            'city_id'=>'numeric|min:1'
         ];
         $validator=Validator::make($request->all(),$rule);
         if ($validator->fails()) {
@@ -33,7 +32,7 @@ class ControllerUser extends Controller
         }
         else{ //devuelve un email
             $user = User::select()->where('email', strtolower($request->input("email")))->first();        
-                if ($user==null){//si es null es por que no esta registrado
+                if (!empty($user)){//si es null es por que no esta registrado
                        $newUser=new User();
                        $newUser->name=ucwords(strtolower($request->input('name')));
                        $newUser->email=strtolower($request->input('email'));
@@ -42,11 +41,9 @@ class ControllerUser extends Controller
                        $newUser->lastname=ucwords(strtolower($request->input('lastname')));
                        $newUser->remember_token=str_random(100);
                        $newUser->confirm_token=str_random(100);
-                       $newUser->address=strtolower($request->input('address'));
                     // $newUser->city_id=$request->input('city_id');
-                       if( $newUser->save()){
-                          return response()->json("User Create"); 
-                       }
+                       $newUser->save();
+                        return response()->json("User Create"); 
                     }
                     else{
                          return response()->json("User Existente"); 
