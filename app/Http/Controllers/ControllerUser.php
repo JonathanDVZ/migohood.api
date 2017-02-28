@@ -32,7 +32,7 @@ class ControllerUser extends Controller
         }
         else{ //devuelve un email
             $user = User::select()->where('email', strtolower($request->input("email")))->first();        
-                if (!empty($user)){//si es null es por que no esta registrado
+                if (empty($user)){//si es null es por que no esta registrado
                        $newUser=new User();
                        $newUser->name=ucwords(strtolower($request->input('name')));
                        $newUser->email=strtolower($request->input('email'));
