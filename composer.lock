@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "be56596918ef42a15b75d881aaedbd55",
+    "content-hash": "37323f02f2536acd23464693bc6bfffc",
     "packages": [
         {
             "name": "doctrine/inflector",
@@ -1532,6 +1532,78 @@
                 "psr-3"
             ],
             "time": "2016-10-10T12:19:37+00:00"
+        },
+        {
+            "name": "stripe/stripe-php",
+<<<<<<< HEAD
+            "version": "v4.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/stripe/stripe-php.git",
+                "reference": "9ec772fe502995850954dbc15b1f38e6f9159a4d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/stripe/stripe-php/zipball/9ec772fe502995850954dbc15b1f38e6f9159a4d",
+                "reference": "9ec772fe502995850954dbc15b1f38e6f9159a4d",
+=======
+            "version": "v4.4.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/stripe/stripe-php.git",
+                "reference": "d9ca4ef579e0829379aa5a1ccb9911b3a46a565b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/stripe/stripe-php/zipball/d9ca4ef579e0829379aa5a1ccb9911b3a46a565b",
+                "reference": "d9ca4ef579e0829379aa5a1ccb9911b3a46a565b",
+>>>>>>> 87488ef644d304f1c622f0771f7d461995c955a7
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-json": "*",
+                "ext-mbstring": "*",
+                "php": ">=5.3.3"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.0",
+                "satooshi/php-coveralls": "~0.6.1",
+                "squizlabs/php_codesniffer": "~2.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Stripe\\": "lib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Stripe and contributors",
+                    "homepage": "https://github.com/stripe/stripe-php/contributors"
+                }
+            ],
+            "description": "Stripe PHP Library",
+            "homepage": "https://stripe.com/",
+            "keywords": [
+                "api",
+                "payment processing",
+                "stripe"
+            ],
+<<<<<<< HEAD
+            "time": "2017-01-18T18:55:45+00:00"
+=======
+            "time": "2017-02-24T23:52:02+00:00"
+>>>>>>> 87488ef644d304f1c622f0771f7d461995c955a7
         },
         {
             "name": "symfony/console",
