@@ -49,7 +49,7 @@ $app->post('/user/login','ControllerUser@verificationLogin');//-->3/3/2017
 //OAuth User-Login
 $app->post('/user/login-oauth','ControllerUser@LoginOauth');//-->3/3/2017
 //OAuth User-Name
-$app->post('/user/set-name-oauth','ControllerUser@UserOauth');//-->3/3/2017
+$app->post('/user/set-user-oauth','ControllerUser@UserOauth');//-->3/3/2017
 /////////////////////////////////////////////////////////////////////////////
 
 /*CRUD SERVICE*//////////////////////////////////////////////////////////////
