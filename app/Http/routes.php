@@ -46,6 +46,10 @@ $app->delete('/user/delete-phone','ControllerUser@DeletePhone');
 /*Verificar User*/
 //Verifica el password y email si estan agregado
 $app->post('/user/login','ControllerUser@verificationLogin');//-->3/3/2017
+//OAuth User-Login
+$app->post('/user/login-oauth','ControllerUser@LoginOauth');//-->3/3/2017
+//OAuth User-Name
+$app->post('/user/set-name-oauth','ControllerUser@UserOauth');//-->3/3/2017
 /////////////////////////////////////////////////////////////////////////////
 
 /*CRUD SERVICE*//////////////////////////////////////////////////////////////
@@ -212,3 +216,6 @@ $app->get('/duration/get-duration','ControllerCombobox@GetDuration');
 $app->post('/city/get-city','ControllerCombobox@GetCity');
 
 
+/*$app->get('/make_token',function(){
+    return str_random(100);
+});*/
