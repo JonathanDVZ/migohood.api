@@ -1,13 +1,5 @@
 <?php
 
-$app->get('/', function () use ($app){
-    return 'Migohood API made with '.$app->version();
-});
-
-$app->get('/home', function () use ($app){
-    return 'Migohood API made with '.$app->version();
-});
-
 /*CRUD USER*//////////////////////////////////////////////////////////
 /*Create*/
 //Agrega un usuario
@@ -53,7 +45,7 @@ $app->delete('/user/delete','ControllerUser@Delete');
 $app->delete('/user/delete-phone','ControllerUser@DeletePhone');
 /*Verificar User*/
 //Verifica el password y email si estan agregado
-$app->post('/user/verification','ControllerUser@verificationLogin');
+$app->post('/user/login','ControllerUser@verificationLogin');//-->3/3/2017
 /////////////////////////////////////////////////////////////////////////////
 
 /*CRUD SERVICE*//////////////////////////////////////////////////////////////
@@ -154,13 +146,13 @@ $app->delete('/service/delete-rent','ControllerRent@DeleteRent');
 /*CRUD BILL*///////////////////////////////////////////////////////////////////////////////////
 /*CREATE*/
 //Agrega un bill
-$app->post('/bill/add-bill','ControllerBill@AddBill');
+$app->post('/bill/add-bill','ControllerPaymentBill@AddBill');//-->3/3/2017
 //Read  bill
 //Muestra una factura de un user en especifico
-$app->post('/bill/get-bill','ControllerBill@ReadBill');
+$app->post('/bill/get-bill','ControllerPaymentBill@ReadBill');
 /*Delete*/
 //Elimina Bill 
-$app->delete('/bill/delete-bill','ControllerBill@DeleteBill');
+$app->delete('/bill/delete-bill','ControllerPaymentBill@DeleteBill');
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /* CRUD MESSAGE and Inbox *//////////////////////////////////////////////////////////////////////////////
@@ -169,7 +161,7 @@ $app->post('/user/get-message','ControllerMessageInbox@ReadMessage');
 //Muestra el user que envio y al enviado dependiendo 
 $app->post('/user/get-inbox','ControllerMessageInbox@ReadInbox');
 //envia un message y lo agrega en la inbox
-$app->post('/user/add_message-inbox','ControllerMessageInbox@CreateMessageInbox');
+$app->post('/user/add-message','ControllerMessageInbox@CreateMessageInbox');
 //Elimina un message seleccionado por el user
 $app->delete('/user/message/delete-message','ControllerMessageInbox@DeleteMessage');
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -200,7 +192,7 @@ $app->post('/price-history/get-history','ControllerPriceHistory@GetHistory');
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 /*Stripe*/////////////////////////////////////////////////////////////////////////////////////////
-$app->post('/user/stripe/add-stripe','ControllerStripe@stripePayment');
+//$app->post('/user/stripe/add-stripe','ControllerStripe@stripePayment');
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 /*Lista de Datos para el Combobox*////////////////////////////////////////////////////////////////
@@ -216,10 +208,7 @@ $app->get('/calendar/get-calendar','ControllerCombobox@GetCalendar');
 $app->get('/type/get-type','ControllerCombobox@GetType');
 //Muestra todas las duraciones
 $app->get('/duration/get-duration','ControllerCombobox@GetDuration');
-$app->get('/duration/get-duration','ControllerCombobox@GetDuration');
 //Muestra todas las ciudades
 $app->post('/city/get-city','ControllerCombobox@GetCity');
-
-//$app->post('/city/get-city','ControllerCombobox@GetCity');
 
 

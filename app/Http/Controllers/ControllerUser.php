@@ -306,7 +306,7 @@ class ControllerUser extends Controller
             $decrypted = Crypt::decrypt($user->password);
             if (strcmp($decrypted,$request->input("password"))==0) {
                       if(strcmp($user->email,$request->input("email"))==0){
-                          return response()->json("true");
+                          return response()->json($user);
                       }
             }else{
                 //Es false si no existe el usuario o ingreso sus datos erroneos
