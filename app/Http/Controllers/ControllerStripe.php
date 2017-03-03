@@ -31,7 +31,7 @@ class ControllerStripe extends Controller
                try{
                    Charge::create(array(
                        "type"=>'ideal',
-                       "amount" => $bill->price,
+                       "amount" => $bill->price*100,
                        "currency" => "usd",
                        "source" => $request->input('stripeToken'), 
                        "description" => 'Test Charge'

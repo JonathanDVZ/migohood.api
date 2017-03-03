@@ -15,7 +15,10 @@ use DB;
 
 class ControllerUser extends Controller
 {
-    
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
    
     public function Create(Request $request)
     {   
@@ -25,6 +28,7 @@ class ControllerUser extends Controller
             'email'=>'required|email|unique:user,email',
             'password'=>'required',
             'lastname'=>"required|string|regex:/^[a-zA-Z_áéíóúàèìòùñ'\s]*$/|max:45",
+            'city_id'=>'numeric|min:1'
         ];
         $validator=Validator::make($request->all(),$rule);
         if ($validator->fails()) {
@@ -32,7 +36,7 @@ class ControllerUser extends Controller
         }
         else{ //devuelve un email
             $user = User::select()->where('email', strtolower($request->input("email")))->first();        
-                if (empty($user)){//si es null es por que no esta registrado
+                if ($user==null){//si es null es por que no esta registrado
                        $newUser=new User();
                        $newUser->name=ucwords(strtolower($request->input('name')));
                        $newUser->email=strtolower($request->input('email'));
@@ -41,12 +45,14 @@ class ControllerUser extends Controller
                        $newUser->lastname=ucwords(strtolower($request->input('lastname')));
                        $newUser->remember_token=str_random(100);
                        $newUser->confirm_token=str_random(100);
+                       $newUser->address=strtolower($request->input('address'));
                     // $newUser->city_id=$request->input('city_id');
-                       $newUser->save();
-                        return response()->json("User Create"); 
+                       if( $newUser->save()){
+                          return response()->json("User Create"); 
+                       }
                     }
                     else{
-                         return response()->json("User Existente"); 
+                         return response()->json("Existing user"); 
                     }
             }
         }
@@ -303,7 +309,7 @@ class ControllerUser extends Controller
             $decrypted = Crypt::decrypt($user->password);
             if (strcmp($decrypted,$request->input("password"))==0) {
                       if(strcmp($user->email,$request->input("email"))==0){
-                          return response()->json("true");
+                          return response()->json($user);
                       }
             }else{
                 //Es false si no existe el usuario o ingreso sus datos erroneos
@@ -508,5 +514,47 @@ public function UpdatePhone(Request $request){
         }
     }
 
+public function LoginOauth(Request $request){
+   $rule=[
+           'email' => 'required|email'
+      ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+        return response()->json($validator->errors()->all());
+        }else{
+           $user= DB::select('select * from user where email = ?',[$request->input("email")]);
+           if(count($user)>0){
+                return response()->json($user);
+           }else{
+               return response()->json("User not found");
+           }           
+        }   
+}
+
+public function UserOauth(Request $request){
+     $rule=[
+           'email' => 'required|email|unique:user,email',
+           'name'=>'required',
+           'thumbnail'=>'required'
+      ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+        return response()->json($validator->errors()->all());
+        }else{
+                try{
+                        $newuser=New User;
+                        $newuser->name=ucwords(strtolower($request->input('name')));
+                        $newuser->email=strtolower($request->input("email"));
+                        $newuser->thumbnail=$request->input("thumbnail");
+                        $newuser->remember_token=str_random(100);
+                        $newuser->confirm_token=str_random(100);
+                        $newuser->save();
+                        return response()->json(['name'=>$newuser->name,'email'=>$newuser->email,'thumbnail'=>$newuser->thumbnail,'confirm_token'=>$newuser->confirm_token,'city'=>$newuser->city_id,'id'=>$newuser->id]); 
+                }catch(Exception $e){
+                    return response()->json($e);
+                }    
+                       
+        }
+   }
     
 }

@@ -23,7 +23,7 @@ class ControllerCardPaypal extends Controller
     public function AddPaypal(request $request){
         $rule=[
             'user_id'=>'required|numeric|min:1',
-            'account'=>'required|unique:paypal,account'
+            'account'=>'required|numeric|min:1'
             ];
         $validator=Validator::make($request->all(),$rule);
       if ($validator->fails()) {
@@ -37,13 +37,13 @@ class ControllerCardPaypal extends Controller
                       $addpaypal->account=$request->input('account');
                       $addpaypal->user_id=$date->id;
                       if($addpaypal->save()){
-                          return response()->json('Add Paypal');
+                          return response()->json(['message' => 'Add Paypal', 'paypal_id' => $addpaypal->id]);
                       }
                    }else{
-                       return response()->json('The paypal is already registered ');
+                     return response()->json(['message' => 'The paypal is already registered','account'=> $request->input("account")]);
                    }   
               }else{
-                   return response()->json('User not found ');
+                   return response()->json('User not found');
              }
         } 
     }
@@ -52,7 +52,7 @@ class ControllerCardPaypal extends Controller
     public function AddCard(request $request){
         $rule=[
             'user_id'=>'required|numeric|min:1',
-            'number'=>'required|unique:card,number|numeric|min:1',
+            'number'=>'required|numeric|min:1',
             'exp_month'=>'required',
             'exp_year'=>'required',
             'cvc'=>'required|numeric|unique:card,cvc|min:1',
@@ -74,10 +74,11 @@ class ControllerCardPaypal extends Controller
                       $addcard->cvc=$request->input('cvc');
                       $addcard->name=ucwords(strtolower($request->input('name')));
                       if($addcard->save()){
-                          return response()->json('Add Card');
+                          return response()->json(['message' => 'Add Card', 'card_id' => $addcard->id]);
                       }
                   }else{
-                      return response()->json('The card is already registered ');
+                      return response()->json(['message'=>'The card is already registered','number'=>$request->input("number")]);
+
                   }
                  }else{
                      return response()->json('User not found ');
@@ -268,7 +269,7 @@ class ControllerCardPaypal extends Controller
                if(count($paypal)>0){
                     return response()->json($paypal);
                }else{
-                    return response()->json("The user does not have a registered phone");
+                    return response()->json("The user does not have a registered paypal");
                }
             }
             else{
@@ -291,7 +292,7 @@ class ControllerCardPaypal extends Controller
                if(count($paypal)>0){
                     return response()->json($paypal);
                }else{
-                    return response()->json("The user does not have a registered phone");
+                    return response()->json("The user does not have a registered card");
                }
             }
             else{

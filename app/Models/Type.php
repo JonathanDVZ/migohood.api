@@ -4,7 +4,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Type extends Model
 {
-     protected $id=['id_type'];
+     protected $id=['id'];
      protected $table = 'type';
      public $timestamps = false;
 }
