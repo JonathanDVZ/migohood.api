@@ -47,10 +47,9 @@ class ControllerUser extends Controller
                        $newUser->confirm_token=str_random(100);
                        $newUser->address=strtolower($request->input('address'));
                     // $newUser->city_id=$request->input('city_id');
-                       if( $newUser->save()){
-                          return response()->json("User Create"); 
-                       }
-                    }
+                       $newUser->save();
+                       return response()->json($newUser); 
+                    }                   
                     else{
                          return response()->json("Existing user"); 
                     }
