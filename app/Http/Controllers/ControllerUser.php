@@ -17,7 +17,7 @@ class ControllerUser extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware('auth', ['except' => 'Create']);
     }
    
     public function Create(Request $request)
