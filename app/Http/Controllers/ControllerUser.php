@@ -32,7 +32,7 @@ class ControllerUser extends Controller
         ];
         $validator=Validator::make($request->all(),$rule);
         if ($validator->fails()) {
-            return response()->json($validator->errors()->all(),true);
+            return json_encode($validator->errors()->all(),true);
         }
         else{ //devuelve un email
             $user = User::select()->where('email', strtolower($request->input("email")))->first();        
