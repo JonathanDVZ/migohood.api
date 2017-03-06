@@ -17,7 +17,10 @@ class ControllerUser extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth', ['except' => 'Create'],['except' => 'verificationLogin'],['except' => 'LoginOauth'],['except' => 'UserOauth']);
+        $this->middleware('auth', ['except' => 'Create']);
+        $this->middleware('auth', ['except' => 'verificationLogin']);
+        $this->middleware('auth', ['except' => 'LoginOauth']);
+        $this->middleware('auth', ['except' => 'UserOauth']);
     }
    
     public function Create(Request $request)
