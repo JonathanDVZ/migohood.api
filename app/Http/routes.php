@@ -1,12 +1,12 @@
 <?php
 
-$app->get('/', function () use ($app){
+/*$app->get('/', function () use ($app){
     return 'Migohood API made with '.$app->version();
 });
 
 $app->get('/home', function () use ($app){
     return 'Migohood API made with '.$app->version();
-});
+});*/
 
 /*CRUD USER*//////////////////////////////////////////////////////////
 /*Create*/
@@ -35,7 +35,7 @@ $app->put('/user/update-email','ControllerUser@UpdateEmail');
 //Actualiza password
 $app->put('/user/update-password','ControllerUser@UpdatePassword');
 //Actualiza thumbnail
-$app->put('/user/update-thumbnail','ControllerUser@UpdateThumbnail');
+$app->post('/user/update-thumbnail','ControllerUser@UpdateThumbnail');
 //Actualiza secondname
 $app->put('/user/update-secondname','ControllerUser@UpdateSecondname');
 //Actualiza lastname

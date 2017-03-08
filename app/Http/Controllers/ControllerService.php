@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 use App\Models\Service;
 use App\Models\User;
+use App\Models\Category;
 use App\Models\Amenite;
 use App\Models\Service_Amenite;
 use App\Models\Service_Type;
@@ -24,7 +25,7 @@ class ControllerService extends Controller
     }
    
     //Agrega Service
-    public function CreateService(Request $request){   
+    /*public function CreateService(Request $request){   
          //regla de validacion
               $rule=[
                     'id'=>'required|numeric|min:1',
@@ -71,7 +72,44 @@ class ControllerService extends Controller
                           return response()->json('User not Found');
                       }
                   }
+    }*/
+
+    //Crea el servicio asignando primero la catogoria
+    public function CreateService(Request $request){
+         //regla de validacion
+             $rule=[
+                  'user_id'=>'required|numeric|min:1',
+                  'category_id'=>'required|numeric|min:1'
+              ];
+                $validator=Validator::make($request->all(),$rule);
+             if ($validator->fails()) {
+                return response()->json($validator->errors()->all());
+               }
+             else{
+                 //Busca si se encuentra un usuario registrado 
+                 $user = User::select()->where('id',$request->input("user_id"))->first();
+                 //Busca si se encuentra la category asignada 
+                 $category = Category::select()->where('id',$request->input("category_id"))->first();
+                 //Verifica si lo encontro
+                 if(count($user)>0){
+                    if(count($category)>0){
+                      $newservice=new Service();
+                      $dt = new DateTime();
+                      $newservice->user_id=$user->id;
+                      $newservice->date=$dt->format('Y-m-d'); 
+                      $newservice->category_id=$category->name;
+                      if($newservice->save()){
+                         return response()->json('Add Service'); 
+                      }  
+                    }else{//Si no encuentra le genera un mensaje con el id de la category al que agrego
+                        return response()->json(['Message'=>'Category not Found','Error'=>$Category->id]); 
+                    } 
+                 }else{//Si no encuentra le genera un mensaje con el id del usuario al que agrego
+                    return response()->json(['Message'=>'User not Found','Error'=>$user->id]);
+                 }   
+             }
     }
+     
 
     //Actualiza un Service
     public function UpdateService(Request $request){
