@@ -5,6 +5,9 @@ use App\Models\Phone;
 use App\Models\State;
 use App\Models\City;
 use App\Models\Country;
+use Aws\S3\S3Client;
+use Aws\Exception\AwsException;
+use Aws\S3\Exception\S3Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Contracts\Encryption\DecryptException;
@@ -162,19 +165,46 @@ class ControllerUser extends Controller
             return response()->json($validator->errors()->all());
         }
         else
-        {
+        { 
              // Buscamos el usuario que posea el id ingresado, una vez que se halle entra a la condición
             $user = User::select()->where('id',$request->input("user_id"))->first();
             if ($user){
                 try{
+                    // Se definen las credenciales del cliente s3 de amazon
+                    $s3 = new S3Client([
+                        'version'     => env('S3_VERSION'),
+                        'region'      => env('S3_REGION'),
+                        'credentials' => [
+                            'key'    => env('S3_KEY'),
+                            'secret' => env('S3_SECRET')
+                        ]
+                    ]);
+                    $image_link = 'https://s3.'.env('S3_REGION').'.amazonaws.com/'.env('S3_BUCKET').'/files/thumbnails/';
                     // Obtenemos el campo file definido en el formulario
                     $file = $request->file('thumbnail');            
                     // Creamos un nombre para nuestro thumnail
-                    $name = 'thumbnail_user_'.Auth::user()->id.'.'.$file->getClientOriginalExtension();            
-                    // Movemos el archivo a la caperta que deseamos
+                    $name = 'thumbnail_'.str_random(20).'_user_'.$user->id.'.'.$file->getClientOriginalExtension();         
+                    // Movemos el archivo a la caperta temporal
                     $file->move('files/thumbnails/',$name);
+                    //
+                    $old_thumbnail = str_replace($image_link,'',$user->thumbnail);
+                    //
+                    $s3->deleteObject([
+                        'Bucket' => env('S3_BUCKET'),
+                        'Key'    => 'files/thumbnails/'.$old_thumbnail
+                    ]);
+                    //
+                    $s3->putObject([
+                        'Bucket' => env('S3_BUCKET'),
+                        'Key'    => 'files/thumbnails/'.$name,
+                        'Body'   => fopen('files/thumbnails/'.$name, 'r'),
+                        'ACL'    => 'public-read'
+                    ]);
+                    //
+                    // Borramos el arrchivo de la carpeta temporal
+                    unlink('files/thumbnails/'.$name);
                     // Actualizamos la fila thumbnail del usuario respectivo
-                    DB::table('user')->where('id', $user->id )->update(['thumbnail' => url('/files/thumbnails/'.$name)]);
+                    DB::table('user')->where('id', $user->id )->update(['thumbnail' => $image_link.$name]);
                     return json_encode('Update completed!', true);
                 }
                 catch (\Exception $e){
