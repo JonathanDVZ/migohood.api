@@ -13,6 +13,18 @@ class User extends Model
      *
      * @var array
      */
+     protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'thumbnail',
+        'secondname',
+        'lastname',
+        'remember_token',
+        'confirm_token',
+        'address',
+        'city_id',
+     ];
 
     protected $hidden = ['password'];
 }
