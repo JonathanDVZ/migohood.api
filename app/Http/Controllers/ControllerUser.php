@@ -459,8 +459,7 @@ public function UpdatePhone(Request $request){
       if ($validator->fails()) {
         return response()->json($validator->errors()->all());
         }else{
-            $id=$request->input("user_id");
-            $user= DB::select('select * from user where id = ?',[$id] );
+            $user= User::select('*')->where('if=d',$request->input("user_id"));
             if(count($user)>0){
                  return response()->json($user);
             }
@@ -551,7 +550,7 @@ public function LoginOauth(Request $request){
       if ($validator->fails()) {
         return response()->json($validator->errors()->all());
         }else{
-           $user= DB::select('select * from user where email = ?',[$request->input("email")]);
+           $user= User::select('*')->where('email',$request->input("email"));
            if(count($user)>0){
                 return response()->json($user);
            }else{
@@ -561,29 +560,29 @@ public function LoginOauth(Request $request){
 }
 
 public function UserOauth(Request $request){
-     $rule=[
-           'email' => 'required|email|unique:user,email',
-           'name'=>'required',
-           'thumbnail'=>'required'
-      ];
-      $validator=Validator::make($request->all(),$rule);
-      if ($validator->fails()) {
+    $rule=[
+        'email' => 'required|email|unique:user,email',
+        'name'=>'required',
+        'thumbnail'=>'required'
+    ];
+    $validator=Validator::make($request->all(),$rule);
+    if ($validator->fails()) {
         return response()->json($validator->errors()->all());
-        }else{
-                try{
-                        $newuser=New User;
-                        $newuser->name=ucwords(strtolower($request->input('name')));
-                        $newuser->email=strtolower($request->input("email"));
-                        $newuser->thumbnail=$request->input("thumbnail");
-                        $newuser->remember_token=str_random(100);
-                        $newuser->confirm_token=str_random(100);
-                        $newuser->save();
-                        return response()->json($newuser); 
-                }catch(Exception $e){
-                    return response()->json($e);
-                }    
-                       
-        }
+    }else{
+        try{
+                $newuser=New User;
+                $newuser->name=ucwords(strtolower($request->input('name')));
+                $newuser->email=strtolower($request->input("email"));
+                $newuser->thumbnail=$request->input("thumbnail");
+                $newuser->remember_token=str_random(100);
+                $newuser->confirm_token=str_random(100);
+                $newuser->save();
+                return response()->json($newuser); 
+        }catch(Exception $e){
+            return response()->json($e);
+        }    
+                    
+    }
    }
     
 }
