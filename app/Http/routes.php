@@ -1,12 +1,12 @@
 <?php
 
-/*$app->get('/', function () use ($app){
+$app->get('/', function () use ($app){
     return 'Migohood API made with '.$app->version();
 });
 
 $app->get('/home', function () use ($app){
     return 'Migohood API made with '.$app->version();
-});*/
+});
 
 /*CRUD USER*//////////////////////////////////////////////////////////
 /*Create*/
