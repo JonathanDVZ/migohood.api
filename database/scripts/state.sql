@@ -1,4 +1,4 @@
-INSERT INTO `state` (`id`, `name`, `Country_id`) VALUES
+INSERT INTO `State` (`id`, `name`, `Country_id`) VALUES
 (1, 'Andaman and Nicobar Islands', 101),
 (2, 'Andhra Pradesh', 101),
 (3, 'Arunachal Pradesh', 101),
@@ -2180,7 +2180,7 @@ INSERT INTO `state` (`id`, `name`, `Country_id`) VALUES
 (2179, 'Rivercess', 123),
 (2180, 'Sinoe', 123),
 (2181, 'Ajdabiya', 124);
-INSERT INTO `state` (`id`, `name`, `Country_id`) VALUES
+INSERT INTO `State` (`id`, `name`, `Country_id`) VALUES
 (2182, 'Fezzan', 124),
 (2183, 'Banghazi', 124),
 (2184, 'Darnah', 124),

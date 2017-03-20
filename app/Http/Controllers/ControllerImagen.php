@@ -36,7 +36,7 @@ class ControllerImagen extends Controller
     public function AddImagen(Request $request){
           $rule=[
             'service_id'=>'required|numeric|min:1',
-            'ruta'=>'required'
+            'ruta'=>'required|Image'
             ];
         $validator=Validator::make($request->all(),$rule);
       if ($validator->fails()) {
@@ -99,5 +99,32 @@ class ControllerImagen extends Controller
                  return response()->json('Imagen not found');
                }
            }
+        }
+        
+        //Agregar un comentario a una imagen especifica
+        public function AddDescriptionImagen(Request $request){
+            $rule=[
+            'ruta_id' => 'required|image',
+            'service_id'=>'required|numeric|min:1',
+            'description'=>'string'
+            ];
+        $validator=Validator::make($request->all(),$rule);
+         if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+        }else{
+             $service=Imagen::where('service_id','=',$request->input("service_id"))->first();
+             $descriptionimagen=Imagen::where('ruta','=',$request->input('ruta_id'))->first();
+             if(count($service)>0){
+                  if(count($descriptionimagen)>0){
+                      $descriptionimagen->description=$request->input("description");
+                      $descriptionimagen->save();
+                      return response()->json('Add Description');
+                  }else{
+                      return response()->json('Imagen not found');
+                  }
+            }else{
+                return response()->json('Imagen not found');
+            }     
+         }
         }
 }
