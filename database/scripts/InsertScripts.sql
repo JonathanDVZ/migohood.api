@@ -10,3 +10,5 @@ insert into accommodation(name)values("private"),("Share");
 insert into calendar(day) value("All Days"),("Sunday"),("Monday"),("Tuesday"),("Wednesday"),("Thursday"),("Friday"),("Sturday");
 insert into duration(type) values("Minute"),("Hour"),("Week"),("Month");
 insert into type_number(type)values("Fixed"),("Cell");
+insert into description(type)values("title"),("address1"),("address2"),("des_neighborhood"),("desc_surroundings"),("desc_length"),("desc_latitud"),("description"),("apt"),("desc_around");
+insert into house_rules(type)values("Apto para niños(2 a 12 años)"),("Apto para bebes(0 a 2 años)"),("Se Admiten Mascotas"),("Permitido Fumar"),("Eventos fiestas permitidos");
