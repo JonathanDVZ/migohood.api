@@ -47,38 +47,38 @@ $app->delete('/user/delete-phone','ControllerUser@DeletePhone');
 //Verifica el password y email si estan agregado
 $app->post('/user/login','ControllerUser@verificationLogin');//-->3/3/2017
 //OAuth User-Login
-$app->post('/user/login-oauth','ControllerUser@LoginOauth');
+$app->post('/user/login-oauth','ControllerUser@LoginOauth');//-->3/3/2017
 //OAuth User-Name
-$app->post('/user/set-name-oauth','ControllerUser@UserOauth');
+$app->post('/user/set-name-oauth','ControllerUser@UserOauth');//-->3/3/2017
 //Verification email
-$app->post('/user/email','ControllerUser@VerificationEmail');
+$app->post('/user/email','ControllerUser@VerificationEmail');//-->3/3/2017
 
 /////////////////////////////////////////////////////////////////////////////
 
 /*CRUD SERVICE Movil*//////////////////////////////////////////////////////////////
 /*Create*/
 //Agrega una category
-$app->post('/service/new-space/step','ControllerService@AddNewStep');
+$app->post('/service/space/step','ControllerService@AddNewStep');
 //Agrega  type
-$app->post('/service/new-space/step-1','ControllerService@AddNewStep1');
+$app->post('/service/space/step-1','ControllerService@AddNewStep1');
 //Agrega invitados y habitaciones
-$app->put('/service/new-space/step-2','ControllerService@AddNewStep2');
+$app->put('/service/space/step-2','ControllerService@AddNewStep2');
 //Agrega Baños
-$app->put('/service/new-space/step-3','ControllerService@AddNewStep3');
+$app->put('/service/space/step-3','ControllerService@AddNewStep3');
 //Agrega datos de ubicacion
-$app->post('service/new-space/step-4','ControllerService@AddNewStep4');
+$app->post('service/space/step-4','ControllerService@AddNewStep4');
 //Agrega en la service-amenitie
-$app->post('service/new-space/step-5','ControllerService@AddNewStep5');
+$app->post('service/space/step-5','ControllerService@AddNewStep5');
 //Agrega titulo
-$app->post('service/new-space/title','ControllerService@AddNewTitle');
+$app->post('service/space/title','ControllerService@AddNewTitle');
 //Agrega description
-$app->post('service/new-space/description','ControllerService@AddNewDescription');
+$app->post('service/space/description','ControllerService@AddNewDescription');
 //Agrega reglas de casa
-$app->post('service/new-space/rules-house','ControllerService@AddNewRulesHouse');
+$app->post('service/space/rules-house','ControllerService@AddNewRulesHouse');
 //Agrega check_in y check_out
-$app->post('service/new-space/check-in-and-check-out','ControllerService@AddNewCheckInCheckOut');
+$app->post('service/space/check-in-and-check-out','ControllerService@AddNewCheckInCheckOut');//esta ruta tambien es para web
 //Agrega Reservation Preferent
-$app->post('service/new-space/reservation-preference','ControllerService@AddNewReservationPrerence');
+$app->post('service/space/reservation-preference','ControllerService@AddNewReservationPrerence');
 //Agrega Imagen
 $app->post('/service/add-imagen','ControllerImagen@AddImagen');
 //Agrega Comentario a La imagen
@@ -95,6 +95,22 @@ $app->post('/service/space/step-2/beds','ControllerService@AddNewSpaceStep2Beds'
 $app->put('/service/space/step-3/bathroom','ControllerService@AddNewStep3');
 //Agregar un servicio (space-step4)
 $app->put('/service/space/step-4/location','ControllerService@AddNewSpaceStep4Location');
+//Agregar un Amenities (space-step5)
+$app->post('/service/space/step-5/amenities','ControllerService@AddNewSpaceStep5Amenities');
+//Agregar un cancellation policy (space-step6)
+$app->post('/service/space/step-6/lower','ControllerService@AddNewSpaceStep6');
+//Agregar un description service (space-step7)
+$app->post('/service/space/step-7/description','ControllerService@AddNewSpaceStep7Description');
+//Agregar un rules description (space-step8)
+$app->post('/service/space/step-8/rules','ControllerService@AddNewSpaceStep8Rules');
+
+
+
+
+
+
+
+
 
 
 
