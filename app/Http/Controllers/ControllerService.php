@@ -780,7 +780,8 @@ class ControllerService extends Controller
                            $bedroom->service_id=$service->id; 
                            $bedroom->save();
                     }
-                     return response()->json("Add Space Bedroom");   
+                    return response()->json("Add Space Bedroom");  
+
                  }catch(Exception $e){
                      return response()->json($e); 
                  }  
@@ -1011,6 +1012,8 @@ class ControllerService extends Controller
             }
     }
    
+   
+    //Agregar Service(space-step7)-Web
    public function AddNewSpaceStep7Description(Request $request){
           $rule=[
            'service_id' => 'required|numeric|min:1',
@@ -1074,6 +1077,8 @@ class ControllerService extends Controller
         }
    }
 
+   
+    //Agregar Service(space-step8)-Web
    public function AddNewSpaceStep8Rules(Request $request){
           $rule=[
            'service_id' => 'required|numeric|min:1',
@@ -1165,6 +1170,36 @@ class ControllerService extends Controller
             }
        }
    }
+
+    //Agregar Service(space-step9)-Web
+    public function AddNewSpaceStep9Imagen(Request $request){
+             $rule=[
+                 'service_id'=>'required|numeric|min:1',
+                 'ruta'=>'required|Image',
+             ];
+            $validator=Validator::make($request->all(),$rule);
+            if ($validator->fails()) {
+                return response()->json($validator->errors()->all());
+            }else{        
+                 $service=Service::where('id','=',$request->input('service_id'))->first();
+                 $users = DB::table('imagen')->where('service_id','=',$service->id)->count();
+                 if($service!=null){
+                    $imagen = DB::table('imagen')->where('service_id','=',$service->id)->count();
+                    if($imagen<=10){
+                      $addimagen=new Imagen();
+                      $addimagen->ruta=$request->input('ruta');
+                      $addimagen->service_id=$service->id;
+                      $addimagen->description=$request->input("description");
+                      $addimagen->save();
+                      return response()->json('Add Imagen');
+                      }else{
+                        return response()->json('Imagen Limit!');
+                      }
+                 }else{
+                     return response()->json('Service not found ');
+                 }
+             }     
+    }
 
 }
 

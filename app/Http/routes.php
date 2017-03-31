@@ -84,13 +84,13 @@ $app->post('/service/add-imagen','ControllerImagen@AddImagen');
 //Agrega Comentario a La imagen
 $app->post('/service/add-imagen-description','ControllerImagen@AddDescriptionImagen');
 
-/*Crud Service Web */////////////////////////////////////////////////////////////////
+/*Crud Service Web */////////////////////////////////////////////////////////////////->en proceso
 //Agregar un servicio (space-step1)
-$app->post('/service/space/step-1','ControllerService@AddNewSpaceStep1');
+$app->post('/service/space/step-1/create','ControllerService@AddNewSpaceStep1');
 //Agregar un servicio (space-step2-bedroom)
-$app->post('/service/space/step-2','ControllerService@AddNewSpaceStep2');
+$app->post('/service/space/step-2/bedrooms','ControllerService@AddNewSpaceStep2');
 //Agregar un servicio (space-step2-beds)
-$app->post('/service/space/step-2/beds','ControllerService@AddNewSpaceStep2Beds');
+$app->post('/service/space/step-2/beds/details','ControllerService@AddNewSpaceStep2Beds');
 //Agregar un servicio (space-step3-bathroom)
 $app->put('/service/space/step-3/bathroom','ControllerService@AddNewStep3');
 //Agregar un servicio (space-step4)
@@ -98,34 +98,14 @@ $app->put('/service/space/step-4/location','ControllerService@AddNewSpaceStep4Lo
 //Agregar un Amenities (space-step5)
 $app->post('/service/space/step-5/amenities','ControllerService@AddNewSpaceStep5Amenities');
 //Agregar un cancellation policy (space-step6)
-$app->post('/service/space/step-6/lower','ControllerService@AddNewSpaceStep6');
+$app->post('/service/space/step-6/hosting','ControllerService@AddNewSpaceStep6');
 //Agregar un description service (space-step7)
 $app->post('/service/space/step-7/description','ControllerService@AddNewSpaceStep7Description');
 //Agregar un rules description (space-step8)
 $app->post('/service/space/step-8/rules','ControllerService@AddNewSpaceStep8Rules');
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+//Agregar imagen (space-step9)
+$app->post('/service/space/step-9/imagen','ControllerService@AddNewSpaceStep9Imagen');
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //Agrgar Accommodation
 $app->put('/service/add-accommodation','ControllerService@AddAccommodation');
