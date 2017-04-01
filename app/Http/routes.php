@@ -1,5 +1,13 @@
 <?php
 
+$app->get('/', function () use ($app){
+    return 'Migohood API made with '.$app->version();
+});
+
+$app->get('/home', function () use ($app){
+    return 'Migohood API made with '.$app->version();
+});
+
 /*CRUD USER*//////////////////////////////////////////////////////////
 /*Create*/
 //Agrega un usuario
@@ -27,7 +35,7 @@ $app->put('/user/update-email','ControllerUser@UpdateEmail');
 //Actualiza password
 $app->put('/user/update-password','ControllerUser@UpdatePassword');
 //Actualiza thumbnail
-$app->put('/user/update-thumbnail','ControllerUser@UpdateThumbnail');
+$app->post('/user/update-thumbnail','ControllerUser@UpdateThumbnail');
 //Actualiza secondname
 $app->put('/user/update-secondname','ControllerUser@UpdateSecondname');
 //Actualiza lastname
@@ -52,7 +60,7 @@ $app->post('/user/login-oauth','ControllerUser@LoginOauth');//-->3/3/2017
 $app->post('/user/set-name-oauth','ControllerUser@UserOauth');//-->3/3/2017
 //Verification email
 $app->post('/user/email','ControllerUser@VerificationEmail');//-->3/3/2017
-
+$app->post('/user/set-user-oauth','ControllerUser@UserOauth');//-->3/3/2017
 /////////////////////////////////////////////////////////////////////////////
 
 /*CRUD SERVICE Movil*//////////////////////////////////////////////////////////////

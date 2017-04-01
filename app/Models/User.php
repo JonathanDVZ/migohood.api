@@ -4,7 +4,27 @@ use Illuminate\Database\Eloquent\Model;
 
 class User extends Model
 {
-     protected $id_user=['id'];
-     protected $table = 'user';
-     public $timestamps = false;
+    protected $id_user=['id'];
+    protected $table = 'user';
+    public $timestamps = false;
+
+     /**
+     * The attributes excluded from the model's JSON form.
+     *
+     * @var array
+     */
+     protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'thumbnail',
+        'secondname',
+        'lastname',
+        'remember_token',
+        'confirm_token',
+        'address',
+        'city_id',
+     ];
+
+    protected $hidden = ['password'];
 }
