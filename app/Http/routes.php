@@ -84,7 +84,7 @@ $app->post('/service/add-imagen','ControllerImagen@AddImagen');
 //Agrega Comentario a La imagen
 $app->post('/service/add-imagen-description','ControllerImagen@AddDescriptionImagen');
 
-/*Crud Service Web */////////////////////////////////////////////////////////////////->en proceso
+/*Crud Service Web */////////////////////////////////////////////////////////////////->en proces0
 //Agregar un servicio (space-step1)
 $app->post('/service/space/step-1/create','ControllerService@AddNewSpaceStep1');
 //Agregar un servicio (space-step2-bedroom)
