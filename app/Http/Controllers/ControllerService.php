@@ -37,61 +37,6 @@ class ControllerService extends Controller
     return Service::all();   
     }
    
-
-    //Agreg New Step 1 
-    public function AddNewStep(Request $request){
-             //Regla de validacion       
-
-    //Agrega Service
-    /*public function CreateService(Request $request){   
-         //regla de validacion
-              $rule=[
-                    'id'=>'required|numeric|min:1',
-                  //  'date'=>'required|date_format:Y-m-d',
-                    'category_id'=>'required|numeric|min:1',                  
-                    'address'=>'required',
-                    'title'=>"required|regex:/^[a-zA-Z_áéíóúàèìòùñ'\s]*$/|max:45",
-                    'duration_id'=>'numeric|required|min:1',
-                    'zipcode'=>'required|numeric|min:1',
-                    'accommodation_id'=>'required|numeric|max:2|min:1',
-                    'city_id'=>'required|numeric|min:1',
-                    'num_bedroom'=>'numeric|min:1',
-                    'num_bathroom'=>'numeric|min:1',
-                    'num_guest'=>'required|numeric|min:1'
-             ];
-             $validator=Validator::make($request->all(),$rule);
-             if ($validator->fails()) {
-             return response()->json($validator->errors()->all());
-             }
-             else{
-                  //Verifico si se encuentra registrado en usuario
-                      $user = User::select()->where('id',$request->input("id"))->first();    
-                      if(count($user)>0){
-                          $newService=new Service();
-                          $dt = new DateTime();
-                          $newService->user_id=$user->id;
-                          $newService->date=$dt->format('Y-m-d');
-                          $newService->category_id=$request->input('category_id');
-                          $newService->address=$request->input('address');
-                          if($request->has('description'))
-                          $newService->description=$request->input('description');
-                          $newService->title=ucwords(strtolower($request->input('title')));
-                          $newService->duration_id=$request->input('duration_id');
-                          $newService->zipcode=$request->input('zipcode');
-                          $newService->accommodation_id=$request->input('accommodation_id');
-                          $newService->city_id=$request->input('city_id');
-                          $newService->num_bedroom=$request->input('num_bedroom');
-                          $newService->num_bathroom=$request->input('num_bathroom');
-                          $newService->num_guest=$request->input('num_guest');
-                      if($newService->save()){
-                         return response()->json('Service Create');
-                      }
-                      }else{
-                          return response()->json('User not Found');
-                      }
-                  }
-    }*/
-
     //Crea el servicio asignando primero la catogoria
     public function CreateService(Request $request){
          //regla de validacion
@@ -795,7 +740,7 @@ class ControllerService extends Controller
         }
     }  
 
-   //Agregar Service(space-step1)-Web
+   //Agregar Service(space-step1)-Web//////////////////////////////////////////////////////////////////////////////////////////
      public function AddNewSpaceStep1(Request $request){
             $rule=[
            'service_id' => 'required|numeric|min:1',
@@ -829,7 +774,7 @@ class ControllerService extends Controller
                             $newytype->service_id=$newspace->id;
                             $newtype->type_id=$type->id;
                             $newtype->save();
-                            return response()->json('Add Service');
+                            return response()->json('Add Space');
                           }catch(exception $e){
                               return response()->json($e);
                           }
