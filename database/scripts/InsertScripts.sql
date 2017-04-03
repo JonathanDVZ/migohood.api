@@ -1,4 +1,4 @@
- use migohood;
+use Migohood;
 insert into category(name) value("Space"),("Workspace"),("Parking Space"),("Service");
 insert into type(name,category_id) values("Apartament",1),("House",1),("B&B",1),("Room",1),("Other",1);
 insert into type(name,category_id) values("Bussiness Center",2),("Corporate Office",2),("Coworking Space",2),("Other Workspace",2);
