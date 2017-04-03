@@ -2,7 +2,6 @@
 namespace App\Http\Controllers;
 use App\Models\Service;
 use App\Models\User;
-use App\Models\Category;
 use App\Models\Amenite;
 use App\Models\Accommodation;
 use App\Models\Bedroom;
@@ -14,6 +13,7 @@ use App\Models\City;
 use App\Models\Service_Rules;
 use App\Models\Service_Reservation;
 use App\Models\Service_Description;
+use App\Models\Category;
 use App\Models\SpecialDate;
 use App\Models\Service_Cancellation;
 use App\Models\Service_Amenite;
@@ -37,46 +37,9 @@ class ControllerService extends Controller
     return Service::all();   
     }
    
-    //Crea el servicio asignando primero la catogoria
-    public function CreateService(Request $request){
-         //regla de validacion
-             $rule=[
-                  'user_id'=>'required|numeric|min:1',
-                  'category_id'=>'required|numeric|min:1'
-              ];
-                $validator=Validator::make($request->all(),$rule);
-             if ($validator->fails()) {
-                return response()->json($validator->errors()->all());
-               }
-             else{
-                 //Busca si se encuentra un usuario registrado 
-                 $user = User::select()->where('id',$request->input("user_id"))->first();
-                 //Busca si se encuentra la category asignada 
-                 $category = Category::select()->where('id',$request->input("category_id"))->first();
-                 //Verifica si lo encontro
-                 if(count($user)>0){
-                    if(count($category)>0){
-                      $newservice=new Service();
-                      $dt = new DateTime();
-                      $newservice->user_id=$user->id;
-                      $newservice->date=$dt->format('Y-m-d'); 
-                      $newservice->category_id=$category->name;
-                      if($newservice->save()){
-                         return response()->json('Add Service'); 
-                      }  
-                    }else{//Si no encuentra le genera un mensaje con el id de la category al que agrego
-                        return response()->json(['Message'=>'Category not Found','Error'=>$Category->id]); 
-                    } 
-                 }else{//Si no encuentra le genera un mensaje con el id del usuario al que agrego
-                    return response()->json(['Message'=>'User not Found','Error'=>$user->id]);
-                 }   
-             }
-    }
-     
-
-    //Actualiza un Service
-    public function UpdateService(Request $request){
-            //Regla de validacion       
+    //Agreg New Step 1 
+    public function AddNewStep(Request $request){
+             //Regla de validacion       
               $rule=[
                     'user_id'=>'required|numeric|min:1',
                     'category_id'=>'required|numeric|min:1',
@@ -740,9 +703,10 @@ class ControllerService extends Controller
         }
     }  
 
-   //Agregar Service(space-step1)-Web//////////////////////////////////////////////////////////////////////////////////////////
+   //Agregar Service(space-step1)-Web
      public function AddNewSpaceStep1(Request $request){
             $rule=[
+           'service_id' => 'required|numeric|min:1',
            'type_id'=>'required|numeric|min:1',
            'accommodation_id'=>'required|numeric|min:1',
            'live'=>'required|boolean',
@@ -773,7 +737,7 @@ class ControllerService extends Controller
                             $newytype->service_id=$newspace->id;
                             $newtype->type_id=$type->id;
                             $newtype->save();
-                            return response()->json('Add Space');
+                            return response()->json('Add Service');
                           }catch(exception $e){
                               return response()->json($e);
                           }
@@ -800,8 +764,7 @@ class ControllerService extends Controller
    public function AddNewSpaceStep2(Request $request){
         $rule=[
            'service_id' => 'required|numeric|min:1',
-           'num_guest'=>'required|numeric|min:0',
-           'num_bedroom'=>'numeric:min:1'
+           'num_guest'=>'required|numeric|min:0'
       ];
       $validator=Validator::make($request->all(),$rule);
       if ($validator->fails()) {
@@ -817,8 +780,7 @@ class ControllerService extends Controller
                            $bedroom->service_id=$service->id; 
                            $bedroom->save();
                     }
-                    return response()->json("Add Space Bedroom");  
-
+                     return response()->json("Add Space Bedroom");   
                  }catch(Exception $e){
                      return response()->json($e); 
                  }  
@@ -1049,8 +1011,6 @@ class ControllerService extends Controller
             }
     }
    
-   
-    //Agregar Service(space-step7)-Web
    public function AddNewSpaceStep7Description(Request $request){
           $rule=[
            'service_id' => 'required|numeric|min:1',
@@ -1114,8 +1074,6 @@ class ControllerService extends Controller
         }
    }
 
-   
-    //Agregar Service(space-step8)-Web
    public function AddNewSpaceStep8Rules(Request $request){
           $rule=[
            'service_id' => 'required|numeric|min:1',
@@ -1207,36 +1165,6 @@ class ControllerService extends Controller
             }
        }
    }
-
-    //Agregar Service(space-step9)-Web
-    public function AddNewSpaceStep9Imagen(Request $request){
-             $rule=[
-                 'service_id'=>'required|numeric|min:1',
-                 'ruta'=>'required|Image',
-             ];
-            $validator=Validator::make($request->all(),$rule);
-            if ($validator->fails()) {
-                return response()->json($validator->errors()->all());
-            }else{        
-                 $service=Service::where('id','=',$request->input('service_id'))->first();
-                 $users = DB::table('imagen')->where('service_id','=',$service->id)->count();
-                 if($service!=null){
-                    $imagen = DB::table('imagen')->where('service_id','=',$service->id)->count();
-                    if($imagen<=10){
-                      $addimagen=new Imagen();
-                      $addimagen->ruta=$request->input('ruta');
-                      $addimagen->service_id=$service->id;
-                      $addimagen->description=$request->input("description");
-                      $addimagen->save();
-                      return response()->json('Add Imagen');
-                      }else{
-                        return response()->json('Imagen Limit!');
-                      }
-                 }else{
-                     return response()->json('Service not found ');
-                 }
-             }     
-    }
 
 }
 
