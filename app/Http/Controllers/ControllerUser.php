@@ -20,13 +20,11 @@ class ControllerUser extends Controller
 {
     /*public function __construct()
     {
-<<<<<<< HEAD
+
         $this->middleware('auth');
     }*/
-=======
-        $this->middleware('auth', ['except' => array('Create','verificationLogin','LoginOauth','UserOauth')]);
-    }
->>>>>>> f786c388afedfa8f5a2d0e4a9f99d9f7c313ab07
+    //    $this->middleware('auth', ['except' => array('Create','verificationLogin','LoginOauth','UserOauth')]);
+    
    
     public function Create(Request $request)
     {   
@@ -465,11 +463,8 @@ public function UpdatePhone(Request $request){
       if ($validator->fails()) {
         return response()->json($validator->errors()->all());
         }else{
-<<<<<<< HEAD
             $user=User::where('id','=',$request->input("user_id"))->first();
-=======
             $user= User::select('*')->where('if=d',$request->input("user_id"));
->>>>>>> f786c388afedfa8f5a2d0e4a9f99d9f7c313ab07
             if(count($user)>0){
                  return response()->json($user);
             }
@@ -560,11 +555,8 @@ public function LoginOauth(Request $request){
       if ($validator->fails()) {
         return response()->json($validator->errors()->all());
         }else{
-<<<<<<< HEAD
             $user=User::where('email','=',$request->input("email"))->get();
-=======
            $user= User::select('*')->where('email','=',$request->input("email"))->first();
->>>>>>> f786c388afedfa8f5a2d0e4a9f99d9f7c313ab07
            if(count($user)>0){
                 return response()->json($user);
            }else{

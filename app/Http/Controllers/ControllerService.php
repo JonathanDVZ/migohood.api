@@ -743,7 +743,6 @@ class ControllerService extends Controller
    //Agregar Service(space-step1)-Web//////////////////////////////////////////////////////////////////////////////////////////
      public function AddNewSpaceStep1(Request $request){
             $rule=[
-           'service_id' => 'required|numeric|min:1',
            'type_id'=>'required|numeric|min:1',
            'accommodation_id'=>'required|numeric|min:1',
            'live'=>'required|boolean',
@@ -801,7 +800,8 @@ class ControllerService extends Controller
    public function AddNewSpaceStep2(Request $request){
         $rule=[
            'service_id' => 'required|numeric|min:1',
-           'num_guest'=>'required|numeric|min:0'
+           'num_guest'=>'required|numeric|min:0',
+           'num_bedroom'=>'numeric:min:1'
       ];
       $validator=Validator::make($request->all(),$rule);
       if ($validator->fails()) {
