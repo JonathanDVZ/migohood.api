@@ -754,7 +754,7 @@ class ControllerService extends Controller
         }else{
             $user = User::select()->where('id',$request->input("user_id"))->first(); 
             $category=Category::select()->where('id',1)->first();  
-            $type=Type::select()->where('category_id','=',$category->id)->where('id','=',$request->input("type_id"))->first();  
+            $type=Type::select()->where('category_id','=',$category->id)->where('id_type','=',$request->input("type_id"))->first();  
             $accommodation=Accommodation::select()->where('id',$request->input("accommodation_id"))->first(); 
             if(count($user)>0){
                 if(count($category)>0){
