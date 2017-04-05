@@ -717,8 +717,8 @@ class ControllerService extends Controller
         return response()->json($validator->errors()->all());
         }else{
             $user = User::select()->where('id',$request->input("user_id"))->first(); 
-            $category=Category::select()->where('id',$request->input("1"))->first();  
-            $type=Type::select()->where('category_id','=',$category->id)->where('id','=',$request->input("type_id"))->first();  
+            $category=Category::select()->where('id',1)->first();  
+            $type=Type::select()->where('category_id','=',$category->id)->where('id_type','=',$request->input("type_id"))->first();  
             $accommodation=Accommodation::select()->where('id',$request->input("accommodation_id"))->first(); 
             if(count($user)>0){
                 if(count($category)>0){
@@ -730,14 +730,15 @@ class ControllerService extends Controller
                             $newspace->user_id=$user->id;
                             $newspace->date=$dt->format('Y-m-d');
                             $newspace->category_id=$category->id;
-                            $newspace->accommodation_id->$accommodation->id;
+                            $newspace->accommodation_id = $accommodation->id;
                             $newspace->live=$request->input("live");
                             $newspace->save();
                             $newtype=new Service_Type;
-                            $newytype->service_id=$newspace->id;
-                            $newtype->type_id=$type->id;
+                            $newtype->service_id = $newspace->id;
+                            $newtype->type_id = $type->id_type;
                             $newtype->save();
                             return response()->json('Add Service');
+                            return response()->json($newspace);
                           }catch(exception $e){
                               return response()->json($e);
                           }
