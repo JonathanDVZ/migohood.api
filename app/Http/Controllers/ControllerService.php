@@ -766,12 +766,12 @@ class ControllerService extends Controller
                             $newspace->user_id=$user->id;
                             $newspace->date=$dt->format('Y-m-d');
                             $newspace->category_id=$category->id;
-                            $newspace->accommodation_id->$accommodation->id;
+                            $newspace->accommodation_id = $accommodation->id;
                             $newspace->live=$request->input("live");
                             $newspace->save();
                             $newtype=new Service_Type;
-                            $newytype->service_id=$newspace->id;
-                            $newtype->type_id=$type->id;
+                            $newtype->service_id = $newspace->id;
+                            $newtype->type_id = $type->id_type;
                             $newtype->save();
                             return response()->json($newspace);
                           }catch(exception $e){
