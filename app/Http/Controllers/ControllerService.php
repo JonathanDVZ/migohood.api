@@ -1167,6 +1167,69 @@ class ControllerService extends Controller
        }
    }
 
+   public function AddNewSpaceStep9(Request $request){
+        $rule=[
+           'service_id' => 'required|numeric|min:1',
+           'ruta'=>'imagen'
+           ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+        return response()->json($validator->errors()->all());
+        }else{
+            $service=Service::where('id',$request->input("service_id"))->first();
+            if(count($service)>0){
+                 try{
+                    // Se definen las credenciales del cliente s3 de amazon
+                    $s3 = new S3Client([
+                        'version'     => env('S3_VERSION'),
+                        'region'      => env('S3_REGION'),
+                        'credentials' => [
+                            'key'    => env('S3_KEY'),
+                            'secret' => env('S3_SECRET')
+                        ]
+                    ]);
+                    $image_link = 'https://s3.'.env('S3_REGION').'.amazonaws.com/'.env('S3_BUCKET').'/files/imagen/';
+                    // Obtenemos el campo file definido en el formulario
+                    $file = $request->file('imagen');            
+                    // Creamos un nombre para nuestro thumnail
+                    $name = 'imagen'.str_random(20).'_service_'.$service->id.'.'.$file->getClientOriginalExtension();         
+                    // Movemos el archivo a la caperta temporal
+                    $file->move('files/imagen/',$name);
+                    //
+                    $old_thumbnail = str_replace($image_link,'',$service->imagen);
+                    //
+                    $s3->deleteObject([
+                        'Bucket' => env('S3_BUCKET'),
+                        'Key'    => 'files/imagen/'.$old_thumbnail
+                    ]);
+                    //
+                    $s3->putObject([
+                        'Bucket' => env('S3_BUCKET'),
+                        'Key'    => 'files/imagen/'.$name,
+                        'Body'   => fopen('files/imagen/'.$name, 'r'),
+                        'ACL'    => 'public-read'
+                    ]);
+                    //
+                    // Borramos el arrchivo de la carpeta temporal
+                    unlink('files/imagen/'.$name);
+                    // Actualizamos la fila thumbnail del usuario respectivo
+                    DB::table('service')->where('id', $service->id )->update(['ruta' => $image_link.$name,
+                    'description'=>$request->input("description")]);
+
+                    return json_encode('Update completed!', true);
+                }
+                catch (\Exception $e){
+                    return response()->json($e->getMessage());
+                }
+            }else{
+              return response()->json('Service not found'); 
+            }
+
+        }
+
+   }
+
+
 }
 
     
