@@ -704,18 +704,19 @@ class ControllerService extends Controller
     }  
 
    //Agregar Service(space-step1)-Web
-     public function AddNewSpaceStep1(Request $request){
-            $rule=[
-           'service_id' => 'required|numeric|min:1',
-           'type_id'=>'required|numeric|min:1',
-           'accommodation_id'=>'required|numeric|min:1',
-           'live'=>'required|boolean',
-           'user_id'=>'required|numeric|min:1'
-      ];
-      $validator=Validator::make($request->all(),$rule);
-      if ($validator->fails()) {
-        return response()->json($validator->errors()->all());
-        }else{
+    public function AddNewSpaceStep1(Request $request){
+        $rule=[
+            // Comente esto, ya que aun no poseo ningun id service
+            //'service_id' => 'required|numeric|min:1',
+            'type_id'=>'required|numeric|min:1',
+            'accommodation_id'=>'required|numeric|min:1',
+            'live'=>'required|boolean',
+            'user_id'=>'required|numeric|min:1'
+        ];
+        $validator=Validator::make($request->all(),$rule);
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+        } else {
             $user = User::select()->where('id',$request->input("user_id"))->first(); 
             $category=Category::select()->where('id',1)->first();  
             $type=Type::select()->where('category_id','=',$category->id)->where('id_type','=',$request->input("type_id"))->first();  
@@ -737,7 +738,8 @@ class ControllerService extends Controller
                             $newtype->service_id = $newspace->id;
                             $newtype->type_id = $type->id_type;
                             $newtype->save();
-                            return response()->json('Add Service');
+                            // Permito que me devuelva el arreglo, ya que necesito el id del servicio creado
+                            //return response()->json('Add Service');
                             return response()->json($newspace);
                           }catch(exception $e){
                               return response()->json($e);
@@ -762,33 +764,40 @@ class ControllerService extends Controller
     }
 
     //Agregar Service(space-step2)-Web
-   public function AddNewSpaceStep2(Request $request){
+    public function AddNewSpaceStep2(Request $request){
         $rule=[
            'service_id' => 'required|numeric|min:1',
            'num_guest'=>'required|numeric|min:0'
-      ];
-      $validator=Validator::make($request->all(),$rule);
-      if ($validator->fails()) {
-        return response()->json($validator->errors()->all());
-        }else{
-             $servicespace=Service::select()->where('id',$request->input("service_id"))->first();
-             if(count($service)>0){
-                 try{ 
-                  $servicespace->num_guest=$request->input("num_guest");
-                  $servicespace->save();
-                   for($i=1;$i<=$request->input("num_bedroom");$i++){
-                           $bedroom=new Bedroom;
-                           $bedroom->service_id=$service->id; 
-                           $bedroom->save();
+        ];
+        $validator=Validator::make($request->all(),$rule);
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+        } else {
+            $servicespace=Service::select()->where('id',$request->input("service_id"))->first();
+            // Habia un error, la variable se llama servicespace, no service
+            if(count($servicespace)>0){
+                try{ 
+                    $servicespace->num_guest=$request->input("num_guest");
+                    $servicespace->save();
+                    for($i=1;$i<=$request->input("num_bedroom");$i++){
+                        $bedroom=new Bedroom;
+                        // Habia un error, la variable se llama servicespace, no service
+                        $bedroom->service_id=$servicespace->id; 
+                        $bedroom->save();
                     }
-                     return response()->json("Add Space Bedroom");   
-                 }catch(Exception $e){
+                    /** 
+                    *   Envio como respuesta el servicio junto con el numero de habitaciones,
+                    *   ya que para la vista siguiente son necesarios dichos datos
+                    */
+                    //return response()->json("Add Space Bedroom"); 
+                    $servicespace->num_bedrooms = $request->input("num_bedroom");
+                    return response()->json($servicespace);  
+                 } catch(Exception $e) {
                      return response()->json($e); 
                  }  
-
-             }else{
-                  return response()->json('Service not found'); 
-             }
+            } else {
+                return response()->json('Service not found'); 
+            }
         }
       
    } 
