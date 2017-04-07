@@ -57,19 +57,68 @@ $app->post('/user/login','ControllerUser@verificationLogin');//-->3/3/2017
 //OAuth User-Login
 $app->post('/user/login-oauth','ControllerUser@LoginOauth');//-->3/3/2017
 //OAuth User-Name
+$app->post('/user/set-name-oauth','ControllerUser@UserOauth');//-->3/3/2017
+//Verification email
+$app->post('/user/email','ControllerUser@VerificationEmail');//-->3/3/2017
 $app->post('/user/set-user-oauth','ControllerUser@UserOauth');//-->3/3/2017
 /////////////////////////////////////////////////////////////////////////////
 
-/*CRUD SERVICE*//////////////////////////////////////////////////////////////
+/*CRUD SERVICE Movil*//////////////////////////////////////////////////////////////
 /*Create*/
-//Agrega un service
-$app->post('/service/create','ControllerService@CreateService');
+//Agrega una category
+$app->post('/service/space/step','ControllerService@AddNewStep');
 //Agrega  type
-$app->post('/service/add-type','ControllerService@AddTypeService');
+$app->post('/service/space/step-1','ControllerService@AddNewStep1');
+//Agrega invitados y habitaciones
+$app->put('/service/space/step-2','ControllerService@AddNewStep2');
+//Agrega Baños
+$app->put('/service/space/step-3','ControllerService@AddNewStep3');
+//Agrega datos de ubicacion
+$app->post('service/space/step-4','ControllerService@AddNewStep4');
+//Agrega en la service-amenitie
+$app->post('service/space/step-5','ControllerService@AddNewStep5');
+//Agrega titulo
+$app->post('service/space/title','ControllerService@AddNewTitle');
+//Agrega description
+$app->post('service/space/description','ControllerService@AddNewDescription');
+//Agrega reglas de casa
+$app->post('service/space/rules-house','ControllerService@AddNewRulesHouse');
+//Agrega check_in y check_out
+$app->post('service/space/check-in-and-check-out','ControllerService@AddNewCheckInCheckOut');//esta ruta tambien es para web
+//Agrega Reservation Preferent
+$app->post('service/space/reservation-preference','ControllerService@AddNewReservationPrerence');
+//Agrega Imagen
+$app->post('/service/add-imagen','ControllerImagen@AddImagen');
+//Agrega Comentario a La imagen
+$app->post('/service/add-imagen-description','ControllerImagen@AddDescriptionImagen');
+
+/*Crud Service Web */////////////////////////////////////////////////////////////////->en proces0
+//Agregar un servicio (space-step1)
+$app->post('/service/space/step-1/create','ControllerService@AddNewSpaceStep1');
+//Agregar un servicio (space-step2-bedroom)
+$app->post('/service/space/step-2/bedrooms','ControllerService@AddNewSpaceStep2');
+//Agregar un servicio (space-step2-beds)
+$app->post('/service/space/step-2/beds/details','ControllerService@AddNewSpaceStep2Beds');
+//Agregar un servicio (space-step3-bathroom)
+$app->put('/service/space/step-3/bathroom','ControllerService@AddNewStep3');
+//Agregar un servicio (space-step4)
+$app->put('/service/space/step-4/location','ControllerService@AddNewSpaceStep4Location');
+//Agregar un Amenities (space-step5)
+$app->post('/service/space/step-5/amenities','ControllerService@AddNewSpaceStep5Amenities');
+//Agregar un cancellation policy (space-step6)
+$app->post('/service/space/step-6/hosting','ControllerService@AddNewSpaceStep6');
+//Agregar un description service (space-step7)
+$app->post('/service/space/step-7/description','ControllerService@AddNewSpaceStep7Description');
+//Agregar un rules description (space-step8)
+$app->post('/service/space/step-8/rules','ControllerService@AddNewSpaceStep8Rules');
+//Agregar imagen (space-step9)
+$app->post('/service/space/step-9/imagen','ControllerService@AddNewSpaceStep9Imagen');
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//Agrgar Accommodation
+$app->put('/service/add-accommodation','ControllerService@AddAccommodation');
 //Agrega en la tabla service-calendar
 $app->post('/service/add-servicecalendar','ControllerService@AddServiceCalendar');
-//Agrega en la service-amenite
-$app->post('/service/add-serviceamenite','ControllerService@AddServiceAmentines');
 //Muestra un service-type en especifico 
 $app->post('/service/get-type','ControllerService@GetTypeService');
 //Muestra un Calendar-Service en especifico
@@ -133,8 +182,6 @@ $app->delete('/user/card/delete-card','ControllerCardPaypal@Deletecard');
 ///////////////////////////////////////////////////////////////////////////////////
 
 /*CRUD Imagen*/////////////////////////////////////////////////////////////////////
-/*Create*/
-$app->post('/service/add-imagen','ControllerImagen@AddImagen');
 /*Update*/
 $app->put('/service/update-imagen','ControllerImagen@UpdateImagen');
 /*Delete*/

@@ -18,10 +18,13 @@ use DB;
 
 class ControllerUser extends Controller
 {
-    public function __construct()
+    /*public function __construct()
     {
-        $this->middleware('auth', ['except' => array('Create','verificationLogin','LoginOauth','UserOauth')]);
-    }
+
+        $this->middleware('auth');
+    }*/
+    //    $this->middleware('auth', ['except' => array('Create','verificationLogin','LoginOauth','UserOauth')]);
+    
    
     public function Create(Request $request)
     {   
@@ -366,7 +369,7 @@ class ControllerUser extends Controller
              if($date!=null){
                   $addphone=new Phone();
                   $addphone->number=$request->input('number');
-                  $val= DB::select('select * from phone_number where user_id = ? and number=?', [$request->input("id"),$request->input("number")]);
+                  $val=Phone::where('user_id','=',$request->input('id'))->where('number','=',$request->input("number"))->first();
                   if(count($val)==0){
                         $addphone->type_id=$request->input('type_id');
                         $addphone->user_id=$date->id;
@@ -418,7 +421,8 @@ public function UpdatePhone(Request $request){
         }else{
             $user=User::where('id','=',$request->input('user_id'))->first();
             if(count($user)>0){
-                 $phone = DB::select('select number,type_id from phone_number where user_id=?', [$user->id]);
+                  //$phone=Phone::where('user_id',$user->id)->first();
+                  $phone=Phone::where('user_id','=',$user->id)->get();
                if(count($phone)>0){
                     return response()->json($phone);
                }else{
@@ -459,6 +463,7 @@ public function UpdatePhone(Request $request){
       if ($validator->fails()) {
         return response()->json($validator->errors()->all());
         }else{
+            $user=User::where('id','=',$request->input("user_id"))->first();
             $user= User::select('*')->where('if=d',$request->input("user_id"));
             if(count($user)>0){
                  return response()->json($user);
@@ -481,7 +486,7 @@ public function UpdatePhone(Request $request){
             $user=User::where('id','=',$request->input('user_id'))->first();
             if(count($user)>0){
                 if(count($user->city_id)>0){
-                     $city= DB::select('select * from city where id = ?',[$user->city_id] );
+                     $city=City::where('id','=',$user->city_id)->get();
                  return response()->json($city);
                  }else{
                     return response()->json("Your city is not registered");
@@ -550,6 +555,7 @@ public function LoginOauth(Request $request){
       if ($validator->fails()) {
         return response()->json($validator->errors()->all());
         }else{
+            $user=User::where('email','=',$request->input("email"))->get();
            $user= User::select('*')->where('email','=',$request->input("email"))->first();
            if(count($user)>0){
                 return response()->json($user);
@@ -584,5 +590,23 @@ public function UserOauth(Request $request){
                     
     }
    }
-    
+
+  //Verification Email
+  public function VerificationEmail(Request $request){
+        $rule=[
+           'email' => 'required|email',
+      ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+        return response()->json($validator->errors()->all());
+        }else{
+                $user=User::where('email','=',$request->input("email"))->first();
+           if(count($user)>0){
+                return response()->json("True");
+           }else{
+               return response()->json("False");
+           }       
+        }
+  }     
+
 }
