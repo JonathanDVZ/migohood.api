@@ -8,8 +8,7 @@
     "packages": [
         {
             "name": "aws/aws-sdk-php",
-<<<<<<< HEAD
-            "version": "3.24.0",
+            "version": "3.25.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
@@ -17,26 +16,14 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/3aacac064f40fcfdf8ecde2102a73d18b8b744d0",
-                "reference": "3aacac064f40fcfdf8ecde2102a73d18b8b744d0",
-=======
-            "version": "3.24.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "2b252f300de442cdb5cde18ddc118c2477972e30"
-            },
-            "dist": {
-                "type": "zip",
                 "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/2b252f300de442cdb5cde18ddc118c2477972e30",
                 "reference": "2b252f300de442cdb5cde18ddc118c2477972e30",
->>>>>>> ad1aa621a19dfb52312b71f619c3df20e2b83e3c
                 "shasum": ""
             },
             "require": {
                 "guzzlehttp/guzzle": "^5.3.1|^6.2.1",
                 "guzzlehttp/promises": "~1.0",
-                "guzzlehttp/psr7": "^1.3.1, !=1.4.0",
+                "guzzlehttp/psr7": "^1.4.1",
                 "mtdowling/jmespath.php": "~2.2",
                 "php": ">=5.5"
             },
@@ -98,10 +85,14 @@
                 "sdk"
             ],
 <<<<<<< HEAD
+<<<<<<< HEAD
             "time": "2017-03-08T23:57:18+00:00"
 =======
             "time": "2017-03-10T21:09:41+00:00"
 >>>>>>> ad1aa621a19dfb52312b71f619c3df20e2b83e3c
+=======
+            "time": "2017-04-04T20:52:10+00:00"
+>>>>>>> 806d04e6e772f6ac04b94245c4246ab3c3de4a3b
         },
         {
             "name": "doctrine/inflector",
@@ -285,16 +276,16 @@
         },
         {
             "name": "guzzlehttp/psr7",
-            "version": "1.4.1",
+            "version": "1.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/psr7.git",
-                "reference": "0d6c7ca039329247e4f0f8f8f6506810e8248855"
+                "reference": "f5b8a8512e2b58b0071a7280e39f14f72e05d87c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/psr7/zipball/0d6c7ca039329247e4f0f8f8f6506810e8248855",
-                "reference": "0d6c7ca039329247e4f0f8f8f6506810e8248855",
+                "url": "https://api.github.com/repos/guzzle/psr7/zipball/f5b8a8512e2b58b0071a7280e39f14f72e05d87c",
+                "reference": "f5b8a8512e2b58b0071a7280e39f14f72e05d87c",
                 "shasum": ""
             },
             "require": {
@@ -346,7 +337,7 @@
                 "uri",
                 "url"
             ],
-            "time": "2017-02-27T10:51:17+00:00"
+            "time": "2017-03-20T17:10:46+00:00"
         },
         {
             "name": "illuminate/auth",
@@ -1915,16 +1906,16 @@
         },
         {
             "name": "stripe/stripe-php",
-            "version": "v4.4.2",
+            "version": "v4.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/stripe/stripe-php.git",
-                "reference": "c9d4326bb99edd1a9849a6f22c0d8ea3351105de"
+                "reference": "420d34ae71059700ea2a2e466670f66ddd97777d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stripe/stripe-php/zipball/c9d4326bb99edd1a9849a6f22c0d8ea3351105de",
-                "reference": "c9d4326bb99edd1a9849a6f22c0d8ea3351105de",
+                "url": "https://api.github.com/repos/stripe/stripe-php/zipball/420d34ae71059700ea2a2e466670f66ddd97777d",
+                "reference": "420d34ae71059700ea2a2e466670f66ddd97777d",
                 "shasum": ""
             },
             "require": {
@@ -1966,7 +1957,7 @@
                 "payment processing",
                 "stripe"
             ],
-            "time": "2017-02-27T15:48:36+00:00"
+            "time": "2017-03-22T17:51:32+00:00"
         },
         {
             "name": "symfony/console",
@@ -2088,19 +2079,23 @@
         {
             "name": "symfony/event-dispatcher",
 <<<<<<< HEAD
+<<<<<<< HEAD
             "version": "v3.2.5",
 =======
             "version": "v3.2.6",
 >>>>>>> ad1aa621a19dfb52312b71f619c3df20e2b83e3c
+=======
+            "version": "v3.2.7",
+>>>>>>> 806d04e6e772f6ac04b94245c4246ab3c3de4a3b
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/event-dispatcher.git",
-                "reference": "b7a1b9e0a0f623ce43b4c8d775eb138f190c9d8d"
+                "reference": "154bb1ef7b0e42ccc792bd53edbce18ed73440ca"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/event-dispatcher/zipball/b7a1b9e0a0f623ce43b4c8d775eb138f190c9d8d",
-                "reference": "b7a1b9e0a0f623ce43b4c8d775eb138f190c9d8d",
+                "url": "https://api.github.com/repos/symfony/event-dispatcher/zipball/154bb1ef7b0e42ccc792bd53edbce18ed73440ca",
+                "reference": "154bb1ef7b0e42ccc792bd53edbce18ed73440ca",
                 "shasum": ""
             },
             "require": {
@@ -2147,7 +2142,7 @@
             ],
             "description": "Symfony EventDispatcher Component",
             "homepage": "https://symfony.com",
-            "time": "2017-02-21T09:12:04+00:00"
+            "time": "2017-04-04T07:26:27+00:00"
         },
         {
             "name": "symfony/finder",
@@ -3727,19 +3722,23 @@
         {
             "name": "symfony/yaml",
 <<<<<<< HEAD
+<<<<<<< HEAD
             "version": "v3.2.5",
 =======
             "version": "v3.2.6",
 >>>>>>> ad1aa621a19dfb52312b71f619c3df20e2b83e3c
+=======
+            "version": "v3.2.7",
+>>>>>>> 806d04e6e772f6ac04b94245c4246ab3c3de4a3b
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
-                "reference": "093e416ad096355149e265ea2e4cc1f9ee40ab1a"
+                "reference": "62b4cdb99d52cb1ff253c465eb1532a80cebb621"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/yaml/zipball/093e416ad096355149e265ea2e4cc1f9ee40ab1a",
-                "reference": "093e416ad096355149e265ea2e4cc1f9ee40ab1a",
+                "url": "https://api.github.com/repos/symfony/yaml/zipball/62b4cdb99d52cb1ff253c465eb1532a80cebb621",
+                "reference": "62b4cdb99d52cb1ff253c465eb1532a80cebb621",
                 "shasum": ""
             },
             "require": {
@@ -3781,7 +3780,7 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
-            "time": "2017-03-07T16:47:02+00:00"
+            "time": "2017-03-20T09:45:15+00:00"
         },
         {
             "name": "webmozart/assert",

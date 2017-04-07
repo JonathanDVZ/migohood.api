@@ -112,7 +112,7 @@ $app->post('/service/space/step-7/description','ControllerService@AddNewSpaceSte
 //Agregar un rules description (space-step8)
 $app->post('/service/space/step-8/rules','ControllerService@AddNewSpaceStep8Rules');
 //Agregar imagen (space-step9)
-$app->post('/service/space/step-9/imagen','ControllerService@AddNewSpaceStep9Imagen');
+$app->post('/service/space/step-9/imagen','ControllerService@AddNewSpaceStep9');
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //Agrgar Accommodation
@@ -259,7 +259,7 @@ $app->post('/price-history/get-history','ControllerPriceHistory@GetHistory');
 $app->get('/category/get-category','ControllerCombobox@GetCategory');
 //Muestra todos los GetAmenities
 $app->get('/amenitie/get-amenitie','ControllerCombobox@GetAmenities');
-//Muestra todos los alojamientos
+//Muestra todos los alojamientos->para step1
 $app->get('/accommodation/get-accommodation','ControllerCombobox@GetAccommodation');
 //Muestra todos los dias de la semana
 $app->get('/calendar/get-calendar','ControllerCombobox@GetCalendar');
@@ -269,6 +269,8 @@ $app->get('/type/get-type','ControllerCombobox@GetType');
 $app->get('/duration/get-duration','ControllerCombobox@GetDuration');
 //Muestra todas las ciudades
 $app->post('/city/get-city','ControllerCombobox@GetCity');
+//Muestra todas las type de categoria space->para step1
+$app->get('/category/space/get-type','ControllerCombobox@TypeGet');
 
 
 /*$app->get('/make_token',function(){

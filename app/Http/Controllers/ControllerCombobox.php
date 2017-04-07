@@ -60,8 +60,17 @@ class ControllerCombobox extends Controller
              }
         }
     }
-    
-    
+
+    public function TypeGet(Request $request){
+         
+            $type=Type::select()->where('category_id','=',1)->get();
+            if(count($type)>0){
+                  return response()->json($type);
+            }else{
+                  return response()->json("Error"); 
+            }
+        }
 
 }
+    
     
