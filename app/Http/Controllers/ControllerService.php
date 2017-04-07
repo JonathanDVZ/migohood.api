@@ -779,18 +779,20 @@ class ControllerService extends Controller
                 try{ 
                     $servicespace->num_guest=$request->input("num_guest");
                     $servicespace->save();
+                    $bedr = array();
                     for($i=1;$i<=$request->input("num_bedroom");$i++){
                         $bedroom=new Bedroom;
                         // Habia un error, la variable se llama servicespace, no service
                         $bedroom->service_id=$servicespace->id; 
                         $bedroom->save();
+                        $bedr[] = $bedroom;
                     }
                     /** 
                     *   Envio como respuesta el servicio junto con el numero de habitaciones,
                     *   ya que para la vista siguiente son necesarios dichos datos
                     */
                     //return response()->json("Add Space Bedroom"); 
-                    $servicespace->num_bedrooms = $request->input("num_bedroom");
+                    $servicespace->bedrooms = $bedr;
                     return response()->json($servicespace);  
                  } catch(Exception $e) {
                      return response()->json($e); 
