@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "c5d85fbaaea30e598eab4ff07c4213787b00b080"
+                "reference": "3aacac064f40fcfdf8ecde2102a73d18b8b744d0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/c5d85fbaaea30e598eab4ff07c4213787b00b080",
-                "reference": "c5d85fbaaea30e598eab4ff07c4213787b00b080",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/2b252f300de442cdb5cde18ddc118c2477972e30",
+                "reference": "2b252f300de442cdb5cde18ddc118c2477972e30",
                 "shasum": ""
             },
             "require": {
@@ -84,7 +84,15 @@
                 "s3",
                 "sdk"
             ],
+<<<<<<< HEAD
+<<<<<<< HEAD
+            "time": "2017-03-08T23:57:18+00:00"
+=======
+            "time": "2017-03-10T21:09:41+00:00"
+>>>>>>> ad1aa621a19dfb52312b71f619c3df20e2b83e3c
+=======
             "time": "2017-04-04T20:52:10+00:00"
+>>>>>>> 806d04e6e772f6ac04b94245c4246ab3c3de4a3b
         },
         {
             "name": "doctrine/inflector",
@@ -2070,7 +2078,15 @@
         },
         {
             "name": "symfony/event-dispatcher",
+<<<<<<< HEAD
+<<<<<<< HEAD
+            "version": "v3.2.5",
+=======
+            "version": "v3.2.6",
+>>>>>>> ad1aa621a19dfb52312b71f619c3df20e2b83e3c
+=======
             "version": "v3.2.7",
+>>>>>>> 806d04e6e772f6ac04b94245c4246ab3c3de4a3b
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/event-dispatcher.git",
@@ -3705,7 +3721,15 @@
         },
         {
             "name": "symfony/yaml",
+<<<<<<< HEAD
+<<<<<<< HEAD
+            "version": "v3.2.5",
+=======
+            "version": "v3.2.6",
+>>>>>>> ad1aa621a19dfb52312b71f619c3df20e2b83e3c
+=======
             "version": "v3.2.7",
+>>>>>>> 806d04e6e772f6ac04b94245c4246ab3c3de4a3b
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
