@@ -1241,12 +1241,3 @@ class ControllerService extends Controller
 
 
 }
-
-    
-/*select bedroom.id, bedroom_bed.quantity, bed.id, bed.type
-from bedroom
-left join bedroom_bed
-on bedroom_bed.bedroom_id=bedroom.id
-join bed
-on bed.id=bedroom_bed.bed_id 
-where bedroom.service_id=2;
