@@ -66,16 +66,17 @@ class ControllerService extends Controller
                        $newtypeservice->type_id=$type->id_type;
                        $newtypeservice->save();
                        if($newservice->save() and $newtypeservice->save()){
-                           return response()->json($newservice);
-                       }
-                 }else{
-                     return response()->json('Type not found');  
-                 }
+                              return response()->json($newservice);
+                       }else{
+                         return response()->json('Type not found');  
+                   }
                  }else{
                     return response()->json('User not found');                     
                  }  
-           }
-     }
+                }
+            } 
+    }
+     
    
      //Agrega New Step-1
     public function AddNewStep1(Request $request){
@@ -301,6 +302,7 @@ class ControllerService extends Controller
                       return response()->json('Service or Payment not found');
                    }
                 }
+
         
     }
     //Agrega titulo
@@ -1268,6 +1270,5 @@ class ControllerService extends Controller
             }
         }
   }
-
 
 }
