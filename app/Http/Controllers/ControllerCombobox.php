@@ -86,9 +86,9 @@ class ControllerCombobox extends Controller
         }else{
           $newbedbedroom=DB::table('bedroom')
                               ->leftjoin('bedroom_bed','bedroom_bed.bedroom_id','=','bedroom.id')
-                              ->join('bed','bed.id','=','bedroom_bed.bed_id')
+                              ->leftjoin('bed','bed.id','=','bedroom_bed.bed_id')
                               ->where('bedroom.service_id','=',$request->input("service_id"))
-                              ->select('bedroom.id as bedroom_id','bedroom_bed.quantity bed_quantity','bed.id as bed_id','bed.type bed_type')
+                              ->select('bedroom.id as bedroom_id','bedroom_bed.quantity as bed_quantity','bed.id as bed_id','bed.type as bed_type')
                               ->get();
           if(count($newbedbedroom)>0){
                 return response()->json($newbedbedroom);
