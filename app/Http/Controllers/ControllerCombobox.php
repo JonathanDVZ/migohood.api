@@ -10,6 +10,7 @@ use App\Models\Amenite;
 use App\Models\Accommodation;
 use App\Models\Calendar;
 use App\Models\Duration;
+use App\Models\House_Rules;
 use App\Models\Type;
 use DB;
 
@@ -21,6 +22,10 @@ class ControllerCombobox extends Controller
 
     public function GetAmenities(){
          return Amenite::all();
+    }
+
+   public function RulesHouse(){
+         return House_Rules::all();
     }
 
     public function GetAccommodation(){
@@ -69,8 +74,29 @@ class ControllerCombobox extends Controller
             }else{
                   return response()->json("Error"); 
             }
-        }
+    }
 
+    public function GetBedBedroom(Request $request){
+      $rule=[
+           'service_id' => 'required|numeric|min:1'
+      ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+        return response()->json($validator->errors()->all());
+        }else{
+          $newbedbedroom=DB::table('bedroom')
+                              ->leftjoin('bedroom_bed','bedroom_bed.bedroom_id','=','bedroom.id')
+                              ->leftjoin('bed','bed.id','=','bedroom_bed.bed_id')
+                              ->where('bedroom.service_id','=',$request->input("service_id"))
+                              ->select('bedroom.id as bedroom_id','bedroom_bed.quantity as bed_quantity','bed.id as bed_id','bed.type as bed_type')
+                              ->get();
+          if(count($newbedbedroom)>0){
+                return response()->json($newbedbedroom);
+          }else{
+                return response()->json('GetBedroom Not found'); 
+          }
+       }
+  }
 }
     
     
