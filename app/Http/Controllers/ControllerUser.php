@@ -5,9 +5,6 @@ use App\Models\Phone;
 use App\Models\State;
 use App\Models\City;
 use App\Models\Country;
-use Aws\S3\S3Client;
-use Aws\Exception\AwsException;
-use Aws\S3\Exception\S3Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Contracts\Encryption\DecryptException;
@@ -20,11 +17,8 @@ class ControllerUser extends Controller
 {
     /*public function __construct()
     {
-
         $this->middleware('auth');
     }*/
-    //    $this->middleware('auth', ['except' => array('Create','verificationLogin','LoginOauth','UserOauth')]);
-    
    
     public function Create(Request $request)
     {   
@@ -47,15 +41,16 @@ class ControllerUser extends Controller
                        $newUser->name=ucwords(strtolower($request->input('name')));
                        $newUser->email=strtolower($request->input('email'));
                        $newUser->password=Crypt::encrypt($request->input('password'));
-                       $newUser->thumbnail=url('/').'/files/thumbnails/thumbnail-default.png';
+                    // $newUser->thumbnail=$request->input('thumbnail');
                        $newUser->lastname=ucwords(strtolower($request->input('lastname')));
                        $newUser->remember_token=str_random(100);
                        $newUser->confirm_token=str_random(100);
                        $newUser->address=strtolower($request->input('address'));
                     // $newUser->city_id=$request->input('city_id');
-                       $newUser->save();
-                       return response()->json($newUser); 
-                    }                   
+                       if( $newUser->save()){
+                          return response()->json("User Create"); 
+                       }
+                    }
                     else{
                          return response()->json("Existing user"); 
                     }
@@ -168,46 +163,19 @@ class ControllerUser extends Controller
             return response()->json($validator->errors()->all());
         }
         else
-        { 
+        {
              // Buscamos el usuario que posea el id ingresado, una vez que se halle entra a la condición
             $user = User::select()->where('id',$request->input("user_id"))->first();
             if ($user){
                 try{
-                    // Se definen las credenciales del cliente s3 de amazon
-                    $s3 = new S3Client([
-                        'version'     => env('S3_VERSION'),
-                        'region'      => env('S3_REGION'),
-                        'credentials' => [
-                            'key'    => env('S3_KEY'),
-                            'secret' => env('S3_SECRET')
-                        ]
-                    ]);
-                    $image_link = 'https://s3.'.env('S3_REGION').'.amazonaws.com/'.env('S3_BUCKET').'/files/thumbnails/';
                     // Obtenemos el campo file definido en el formulario
                     $file = $request->file('thumbnail');            
                     // Creamos un nombre para nuestro thumnail
-                    $name = 'thumbnail_'.str_random(20).'_user_'.$user->id.'.'.$file->getClientOriginalExtension();         
-                    // Movemos el archivo a la caperta temporal
+                    $name = 'thumbnail_user_'.Auth::user()->id.'.'.$file->getClientOriginalExtension();            
+                    // Movemos el archivo a la caperta que deseamos
                     $file->move('files/thumbnails/',$name);
-                    //
-                    $old_thumbnail = str_replace($image_link,'',$user->thumbnail);
-                    //
-                    $s3->deleteObject([
-                        'Bucket' => env('S3_BUCKET'),
-                        'Key'    => 'files/thumbnails/'.$old_thumbnail
-                    ]);
-                    //
-                    $s3->putObject([
-                        'Bucket' => env('S3_BUCKET'),
-                        'Key'    => 'files/thumbnails/'.$name,
-                        'Body'   => fopen('files/thumbnails/'.$name, 'r'),
-                        'ACL'    => 'public-read'
-                    ]);
-                    //
-                    // Borramos el arrchivo de la carpeta temporal
-                    unlink('files/thumbnails/'.$name);
                     // Actualizamos la fila thumbnail del usuario respectivo
-                    DB::table('user')->where('id', $user->id )->update(['thumbnail' => $image_link.$name]);
+                    DB::table('user')->where('id', $user->id )->update(['thumbnail' => url('/files/thumbnails/'.$name)]);
                     return json_encode('Update completed!', true);
                 }
                 catch (\Exception $e){
@@ -464,7 +432,6 @@ public function UpdatePhone(Request $request){
         return response()->json($validator->errors()->all());
         }else{
             $user=User::where('id','=',$request->input("user_id"))->first();
-            $user= User::select('*')->where('if=d',$request->input("user_id"));
             if(count($user)>0){
                  return response()->json($user);
             }
@@ -556,7 +523,6 @@ public function LoginOauth(Request $request){
         return response()->json($validator->errors()->all());
         }else{
             $user=User::where('email','=',$request->input("email"))->get();
-           $user= User::select('*')->where('email','=',$request->input("email"))->first();
            if(count($user)>0){
                 return response()->json($user);
            }else{
@@ -566,29 +532,29 @@ public function LoginOauth(Request $request){
 }
 
 public function UserOauth(Request $request){
-    $rule=[
-        'email' => 'required|email|unique:user,email',
-        'name'=>'required',
-        'thumbnail'=>'required'
-    ];
-    $validator=Validator::make($request->all(),$rule);
-    if ($validator->fails()) {
+     $rule=[
+           'email' => 'required|email|unique:user,email',
+           'name'=>'required',
+           'thumbnail'=>'required'
+      ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
         return response()->json($validator->errors()->all());
-    }else{
-        try{
-                $newuser=New User;
-                $newuser->name=ucwords(strtolower($request->input('name')));
-                $newuser->email=strtolower($request->input("email"));
-                $newuser->thumbnail=$request->input("thumbnail");
-                $newuser->remember_token=str_random(100);
-                $newuser->confirm_token=str_random(100);
-                $newuser->save();
-                return response()->json($newuser); 
-        }catch(Exception $e){
-            return response()->json($e);
-        }    
-                    
-    }
+        }else{
+                try{
+                        $newuser=New User;
+                        $newuser->name=ucwords(strtolower($request->input('name')));
+                        $newuser->email=strtolower($request->input("email"));
+                        $newuser->thumbnail=$request->input("thumbnail");
+                        $newuser->remember_token=str_random(100);
+                        $newuser->confirm_token=str_random(100);
+                        $newuser->save();
+                        return response()->json(['name'=>$newuser->name,'email'=>$newuser->email,'thumbnail'=>$newuser->thumbnail,'confirm_token'=>$newuser->confirm_token,'city'=>$newuser->city_id,'id'=>$newuser->id]); 
+                }catch(Exception $e){
+                    return response()->json($e);
+                }    
+                       
+        }
    }
 
   //Verification Email

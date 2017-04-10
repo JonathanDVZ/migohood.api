@@ -77,6 +77,8 @@ $app->put('/service/space/step-3','ControllerService@AddNewStep3');
 $app->post('service/space/step-4','ControllerService@AddNewStep4');
 //Agrega en la service-amenitie
 $app->post('service/space/step-5','ControllerService@AddNewStep5');
+//Agrega en la Agregar costo y politica de pago
+$app->post('service/space/step-6','ControllerService@AddNewStep6');
 //Agrega titulo
 $app->post('service/space/title','ControllerService@AddNewTitle');
 //Agrega description
@@ -276,9 +278,11 @@ $app->get('/duration/get-duration','ControllerCombobox@GetDuration');
 $app->post('/city/get-city','ControllerCombobox@GetCity');
 //Muestra la interseccion cama con habitacion
 $app->post('/service/get-bed-bedroom','ControllerCombobox@GetBedBedroom');
+//Muestra datos de una habitacion
+$app->post('/service/get-bed-bedroom-data','ControllerCombobox@GetBedBedroomData');
 
 
 
-/*$app->get('/make_token',function(){
+$app->get('/make_token',function(){
     return str_random(100);
-});*/
+});

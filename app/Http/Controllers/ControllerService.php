@@ -19,6 +19,7 @@ use App\Models\Service_Cancellation;
 use App\Models\Service_Amenite;
 use App\Models\Service_Type;
 use App\Models\Type;
+use App\Models\Payment;
 use App\Models\Service_Calendar;
 use App\Models\Calendar;
 use App\Models\Price_History;
@@ -42,7 +43,7 @@ class ControllerService extends Controller
              //Regla de validacion       
               $rule=[
                     'user_id'=>'required|numeric|min:1',
-                    'category_id'=>'required|numeric|min:1',
+                    'type_id'=>'required|numeric|min:1',
              ];
              $validator=Validator::make($request->all(),$rule);
              if ($validator->fails()) {
@@ -51,26 +52,31 @@ class ControllerService extends Controller
              else{
                  //Busca el usuario
                  $user = User::select()->where('id',$request->input("user_id"))->first(); 
-                 //Busca la categoria 
-                 $category = Category::select()->where('id',$request->input("category_id"))->first();
+                 $type = Type::where('category_id','=',1)->where('id_type',$request->input("type_id"))->first(); 
                  if(count($user)>0){///Verifica el usuario
-                    if(count($category)>0){//Verifica la categoria
+                 if(count($type)>0){
                        $newservice=new Service();
                        $dt = new DateTime();
                        $newservice->user_id=$user->id;
-                       $newservice->date=$dt->format('Y-m-d');
-                       $newservice->category_id=$category->id;
-                       if($newservice->save()){
-                           return response()->json('Add Step ');
-                       }
-                    }else{
-                        return response()->json('Category not found');  
-                    }
+                       $newservice->date=$dt->format('Y-m-d (H:m:s)');
+                       $newservice->category_id=1;
+                       $newservice->save();
+                       $newtypeservice=new Service_Type;
+                       $newtypeservice->service_id=$newservice->id;
+                       $newtypeservice->type_id=$type->id_type;
+                       $newtypeservice->save();
+                       if($newservice->save() and $newtypeservice->save()){
+                              return response()->json($newservice);
+                       }else{
+                         return response()->json('Type not found');  
+                   }
                  }else{
                     return response()->json('User not found');                     
                  }  
-           }
-     }
+                }
+            } 
+    }
+     
    
      //Agrega New Step-1
     public function AddNewStep1(Request $request){
@@ -239,7 +245,7 @@ class ControllerService extends Controller
             if ($validator->fails()) {
                 return response()->json($validator->errors()->all());
             }else{
-                 $amenite=Amenite::select()->where('codigo',$request->input("codigo"))->first();        
+                 $amenite=Amenite::where('category_id','=',1)->where('codigo',$request->input("codigo"))->first();        
                  if(count($amenite)>0){
                  $service=Service::select()->where('id',$request->input("id"))->first();
                  $val= DB::select('select * from service_amenites where service_id = ? and amenite_id=?', [$request->input("id"),$request->input("codigo")]);
@@ -267,6 +273,37 @@ class ControllerService extends Controller
                   return response()->json('Amenite not found'); 
              }
          } 
+    }
+ 
+    //Agrega step6 movil
+    public function AddNewStep6(Request $request){
+                $rule=[  'service_id'=>'required|numeric|min:1',
+                'politic_payment'=>'required|numeric:1|min:1|max:3'
+            ];
+            $validator=Validator::make($request->all(),$rule);
+            if ($validator->fails()) {
+                return response()->json($validator->errors()->all());
+            }else{
+                $service=Service::where('id',$request->input("service_id"))->first();
+                $payment=Payment::where('id',$request->input("politic_payment"))->first();
+                if(count($service)>0 and count($payment)>0){      
+                      $newhistory=new Price_History;
+                      $dt = new DateTime();
+                      $newhistory->starDate=$dt->format('Y-m-d (H:i:s)');
+                      $newhistory->service_id=$service->id;
+                      $newhistory->price=$request->input("price");
+                      $newhistory->currency_id=$request->input("currency_id");
+                      $newhistory->duration_id=$request->input("duration_id");
+                      $newhistory->save();
+                      $service->payment_id=$request->input("politic_payment");
+                      $service->save() ;
+                      return response()->json($newhistory);
+                   }else{
+                      return response()->json('Service or Payment not found');
+                   }
+                }
+
+        
     }
 
     //Agrega titulo
@@ -1235,6 +1272,7 @@ class ControllerService extends Controller
             }
 
         }
+
 
    }
 

@@ -97,6 +97,36 @@ class ControllerCombobox extends Controller
           }
        }
   }
+
+public function GetBedBedroomData(Request $request){
+         $rule=[
+           'user_id'=>'required|min:1',
+           'bedroom_id'=>'required|min:1'
+      ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+        return response()->json($validator->errors()->all());
+        }else{
+               $newbedbedroomdata=DB::table('service')
+               ->join('bedroom','bedroom.service_id','=','service.id')
+               ->leftjoin('bedroom_bed','bedroom_bed.bedroom_id','=','bedroom.id')
+               ->leftjoin('bed','bed.id','=','bedroom_bed.bed_id')
+               ->where('service.user_id','=',$request->input("user_id"))
+               ->where('bedroom.id','=',$request->input("bedroom_id"))
+               ->select('bedroom_bed.*','service.id as service_id')
+               ->get();
+               //dd($newbedbedroomdata);
+               if(count($newbedbedroomdata)>0){
+                   return response()->json($newbedbedroomdata);
+               }else{ 
+                   return response()->json("The user does not have a room or user not found");
+                    
+               }
+
+        }
+
+  }
+  
 }
     
     
