@@ -98,7 +98,7 @@ class ControllerCombobox extends Controller
        }
   }
 
- public function GetBedBedroomData(Request $request){
+public function GetBedBedroomData(Request $request){
          $rule=[
            'user_id'=>'required|min:1',
            'bedroom_id'=>'required|min:1'
@@ -115,10 +115,11 @@ class ControllerCombobox extends Controller
                ->where('bedroom.id','=',$request->input("bedroom_id"))
                ->select('bedroom_bed.*')
                ->get();
-               if(count($newbedbedroomdata)>0){
+               if(count($newbedbedroomdata)>1){
                    return response()->json($newbedbedroomdata);
-               }else{
-                   return response()->json("The user does not have a room");
+               }else{ 
+                   return response()->json("The user does not have a room or user not found");
+                    
                }
 
         }
