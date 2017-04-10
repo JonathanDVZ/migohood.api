@@ -100,7 +100,9 @@ class ControllerCombobox extends Controller
 
  public function GetBedBedroomData(Request $request){
          $rule=[
-           'service_id' => 'required|numeric|min:1'
+           'service_id' => 'required|numeric|min:1',
+           'user_id'=>'required|min:1',
+           'bedroom_id'=>'required|min:1'
       ];
       $validator=Validator::make($request->all(),$rule);
       if ($validator->fails()) {
