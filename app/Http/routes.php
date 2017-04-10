@@ -278,6 +278,8 @@ $app->get('/duration/get-duration','ControllerCombobox@GetDuration');
 $app->post('/city/get-city','ControllerCombobox@GetCity');
 //Muestra la interseccion cama con habitacion
 $app->post('/service/get-bed-bedroom','ControllerCombobox@GetBedBedroom');
+//Muestra datos de una habitacion
+$app->post('/service/get-bed-bedroom-data','ControllerCombobox@GetBedBedroomData');
 
 
 
