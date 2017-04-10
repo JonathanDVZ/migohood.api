@@ -279,6 +279,6 @@ $app->post('/service/get-bed-bedroom','ControllerCombobox@GetBedBedroom');
 
 
 
-/*$app->get('/make_token',function(){
+$app->get('/make_token',function(){
     return str_random(100);
-});*/
+});
