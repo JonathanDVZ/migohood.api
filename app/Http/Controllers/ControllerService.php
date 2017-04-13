@@ -38,7 +38,7 @@ class ControllerService extends Controller
     return Service::all();   
     }
    
-    //Add New Step 
+    //Agreg New Step 1 
     public function AddNewStep(Request $request){
              //Regla de validacion       
               $rule=[
@@ -98,7 +98,7 @@ class ControllerService extends Controller
                                       $typeservice->service_id=$service->id;
                                       $typeservice->type_id=$type->id_type;
                                       if($typeservice->save()){
-                                           return response()->json($typeservice);  
+                                           return response()->json('Add Step 2');  
                                        }
                                      }else{
                                         return response()->json('Does not belong to category'); 
@@ -302,6 +302,7 @@ class ControllerService extends Controller
 
         
     }
+
     //Agrega titulo
     public function AddNewTitle(Request $request){
         $rule=[  'service_id'=>'required|numeric|min:1',
@@ -737,8 +738,6 @@ class ControllerService extends Controller
     }  
 
    //Agregar Service(space-step1)-Web
-
-     
     public function AddNewSpaceStep1(Request $request){
         $rule=[
             // Comente esto, ya que aun no poseo ningun id service
@@ -824,9 +823,9 @@ class ControllerService extends Controller
                     *   Envio como respuesta el servicio junto con el numero de habitaciones,
                     *   ya que para la vista siguiente son necesarios dichos datos
                     */
-                    //return response()->json("Add Space Bedroom"); 
-                    $servicespace->num_bedrooms = $request->input("num_bedroom");
-                    return response()->json($servicespace);  
+                    return response()->json("Add Space Bedroom"); 
+                    //$servicespace->num_bedrooms = $request->input("num_bedroom");
+                    //return response()->json($servicespace);  
                  } catch(Exception $e) {
                      return response()->json($e); 
                  }  
@@ -1056,7 +1055,6 @@ class ControllerService extends Controller
             }
     }
    
-    //Agregar Service(space-step7)-Web
    public function AddNewSpaceStep7Description(Request $request){
           $rule=[
            'service_id' => 'required|numeric|min:1',
@@ -1120,7 +1118,6 @@ class ControllerService extends Controller
         }
    }
 
- //Agregar Service(space-step8)-Web
    public function AddNewSpaceStep8Rules(Request $request){
           $rule=[
            'service_id' => 'required|numeric|min:1',
@@ -1228,11 +1225,10 @@ class ControllerService extends Controller
        }
    }
 
- //Agregar Service(space-step9)-Web
    public function AddNewSpaceStep9(Request $request){
         $rule=[
            'service_id' => 'required|numeric|min:1',
-           'image'=>'required|image'
+           'ruta'=>'imagen'
            ];
       $validator=Validator::make($request->all(),$rule);
       if ($validator->fails()) {
@@ -1250,29 +1246,35 @@ class ControllerService extends Controller
                             'secret' => env('S3_SECRET')
                         ]
                     ]);
-                    $image_link = 'https://s3.'.env('S3_REGION').'.amazonaws.com/'.env('S3_BUCKET').'/files/images/';
+                    $image_link = 'https://s3.'.env('S3_REGION').'.amazonaws.com/'.env('S3_BUCKET').'/files/imagen/';
                     // Obtenemos el campo file definido en el formulario
-                    $file = $request->file('image');            
-                    // Creamos un nombre para nuestro imagen
-                    $name = 'image'.str_random(20).'_service_'.$service->id.'.'.$file->getClientOriginalExtension();         
+                    $file = $request->file('imagen');            
+                    // Creamos un nombre para nuestro thumnail
+                    $name = 'imagen'.str_random(20).'_service_'.$service->id.'.'.$file->getClientOriginalExtension();         
                     // Movemos el archivo a la caperta temporal
-                    $file->move('files/images/',$name);
-                   
+                    $file->move('files/imagen/',$name);
+                    //
+                    $old_thumbnail = str_replace($image_link,'',$service->imagen);
+                    //
+                    $s3->deleteObject([
+                        'Bucket' => env('S3_BUCKET'),
+                        'Key'    => 'files/imagen/'.$old_thumbnail
+                    ]);
                     //
                     $s3->putObject([
                         'Bucket' => env('S3_BUCKET'),
-                        'Key'    => 'files/images/'.$name,
-                        'Body'   => fopen('files/images/'.$name, 'r'),
+                        'Key'    => 'files/imagen/'.$name,
+                        'Body'   => fopen('files/imagen/'.$name, 'r'),
                         'ACL'    => 'public-read'
                     ]);
                     //
                     // Borramos el arrchivo de la carpeta temporal
-                    unlink('files/images/'.$name);
-                    // Actualizamos la fila imagen del usuario respectivo
+                    unlink('files/imagen/'.$name);
+                    // Actualizamos la fila thumbnail del usuario respectivo
                     DB::table('service')->where('id', $service->id )->update(['ruta' => $image_link.$name,
                     'description'=>$request->input("description")]);
 
-                       return response()->json('add Complete');
+                    return json_encode('Update completed!', true);
                 }
                 catch (\Exception $e){
                     return response()->json($e->getMessage());
@@ -1280,7 +1282,11 @@ class ControllerService extends Controller
             }else{
               return response()->json('Service not found'); 
             }
+
         }
-  }
+
+
+   }
 
 }
+

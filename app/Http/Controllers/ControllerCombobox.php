@@ -113,9 +113,10 @@ public function GetBedBedroomData(Request $request){
                ->leftjoin('bed','bed.id','=','bedroom_bed.bed_id')
                ->where('service.user_id','=',$request->input("user_id"))
                ->where('bedroom.id','=',$request->input("bedroom_id"))
-               ->select('bedroom_bed.*')
+               ->select('bedroom_bed.*','service.id as service_id')
                ->get();
-               if(count($newbedbedroomdata)>1){
+               //dd($newbedbedroomdata);
+               if(count($newbedbedroomdata)>0){
                    return response()->json($newbedbedroomdata);
                }else{ 
                    return response()->json("The user does not have a room or user not found");
