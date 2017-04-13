@@ -52,7 +52,7 @@ class ControllerService extends Controller
              else{
                  //Busca el usuario
                  $user = User::select()->where('id',$request->input("user_id"))->first(); 
-                 $acoommodation = Accommodation::where('id',$request->input("accommodation_id"))->first(); 
+                 $accommodation = Accommodation::where('id',$request->input("accommodation_id"))->first(); 
                  if(count($user)>0){///Verifica el usuario
                  if(count($accommodation)>0){
                        $newservice=new Service();
@@ -60,16 +60,16 @@ class ControllerService extends Controller
                        $newservice->user_id=$user->id;
                        $newservice->date=$dt->format('Y-m-d (H:m:s)');
                        $newservice->category_id=1;
-                       $newservice->accommodation_id=$accommodation;
+                       $newservice->accommodation_id=$request->input("accommodation_id");
                        $newservice->save();
                        if($newservice->save()){
                               return response()->json($newservice);
-                       }else{
-                         return response()->json('Accommodation not found');  
-                   }
+                       }
                  }else{
-                    return response()->json('User not found');                     
+                        return response()->json('Accommodation not found');                 
                  }  
+                }else{
+                    return response()->json('User not found');  
                 }
             } 
     }
