@@ -1,15 +1,16 @@
-use Migohood;
+ use migohood;
 insert into category(name) value("Space"),("Workspace"),("Parking Space"),("Service");
 insert into type(name,category_id) values("Apartament",1),("House",1),("B&B",1),("Room",1),("Other",1);
 insert into type(name,category_id) values("Bussiness Center",2),("Corporate Office",2),("Coworking Space",2),("Other Workspace",2);
 insert into type(name,category_id) values("Driveway",3),("Garage",3),("Car Park",3),("Other",3);
 insert into type(name,category_id) values("Tourism",4),("Educational",4),("Cultural",4),("Recreational",4),("Eco",4),("Adventure",4),("Fitness",4);
 insert into accommodation(name)values("Entire"),("private"),("Share");
+insert into payment(type)values("flex"),("moderate"),("esctric");
 insert into calendar(day) value("All Days"),("Sunday"),("Monday"),("Tuesday"),("Wednesday"),("Thursday"),("Friday"),("Sturday");
 insert into duration(type) values("Minute"),("Hour"),("Week"),("Month");
 insert into type_number(type)values("Fixed"),("Cell");
 insert into description(type)values("title"),("address1"),("address2"),("des_neighborhood"),("desc_surroundings"),("desc_length"),("desc_latitud"),("description"),("apt"),("desc_around"),("desc_crib"),("desc_acce"),("socialize"),("available"),("desc_guest"),("desc_note");
-insert into house_rules(type)values("Apto para niños(2 a 12 años)"),("Apto para bebes(0 a 2 años)"),("Se Admiten Mascotas"),("Permitido Fumar"),("Eventos fiestas permitidos"),("otras reglas"),("guest_phone"),("guest_email"),("guest_profile"),("guest_payment"),("guest_provided"),("guest_recomendation");
+insert into house_rules(type)values("Apto para niños(2 a 12 años)"),("Apto para bebes(0 a 2 años)"),("Se Admiten Mascotas"),("Permitido Fumar"),("Eventos fiestas permitidos"),("otras reglas"),("guest_phone"),("guest_email"),("guest_profile"),("guest_payment"),("guest_provided"),("guest_recomendation"),("instructions"),("name_wifi"),("password_wifi");
 insert into bed(type)values("double"),("queen"),("individual"),("sofa"),("other");
 insert into type_amenities(name)values("Amenities"),("Your_offer"),("Guest_use");
 -- ingles--
