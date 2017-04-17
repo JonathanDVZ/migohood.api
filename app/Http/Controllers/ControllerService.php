@@ -18,6 +18,7 @@ use App\Models\SpecialDate;
 use App\Models\Service_Cancellation;
 use App\Models\Service_Amenite;
 use App\Models\Service_Type;
+use App\Models\Imagen;
 use App\Models\Type;
 use App\Models\Payment;
 use App\Models\Service_Calendar;
@@ -28,6 +29,9 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Contracts\Encryption\DecryptException;
 use	Illuminate\Encryption\Encrypter;
 use validator;
+use Aws\S3\S3Client;
+use Aws\Exception\AwsException;
+use Aws\S3\Exception\S3Exception;
 use DateTime;
 use DB;
 class ControllerService extends Controller
@@ -1228,7 +1232,7 @@ class ControllerService extends Controller
    public function AddNewSpaceStep9(Request $request){
         $rule=[
            'service_id' => 'required|numeric|min:1',
-           'ruta'=>'imagen'
+           'image'=>'required|image'
            ];
       $validator=Validator::make($request->all(),$rule);
       if ($validator->fails()) {
@@ -1246,33 +1250,30 @@ class ControllerService extends Controller
                             'secret' => env('S3_SECRET')
                         ]
                     ]);
-                    $image_link = 'https://s3.'.env('S3_REGION').'.amazonaws.com/'.env('S3_BUCKET').'/files/imagen/';
+                    $image_link = 'https://s3.'.env('S3_REGION').'.amazonaws.com/'.env('S3_BUCKET').'/files/images/';
                     // Obtenemos el campo file definido en el formulario
-                    $file = $request->file('imagen');            
-                    // Creamos un nombre para nuestro thumnail
-                    $name = 'imagen'.str_random(20).'_service_'.$service->id.'.'.$file->getClientOriginalExtension();         
+                    $file = $request->file('image');            
+                    // Creamos un nombre para nuestro imagen
+                    $name = 'image'.str_random(20).'_service_'.$service->id.'.'.$file->getClientOriginalExtension();         
                     // Movemos el archivo a la caperta temporal
-                    $file->move('files/imagen/',$name);
-                    //
-                    $old_thumbnail = str_replace($image_link,'',$service->imagen);
-                    //
-                    $s3->deleteObject([
-                        'Bucket' => env('S3_BUCKET'),
-                        'Key'    => 'files/imagen/'.$old_thumbnail
-                    ]);
-                    //
+                    $file->move('files/images/',$name);
+                    $newruta=new Imagen();
+                    $old_image = str_replace($image_link,'',$newruta->ruta); 
                     $s3->putObject([
-                        'Bucket' => env('S3_BUCKET'),
-                        'Key'    => 'files/imagen/'.$name,
-                        'Body'   => fopen('files/imagen/'.$name, 'r'),
-                        'ACL'    => 'public-read'
-                    ]);
-                    //
+                    'Bucket' => env('S3_BUCKET'),
+                    'Key'    => 'files/images/'.$name,
+                    'Body'   => fopen('files/images/'.$name,'r'),
+                    'ACL'    => 'public-read'
+                    ]); 
+                     unlink('files/images/'.$name);
+                    $newruta->service_id=$service->id;
+                    $newruta->ruta=$image_link.$name;
+                    $newruta->save();
                     // Borramos el arrchivo de la carpeta temporal
-                    unlink('files/imagen/'.$name);
+                   
                     // Actualizamos la fila thumbnail del usuario respectivo
-                    DB::table('service')->where('id', $service->id )->update(['ruta' => $image_link.$name,
-                    'description'=>$request->input("description")]);
+                    /*DB::table('imagen')->where('service_id', $service->id )->update(['ruta' => $image_link.$name,
+                    'description'=>$request->input("description")]);*/
 
                     return json_encode('Update completed!', true);
                 }
