@@ -88,12 +88,12 @@ class ControllerService extends Controller
             if ($validator->fails()) {
                 return response()->json($validator->errors()->all());
             }else{
-                 $type=Type::select()->where('id_type',$request->input("type_id"))->first();        
-                 $service=Service::select()->where('id',$request->input("service_id"))->first();
-               
+                 $type=Type::select()->where('id_type',$request->input("type_id"))->where('category_id',1)->first();        
                  if(count($type)>0){
+                      $service=Service::select()->where('id',$request->input("service_id"))->first();
+                      $type_english=Type::select()->where('code',$type->code)->first(); 
                          if(count($service)>0){
-                              $val= DB::select('select * from service_type where service_id=? and type_id=?', [$service->id,$type->id_type]);
+                              $val= DB::select('select * from service_type where service_id=? and type_id=?',[$service->id,$type->id_type]);
                                 if(count($val)==0){
                                     $typenum=intval($type->category_id);
                                     $servicenum=intval($service->category_id);
@@ -101,9 +101,13 @@ class ControllerService extends Controller
                                       $typeservice=new Service_Type;
                                       $typeservice->service_id=$service->id;
                                       $typeservice->type_id=$type->id_type;
-                                      if($typeservice->save()){
-                                           return response()->json('Add Step 2');  
-                                       }
+                                      $typeservice->save();
+                                      $typeservice=new Service_Type;
+                                      $typeservice->service_id=$service->id;
+                                      $typeservice->type_id=$type_english->code;
+                                      $typeservice->save();
+                                      return response()->json("Add Step1");  
+                                       
                                      }else{
                                         return response()->json('Does not belong to category'); 
                                     }
@@ -239,17 +243,18 @@ class ControllerService extends Controller
 
     //Agrega(step5) a un service amenities nota:solo category 1 y 2 tienen amenities 
     public function AddNewStep5(Request $request){
-        $rule=['codigo'=>'required|numeric|min:1',
-                 'id'=>'required|numeric|min:1'
+        $rule=['amenitie_id'=>'required|numeric|min:1',
+                 'service_id'=>'required|numeric|min:1'
             ];
             $validator=Validator::make($request->all(),$rule);
             if ($validator->fails()) {
                 return response()->json($validator->errors()->all());
             }else{
-                 $amenite=Amenite::where('category_id','=',1)->where('codigo',$request->input("codigo"))->first();        
+                 $amenite=Amenite::where('category_id','=',1)->where('codigo',$request->input("amenitie_id"))->first();       
                  if(count($amenite)>0){
-                 $service=Service::select()->where('id',$request->input("id"))->first();
-                 $val= DB::select('select * from service_amenites where service_id = ? and amenite_id=?', [$request->input("id"),$request->input("codigo")]);
+                 $amenite_english=Amenite::where('code',$amenite->code)->first();      
+                 $service=Service::select()->where('id',$request->input("service_id"))->first();
+                 $val= DB::select('select * from service_amenites where service_id = ? and amenite_id=?', [$request->input("id"),$request->input("amenitie_id")]);
                  if(count($val)==0){
                     if(count($service)>0){
                         $amenitenum=intval($amenite->category_id);
@@ -258,6 +263,10 @@ class ControllerService extends Controller
                             $newserviceame=new Service_Amenite;
                             $newserviceame->service_id=$service->id;
                             $newserviceame->amenite_id=$amenite->codigo;
+                            $newserviceame->save();
+                            $newserviceame=new Service_Amenite;
+                            $newserviceame->service_id=$service->id;
+                            $newserviceame->amenite_id=$amenite_english->code;
                             $newserviceame->save();
                             return response()->json('Add Step 5');  
                        }else{
@@ -485,31 +494,7 @@ class ControllerService extends Controller
     }
    }
 
-   //Agregar accommodation
-    public function AddAccommodation(Request $request){
-        $rule=[  'service_id'=>'required|numeric|min:1',
-              'accommodation_id'=>'required|numeric|min:1'
-            ];
-            $validator=Validator::make($request->all(),$rule);
-            if ($validator->fails()) {
-                return response()->json($validator->errors()->all());
-            }else{
-                $service=Service::where('id','=',$request->input("service_id"))->first();
-                $accommodation=Accommodation::where('id','=',$request->input("accommodation_id"))->first();
-                if(count($service)>0){
-                    if(count($accommodation)>0){
-                     DB::table('service')->where('id',$service->id)->update(
-                            ['accommodation_id'=>$request->input("accommodation_id")
-                            ]);
-                         return response()->json('Add Accommodation'); 
-                    }else{
-                        return response()->json('Accommodation not found');
-                    }    
-                }else{
-                    return response()->json('Service not found');
-                }        
-            }
-    }
+   
     
     //Eliminar Service
     public function DeleteService(Request $request){
@@ -531,28 +516,7 @@ class ControllerService extends Controller
               }        
     }
        
-    //Muestra todos los type-service
-    public function GetTypeService(request $request){
-          $rule=[
-           'user_id' => 'required|numeric|min:1'
-      ];
-      $validator=Validator::make($request->all(),$rule);
-      if ($validator->fails()) {
-        return response()->json($validator->errors()->all());
-        }else{
-             $getrent = DB::table('service')->join('service_type','service.id', '=','service_type.service_id')
-               ->join('type','type.id_type','=','service_type.type_id')
-               ->select('service.title','service.date','type.name as name')
-               ->where('service.user_id','=',$request->input("user_id"))
-               ->get();
-               if(count($getrent)>0){
-                      return response()->json($getrent);
-               }
-               else{
-                    return response()->json("Type not fount");
-               }
-        }
-    } 
+   
       
     //Elimina un service-type
     public function DeleteTypeService(request $request){
@@ -599,37 +563,7 @@ class ControllerService extends Controller
             }
     }   
 
-    //Agrega a un service un dia de la semana ->tabla (service_calender)
-    public function AddServiceCalendar(request $request){
-          $rule=[
-                 'id'=>'required|numeric|min:1',
-                 'codigo_id'=>'required|numeric|min:1|max:8' 
-            ];
-            $validator=Validator::make($request->all(),$rule);
-            if ($validator->fails()) {
-                return response()->json($validator->errors()->all());
-            }else{
-                 $calendar=Calendar::select()->where('codigo_id',$request->input("codigo_id"))->first();        
-                 $service=Service::select()->where('id',$request->input("id"))->first();
-                 $val= DB::select('select * from service_calendar where service_id = ? and calendar_id=?', [$request->input("id"),$request->input("codigo_id")]);
-                 
-                 if(count($service)>0){
-                     if(count($val)==0){
-                       $newcalendar=new Service_Calendar;
-                       $newcalendar->service_id=$service->id;
-                       $newcalendar->calendar_id=$calendar->codigo_id;
-                       $newcalendar->save();
-                       return response()->json('Add date to service');  
-                     }else{
-                         return response()->json('The amenite was already selected'); 
-                     }
-                    }else{
-                        return response()->json('Service not found'); 
-                    }
-
-                }
-    }
-
+    
     //Muestra un service-Calendar en especifico
     public function ReadCalendarService(Request $request){
       $rule=[

@@ -266,7 +266,7 @@ $app->get('/category/space/get-type','ControllerCombobox@TypeGet');
 $app->get('/rules/space/house','ControllerCombobox@RulesHouse');
 //Muestra la Category
 $app->get('/category/get-category','ControllerCombobox@GetCategory');
-//Muestra todos los GetAmenities
+//Muestra todos los GetAmenities--->18/4/2017
 $app->get('/amenitie/get-amenitie','ControllerCombobox@GetAmenities');
 //Muestra todos los dias de la semana
 $app->get('/calendar/get-calendar','ControllerCombobox@GetCalendar');
@@ -285,6 +285,7 @@ $app->get('/country/get-country','ControllerCombobox@GetCountry');
 $app->post('/city/get-city','ControllerCombobox@GetCity');
 //Muestra todas los estados
 $app->post('/state/get-state','ControllerCombobox@GetState');
+
 
 
 $app->get('/make_token',function(){

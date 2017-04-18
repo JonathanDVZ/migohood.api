@@ -21,10 +21,6 @@ class ControllerCombobox extends Controller
          return Category::all();
     }
 
-    public function GetAmenities(){
-         return Amenite::all();
-    }
-
    public function RulesHouse(){
          return House_Rules::all();
     }
@@ -157,6 +153,15 @@ public function GetBedBedroomData(Request $request){
                 return response()->json('Country not found');
              }
         }
+    }
+
+       public function GetAmenities(){
+          $amenitie = DB::table('amenities')->select('codigo','name')->where('languaje','=','ES')->where('category_id','=',1)->get();
+      if(count($amenitie)>0){
+            return response()->json($amenitie);
+      }else{ 
+            return response()->json("Country not found");
+      }
     }
 
   
