@@ -155,7 +155,7 @@ public function GetBedBedroomData(Request $request){
         }
     }
     
-    public function GetAmenities(){
+    public function GetSpaceAmenities(){
       $rule=[
            'languaje' => 'required'
       ];
