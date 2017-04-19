@@ -48,7 +48,7 @@ class ControllerUser extends Controller
                        $newUser->address=strtolower($request->input('address'));
                     // $newUser->city_id=$request->input('city_id');
                        if( $newUser->save()){
-                          return response()->json("User Create"); 
+                          return response()->json($newUser); 
                        }
                     }
                     else{
@@ -549,7 +549,7 @@ public function UserOauth(Request $request){
                         $newuser->remember_token=str_random(100);
                         $newuser->confirm_token=str_random(100);
                         $newuser->save();
-                        return response()->json(['name'=>$newuser->name,'email'=>$newuser->email,'thumbnail'=>$newuser->thumbnail,'confirm_token'=>$newuser->confirm_token,'city'=>$newuser->city_id,'id'=>$newuser->id]); 
+                        return response()->json($newuser); 
                 }catch(Exception $e){
                     return response()->json($e);
                 }    
