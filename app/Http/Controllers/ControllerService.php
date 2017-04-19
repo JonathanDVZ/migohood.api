@@ -253,7 +253,7 @@ class ControllerService extends Controller
         }else{
             // Selecciono los amenites que posean el código recibido
             $amenites=Amenite::select('id')->where('category_id','=',1)->where('code',$request->input("amenitie_code"))->get();     
-            if(count($amenite)>0){    
+            if(count($amenites)>0){    
                 // Selecciono el service que posea el id recibido
                 $service=Service::select()->where('id',$request->input("service_id"))->first();
                 if(count($service)>0){
