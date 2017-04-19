@@ -154,13 +154,21 @@ public function GetBedBedroomData(Request $request){
              }
         }
     }
-
-       public function GetAmenities(){
-          $amenitie = DB::table('amenities')->select('id','name')->where('languaje','=','ES')->where('category_id','=',1)->get();
-      if(count($amenitie)>0){
-            return response()->json($amenitie);
-      }else{ 
-            return response()->json("Country not found");
+    
+    public function GetAmenities(){
+      $rule=[
+           'languaje' => 'required'
+      ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+      }else{
+            $amenitie = DB::table('amenities')->select('code','name')->where('languaje','=',$request->input("languaje"))->where('category_id','=',1)->get();
+            if(count($amenitie)>0){
+                  return response()->json($amenitie);
+            }else{ 
+                  return response()->json("Country not found");
+            }
       }
     }
 
