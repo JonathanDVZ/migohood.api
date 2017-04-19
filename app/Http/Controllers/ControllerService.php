@@ -18,6 +18,7 @@ use App\Models\SpecialDate;
 use App\Models\Service_Cancellation;
 use App\Models\Service_Amenite;
 use App\Models\Service_Type;
+use App\Models\Imagen;
 use App\Models\Type;
 use App\Models\Payment;
 use App\Models\Service_Calendar;
@@ -28,6 +29,9 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Contracts\Encryption\DecryptException;
 use	Illuminate\Encryption\Encrypter;
 use validator;
+use Aws\S3\S3Client;
+use Aws\Exception\AwsException;
+use Aws\S3\Exception\S3Exception;
 use DateTime;
 use DB;
 class ControllerService extends Controller
@@ -38,12 +42,12 @@ class ControllerService extends Controller
     return Service::all();   
     }
    
-    //Add New Step 
+    //Agreg New Step 1 
     public function AddNewStep(Request $request){
              //Regla de validacion       
               $rule=[
                     'user_id'=>'required|numeric|min:1',
-                    'type_id'=>'required|numeric|min:1',
+                    'accommodation_id'=>'required|numeric|min:1',
              ];
              $validator=Validator::make($request->all(),$rule);
              if ($validator->fails()) {
@@ -52,27 +56,24 @@ class ControllerService extends Controller
              else{
                  //Busca el usuario
                  $user = User::select()->where('id',$request->input("user_id"))->first(); 
-                 $type = Type::where('category_id','=',1)->where('id_type',$request->input("type_id"))->first(); 
+                 $accommodation = Accommodation::where('id',$request->input("accommodation_id"))->first(); 
                  if(count($user)>0){///Verifica el usuario
-                 if(count($type)>0){
+                 if(count($accommodation)>0){
                        $newservice=new Service();
                        $dt = new DateTime();
                        $newservice->user_id=$user->id;
                        $newservice->date=$dt->format('Y-m-d (H:m:s)');
                        $newservice->category_id=1;
+                       $newservice->accommodation_id=$request->input("accommodation_id");
                        $newservice->save();
-                       $newtypeservice=new Service_Type;
-                       $newtypeservice->service_id=$newservice->id;
-                       $newtypeservice->type_id=$type->id_type;
-                       $newtypeservice->save();
-                       if($newservice->save() and $newtypeservice->save()){
+                       if($newservice->save()){
                               return response()->json($newservice);
-                       }else{
-                         return response()->json('Type not found');  
-                   }
+                       }
                  }else{
-                    return response()->json('User not found');                     
+                        return response()->json('Accommodation not found');                 
                  }  
+                }else{
+                    return response()->json('User not found');  
                 }
             } 
     }
@@ -87,12 +88,12 @@ class ControllerService extends Controller
             if ($validator->fails()) {
                 return response()->json($validator->errors()->all());
             }else{
-                 $type=Type::select()->where('id_type',$request->input("type_id"))->first();        
-                 $service=Service::select()->where('id',$request->input("service_id"))->first();
-               
+                 $type=Type::select()->where('id_type',$request->input("type_id"))->where('category_id',1)->first();        
                  if(count($type)>0){
+                      $service=Service::select()->where('id',$request->input("service_id"))->first();
+                      $type_english=Type::select()->where('code',$type->code)->first(); 
                          if(count($service)>0){
-                              $val= DB::select('select * from service_type where service_id=? and type_id=?', [$service->id,$type->id_type]);
+                              $val= DB::select('select * from service_type where service_id=? and type_id=?',[$service->id,$type->id_type]);
                                 if(count($val)==0){
                                     $typenum=intval($type->category_id);
                                     $servicenum=intval($service->category_id);
@@ -100,9 +101,13 @@ class ControllerService extends Controller
                                       $typeservice=new Service_Type;
                                       $typeservice->service_id=$service->id;
                                       $typeservice->type_id=$type->id_type;
-                                      if($typeservice->save()){
-                                           return response()->json($typeservice);  
-                                       }
+                                      $typeservice->save();
+                                      $typeservice=new Service_Type;
+                                      $typeservice->service_id=$service->id;
+                                      $typeservice->type_id=$type_english->code;
+                                      $typeservice->save();
+                                      return response()->json("Add Step1");  
+                                       
                                      }else{
                                         return response()->json('Does not belong to category'); 
                                     }
@@ -238,54 +243,50 @@ class ControllerService extends Controller
 
     //Agrega(step5) a un service amenities nota:solo category 1 y 2 tienen amenities 
     public function AddNewStep5(Request $request){
-        $rule=['codigo'=>'required|numeric|min:1',
-                 'id'=>'required|numeric|min:1'
-            ];
-            $validator=Validator::make($request->all(),$rule);
-            if ($validator->fails()) {
-                return response()->json($validator->errors()->all());
-            }else{
-                 $amenite=Amenite::where('category_id','=',1)->where('codigo',$request->input("codigo"))->first();        
-                 if(count($amenite)>0){
-                 $service=Service::select()->where('id',$request->input("id"))->first();
-                 $val= DB::select('select * from service_amenites where service_id = ? and amenite_id=?', [$request->input("id"),$request->input("codigo")]);
-                 if(count($val)==0){
-                    if(count($service)>0){
-                        $amenitenum=intval($amenite->category_id);
-                        $servicenum=intval($service->category_id);
-                        if (strcmp($amenitenum,$servicenum)==0){
-                            $newserviceame=new Service_Amenite;
-                            $newserviceame->service_id=$service->id;
-                            $newserviceame->amenite_id=$amenite->codigo;
-                            $newserviceame->save();
-                            return response()->json('Add Step 5');  
-                       }else{
-                           return response()->json('Does not belong to category'); 
-                       }
-                  }else{
-                    return response()->json('Service not found'); 
-                }}else{
-                    if(count($val)==1){
-                   return response()->json('The amenite was already selected'); 
+        $rule=[
+            'amenitie_code'=>'required|numeric|min:1',
+            'service_id'=>'required|numeric|min:1'
+        ];
+        $validator=Validator::make($request->all(),$rule);
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+        }else{
+            // Selecciono los amenites que posean el código recibido
+            $amenites=Amenite::select('id')->where('category_id','=',1)->where('code',$request->input("amenitie_code"))->get();     
+            if(count($amenites)>0){    
+                // Selecciono el service que posea el id recibido
+                $service=Service::select()->where('id',$request->input("service_id"))->first();
+                if(count($service)>0){
+                    // Recorro el array amenities e inserto cada uno en la tabla interseccion Service_Amenite junto con el service correspondiente
+                    foreach ($amenites as $amenite){
+                        $newserviceame=new Service_Amenite;
+                        $newserviceame->service_id=$service->id;
+                        $newserviceame->amenite_id=$amenite->id;
+                        $newserviceame->save();
+                    }
+                    return response()->json('Add Step 5');
                 }
-             }
-             }else{
-                  return response()->json('Amenite not found'); 
-             }
-         } 
+                else{
+                    return response()->json('Service not found'); 
+                }
+            }
+            else{
+                return response()->json('Amenite not found'); 
+            }
+        } 
     }
  
     //Agrega step6 movil
     public function AddNewStep6(Request $request){
                 $rule=[  'service_id'=>'required|numeric|min:1',
-                'politic_payment'=>'required|numeric:1|min:1|max:3'
+                'politic_payment_id'=>'required|numeric:1|min:1|max:3'
             ];
             $validator=Validator::make($request->all(),$rule);
             if ($validator->fails()) {
                 return response()->json($validator->errors()->all());
             }else{
                 $service=Service::where('id',$request->input("service_id"))->first();
-                $payment=Payment::where('id',$request->input("politic_payment"))->first();
+                $payment=Payment::where('id',$request->input("politic_payment_id"))->first();
                 if(count($service)>0 and count($payment)>0){      
                       $newhistory=new Price_History;
                       $dt = new DateTime();
@@ -295,7 +296,7 @@ class ControllerService extends Controller
                       $newhistory->currency_id=$request->input("currency_id");
                       $newhistory->duration_id=$request->input("duration_id");
                       $newhistory->save();
-                      $service->payment_id=$request->input("politic_payment");
+                      $service->payment_id=$request->input("politic_payment_id");
                       $service->save() ;
                       return response()->json($newhistory);
                    }else{
@@ -305,6 +306,7 @@ class ControllerService extends Controller
 
         
     }
+
     //Agrega titulo
     public function AddNewTitle(Request $request){
         $rule=[  'service_id'=>'required|numeric|min:1',
@@ -483,31 +485,7 @@ class ControllerService extends Controller
     }
    }
 
-   //Agregar accommodation
-    public function AddAccommodation(Request $request){
-        $rule=[  'service_id'=>'required|numeric|min:1',
-              'accommodation_id'=>'required|numeric|min:1'
-            ];
-            $validator=Validator::make($request->all(),$rule);
-            if ($validator->fails()) {
-                return response()->json($validator->errors()->all());
-            }else{
-                $service=Service::where('id','=',$request->input("service_id"))->first();
-                $accommodation=Accommodation::where('id','=',$request->input("accommodation_id"))->first();
-                if(count($service)>0){
-                    if(count($accommodation)>0){
-                     DB::table('service')->where('id',$service->id)->update(
-                            ['accommodation_id'=>$request->input("accommodation_id")
-                            ]);
-                         return response()->json('Add Accommodation'); 
-                    }else{
-                        return response()->json('Accommodation not found');
-                    }    
-                }else{
-                    return response()->json('Service not found');
-                }        
-            }
-    }
+   
     
     //Eliminar Service
     public function DeleteService(Request $request){
@@ -529,28 +507,7 @@ class ControllerService extends Controller
               }        
     }
        
-    //Muestra todos los type-service
-    public function GetTypeService(request $request){
-          $rule=[
-           'user_id' => 'required|numeric|min:1'
-      ];
-      $validator=Validator::make($request->all(),$rule);
-      if ($validator->fails()) {
-        return response()->json($validator->errors()->all());
-        }else{
-             $getrent = DB::table('service')->join('service_type','service.id', '=','service_type.service_id')
-               ->join('type','type.id_type','=','service_type.type_id')
-               ->select('service.title','service.date','type.name as name')
-               ->where('service.user_id','=',$request->input("user_id"))
-               ->get();
-               if(count($getrent)>0){
-                      return response()->json($getrent);
-               }
-               else{
-                    return response()->json("Type not fount");
-               }
-        }
-    } 
+   
       
     //Elimina un service-type
     public function DeleteTypeService(request $request){
@@ -597,37 +554,7 @@ class ControllerService extends Controller
             }
     }   
 
-    //Agrega a un service un dia de la semana ->tabla (service_calender)
-    public function AddServiceCalendar(request $request){
-          $rule=[
-                 'id'=>'required|numeric|min:1',
-                 'codigo_id'=>'required|numeric|min:1|max:8' 
-            ];
-            $validator=Validator::make($request->all(),$rule);
-            if ($validator->fails()) {
-                return response()->json($validator->errors()->all());
-            }else{
-                 $calendar=Calendar::select()->where('codigo_id',$request->input("codigo_id"))->first();        
-                 $service=Service::select()->where('id',$request->input("id"))->first();
-                 $val= DB::select('select * from service_calendar where service_id = ? and calendar_id=?', [$request->input("id"),$request->input("codigo_id")]);
-                 
-                 if(count($service)>0){
-                     if(count($val)==0){
-                       $newcalendar=new Service_Calendar;
-                       $newcalendar->service_id=$service->id;
-                       $newcalendar->calendar_id=$calendar->codigo_id;
-                       $newcalendar->save();
-                       return response()->json('Add date to service');  
-                     }else{
-                         return response()->json('The amenite was already selected'); 
-                     }
-                    }else{
-                        return response()->json('Service not found'); 
-                    }
-
-                }
-    }
-
+    
     //Muestra un service-Calendar en especifico
     public function ReadCalendarService(Request $request){
       $rule=[
@@ -688,7 +615,7 @@ class ControllerService extends Controller
         return response()->json($validator->errors()->all());
         }else{
                $getrent = DB::table('service')->join('service_amenites','service.id', '=','service_amenites.service_id')
-               ->join('amenities','service_amenites.amenite_id','=','amenities.codigo')
+               ->join('amenities','service_amenites.amenite_id','=','amenities.id')
                ->select('service.title','service.date','amenities.name as amenities')
                ->where('service.user_id','=',$request->input("user_id"))
                ->get();
@@ -740,8 +667,6 @@ class ControllerService extends Controller
     }  
 
    //Agregar Service(space-step1)-Web
-
-     
     public function AddNewSpaceStep1(Request $request){
         $rule=[
             // Comente esto, ya que aun no poseo ningun id service
@@ -827,9 +752,9 @@ class ControllerService extends Controller
                     *   Envio como respuesta el servicio junto con el numero de habitaciones,
                     *   ya que para la vista siguiente son necesarios dichos datos
                     */
-                    //return response()->json("Add Space Bedroom"); 
-                    $servicespace->num_bedrooms = $request->input("num_bedroom");
-                    return response()->json($servicespace);  
+                    return response()->json("Add Space Bedroom"); 
+                    //$servicespace->num_bedrooms = $request->input("num_bedroom");
+                    //return response()->json($servicespace);  
                  } catch(Exception $e) {
                      return response()->json($e); 
                  }  
@@ -1059,7 +984,6 @@ class ControllerService extends Controller
             }
     }
    
-    //Agregar Service(space-step7)-Web
    public function AddNewSpaceStep7Description(Request $request){
           $rule=[
            'service_id' => 'required|numeric|min:1',
@@ -1123,7 +1047,6 @@ class ControllerService extends Controller
         }
    }
 
- //Agregar Service(space-step8)-Web
    public function AddNewSpaceStep8Rules(Request $request){
           $rule=[
            'service_id' => 'required|numeric|min:1',
@@ -1206,6 +1129,21 @@ class ControllerService extends Controller
                  $newrequirement->rules_id=12;
                  $newrequirement->check=$request->input("guest_recomendation");
                  $newrequirement->save();
+                 $newrules=new Service_Rules; 
+                 $newrules->service_id=$service->id;
+                 $newrules->rules_id=13;
+                 $newrules->description=$request->input("Desc_Instructions");
+                 $newrules->save();
+                 $newrules=new Service_Rules; 
+                 $newrules->service_id=$service->id;
+                 $newrules->rules_id=14;
+                 $newrules->description=$request->input("Desc_Name_Network");
+                 $newrules->save();
+                 $newrules=new Service_Rules; 
+                 $newrules->service_id=$service->id;
+                 $newrules->rules_id=15;
+                 $newrules->description=Crypt::encrypt($request->input("Password_Wifi"));
+                 $newrules->save();
                  return response()->json('Add Step-8'); 
                 }catch(Exception $e){
                        return response()->json($e); 
@@ -1216,7 +1154,6 @@ class ControllerService extends Controller
        }
    }
 
- //Agregar Service(space-step9)-Web
    public function AddNewSpaceStep9(Request $request){
         $rule=[
            'service_id' => 'required|numeric|min:1',
@@ -1245,22 +1182,25 @@ class ControllerService extends Controller
                     $name = 'image'.str_random(20).'_service_'.$service->id.'.'.$file->getClientOriginalExtension();         
                     // Movemos el archivo a la caperta temporal
                     $file->move('files/images/',$name);
-                   
-                    //
+                    $newruta=new Imagen();
+                    $old_image = str_replace($image_link,'',$newruta->ruta); 
                     $s3->putObject([
-                        'Bucket' => env('S3_BUCKET'),
-                        'Key'    => 'files/images/'.$name,
-                        'Body'   => fopen('files/images/'.$name, 'r'),
-                        'ACL'    => 'public-read'
-                    ]);
-                    //
+                    'Bucket' => env('S3_BUCKET'),
+                    'Key'    => 'files/images/'.$name,
+                    'Body'   => fopen('files/images/'.$name,'r'),
+                    'ACL'    => 'public-read'
+                    ]); 
+                     unlink('files/images/'.$name);
+                    $newruta->service_id=$service->id;
+                    $newruta->ruta=$image_link.$name;
+                    $newruta->save();
                     // Borramos el arrchivo de la carpeta temporal
-                    unlink('files/images/'.$name);
-                    // Actualizamos la fila imagen del usuario respectivo
-                    DB::table('service')->where('id', $service->id )->update(['ruta' => $image_link.$name,
-                    'description'=>$request->input("description")]);
+                   
+                    // Actualizamos la fila thumbnail del usuario respectivo
+                    /*DB::table('imagen')->where('service_id', $service->id )->update(['ruta' => $image_link.$name,
+                    'description'=>$request->input("description")]);*/
 
-                       return response()->json('add Complete');
+                    return json_encode('Update completed!', true);
                 }
                 catch (\Exception $e){
                     return response()->json($e->getMessage());
@@ -1268,7 +1208,11 @@ class ControllerService extends Controller
             }else{
               return response()->json('Service not found'); 
             }
+
         }
-  }
+
+
+   }
 
 }
+
