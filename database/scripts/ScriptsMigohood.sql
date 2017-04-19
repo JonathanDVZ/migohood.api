@@ -188,13 +188,13 @@ ENGINE = InnoDB;
 -- Table `Migohood`.`amenities`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `Migohood`.`amenities` (
-  `codigo` INT NOT NULL AUTO_INCREMENT,
+  `id` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NOT NULL,
   `category_id` INT NOT NULL,
   `type_amenities_id` INT NOT NULL,
   `languaje` VARCHAR(45) NOT NULL,
   `code` INT NULL,
-  PRIMARY KEY (`codigo`),
+  PRIMARY KEY (`id`),
   INDEX `fk_AMENITES_CATEGORY1_idx` (`category_id` ASC),
   INDEX `fk_amenities_type_amenities1_idx` (`type_amenities_id` ASC),
   CONSTRAINT `fk_AMENITES_CATEGORY1`
@@ -264,7 +264,7 @@ CREATE TABLE IF NOT EXISTS `Migohood`.`service_amenites` (
     ON UPDATE CASCADE,
   CONSTRAINT `fk_SERVICE_has_AMENITES_AMENITES1`
     FOREIGN KEY (`amenite_id`)
-    REFERENCES `Migohood`.`amenities` (`codigo`)
+    REFERENCES `Migohood`.`amenities` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB;

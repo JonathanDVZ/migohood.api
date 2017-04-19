@@ -156,7 +156,7 @@ public function GetBedBedroomData(Request $request){
     }
 
        public function GetAmenities(){
-          $amenitie = DB::table('amenities')->select('codigo','name')->where('languaje','=','ES')->where('category_id','=',1)->get();
+          $amenitie = DB::table('amenities')->select('id','name')->where('languaje','=','ES')->where('category_id','=',1)->get();
       if(count($amenitie)>0){
             return response()->json($amenitie);
       }else{ 

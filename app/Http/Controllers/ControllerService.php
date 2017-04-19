@@ -250,7 +250,7 @@ class ControllerService extends Controller
             if ($validator->fails()) {
                 return response()->json($validator->errors()->all());
             }else{
-                 $amenite=Amenite::where('category_id','=',1)->where('codigo',$request->input("amenitie_id"))->first();       
+                 $amenite=Amenite::where('category_id','=',1)->where('id',$request->input("amenitie_id"))->first();       
                  if(count($amenite)>0){
                  $amenite_english=Amenite::where('code',$amenite->code)->first();      
                  $service=Service::select()->where('id',$request->input("service_id"))->first();
@@ -262,7 +262,7 @@ class ControllerService extends Controller
                         if (strcmp($amenitenum,$servicenum)==0){
                             $newserviceame=new Service_Amenite;
                             $newserviceame->service_id=$service->id;
-                            $newserviceame->amenite_id=$amenite->codigo;
+                            $newserviceame->amenite_id=$amenite->id;
                             $newserviceame->save();
                             $newserviceame=new Service_Amenite;
                             $newserviceame->service_id=$service->id;
@@ -288,14 +288,14 @@ class ControllerService extends Controller
     //Agrega step6 movil
     public function AddNewStep6(Request $request){
                 $rule=[  'service_id'=>'required|numeric|min:1',
-                'politic_payment'=>'required|numeric:1|min:1|max:3'
+                'politic_payment_id'=>'required|numeric:1|min:1|max:3'
             ];
             $validator=Validator::make($request->all(),$rule);
             if ($validator->fails()) {
                 return response()->json($validator->errors()->all());
             }else{
                 $service=Service::where('id',$request->input("service_id"))->first();
-                $payment=Payment::where('id',$request->input("politic_payment"))->first();
+                $payment=Payment::where('id',$request->input("politic_payment_id"))->first();
                 if(count($service)>0 and count($payment)>0){      
                       $newhistory=new Price_History;
                       $dt = new DateTime();
@@ -305,7 +305,7 @@ class ControllerService extends Controller
                       $newhistory->currency_id=$request->input("currency_id");
                       $newhistory->duration_id=$request->input("duration_id");
                       $newhistory->save();
-                      $service->payment_id=$request->input("politic_payment");
+                      $service->payment_id=$request->input("politic_payment_id");
                       $service->save() ;
                       return response()->json($newhistory);
                    }else{
@@ -624,7 +624,7 @@ class ControllerService extends Controller
         return response()->json($validator->errors()->all());
         }else{
                $getrent = DB::table('service')->join('service_amenites','service.id', '=','service_amenites.service_id')
-               ->join('amenities','service_amenites.amenite_id','=','amenities.codigo')
+               ->join('amenities','service_amenites.amenite_id','=','amenities.id')
                ->select('service.title','service.date','amenities.name as amenities')
                ->where('service.user_id','=',$request->input("user_id"))
                ->get();

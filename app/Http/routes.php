@@ -267,7 +267,7 @@ $app->get('/rules/space/house','ControllerCombobox@RulesHouse');
 //Muestra la Category
 $app->get('/category/get-category','ControllerCombobox@GetCategory');
 //Muestra todos los GetAmenities--->18/4/2017
-$app->get('/amenitie/get-amenitie','ControllerCombobox@GetAmenities');
+$app->get('/amenities/get-space-amenities','ControllerCombobox@GetAmenities');
 //Muestra todos los dias de la semana
 $app->get('/calendar/get-calendar','ControllerCombobox@GetCalendar');
 //Muestra todos los tipos
