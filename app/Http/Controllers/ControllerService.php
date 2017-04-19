@@ -243,46 +243,37 @@ class ControllerService extends Controller
 
     //Agrega(step5) a un service amenities nota:solo category 1 y 2 tienen amenities 
     public function AddNewStep5(Request $request){
-        $rule=['amenitie_id'=>'required|numeric|min:1',
-                 'service_id'=>'required|numeric|min:1'
-            ];
-            $validator=Validator::make($request->all(),$rule);
-            if ($validator->fails()) {
-                return response()->json($validator->errors()->all());
-            }else{
-                 $amenite=Amenite::where('category_id','=',1)->where('id',$request->input("amenitie_id"))->first();       
-                 if(count($amenite)>0){
-                 $amenite_english=Amenite::where('code',$amenite->code)->first();      
-                 $service=Service::select()->where('id',$request->input("service_id"))->first();
-                 $val= DB::select('select * from service_amenites where service_id = ? and amenite_id=?', [$request->input("id"),$request->input("amenitie_id")]);
-                 if(count($val)==0){
-                    if(count($service)>0){
-                        $amenitenum=intval($amenite->category_id);
-                        $servicenum=intval($service->category_id);
-                        if (strcmp($amenitenum,$servicenum)==0){
-                            $newserviceame=new Service_Amenite;
-                            $newserviceame->service_id=$service->id;
-                            $newserviceame->amenite_id=$amenite->id;
-                            $newserviceame->save();
-                            $newserviceame=new Service_Amenite;
-                            $newserviceame->service_id=$service->id;
-                            $newserviceame->amenite_id=$amenite_english->code;
-                            $newserviceame->save();
-                            return response()->json('Add Step 5');  
-                       }else{
-                           return response()->json('Does not belong to category'); 
-                       }
-                  }else{
-                    return response()->json('Service not found'); 
-                }}else{
-                    if(count($val)==1){
-                   return response()->json('The amenite was already selected'); 
+        $rule=[
+            'amenitie_code'=>'required|numeric|min:1',
+            'service_id'=>'required|numeric|min:1'
+        ];
+        $validator=Validator::make($request->all(),$rule);
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+        }else{
+            // Selecciono los amenites que posean el código recibido
+            $amenites=Amenite::select('id')->where('category_id','=',1)->where('code',$request->input("amenitie_code"))->get();     
+            if(count($amenite)>0){    
+                // Selecciono el service que posea el id recibido
+                $service=Service::select()->where('id',$request->input("service_id"))->first();
+                if(count($service)>0){
+                    // Recorro el array amenities e inserto cada uno en la tabla interseccion Service_Amenite junto con el service correspondiente
+                    foreach ($amenites as $amenite){
+                        $newserviceame=new Service_Amenite;
+                        $newserviceame->service_id=$service->id;
+                        $newserviceame->amenite_id=$amenite->id;
+                        $newserviceame->save();
+                    }
+                    return response()->json('Add Step 5');
                 }
-             }
-             }else{
-                  return response()->json('Amenite not found'); 
-             }
-         } 
+                else{
+                    return response()->json('Service not found'); 
+                }
+            }
+            else{
+                return response()->json('Amenite not found'); 
+            }
+        } 
     }
  
     //Agrega step6 movil
