@@ -77,13 +77,13 @@ CREATE TABLE IF NOT EXISTS `Migohood`.`user` (
   `confirm_token` VARCHAR(100) NULL,
   `address` VARCHAR(80) NULL,
   `city_id` INT NULL,
-  UNIQUE INDEX `password_UNIQUE` (`password` ASC),
   PRIMARY KEY (`id`),
   INDEX `fk_USER_CITY1_idx` (`city_id` ASC),
+  UNIQUE INDEX `email_UNIQUE` (`email` ASC),
   CONSTRAINT `fk_USER_CITY1`
     FOREIGN KEY (`city_id`)
     REFERENCES `Migohood`.`city` (`id`)
-    ON DELETE NO ACTION
+    ON DELETE SET NULL
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
