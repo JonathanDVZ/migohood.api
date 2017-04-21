@@ -89,25 +89,12 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `Migohood`.`category`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `Migohood`.`category` (
-  `id` INT NOT NULL AUTO_INCREMENT,
-  `name` VARCHAR(45) NOT NULL,
-  `code` INT NULL,
-  `languaje` VARCHAR(45) NOT NULL,
-  PRIMARY KEY (`id`))
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
 -- Table `Migohood`.`service`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `Migohood`.`service` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `user_id` INT NOT NULL,
   `date` DATE NULL,
-  `category_id` INT NOT NULL,
   `zipcode` INT NULL,
   `city_id` INT NULL,
   `num_bathroom` INT NULL,
@@ -116,23 +103,29 @@ CREATE TABLE IF NOT EXISTS `Migohood`.`service` (
   `live` TINYINT(1) NULL,
   PRIMARY KEY (`id`),
   INDEX `cod_user_idx` (`user_id` ASC),
-  INDEX `fk_SERVICE_CATEGORY1_idx` (`category_id` ASC),
   INDEX `fk_service_city1_idx` (`city_id` ASC),
   CONSTRAINT `cod_user`
     FOREIGN KEY (`user_id`)
     REFERENCES `Migohood`.`user` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `fk_SERVICE_CATEGORY1`
-    FOREIGN KEY (`category_id`)
-    REFERENCES `Migohood`.`category` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE CASCADE,
   CONSTRAINT `fk_service_city1`
     FOREIGN KEY (`city_id`)
     REFERENCES `Migohood`.`city` (`id`)
     ON DELETE NO ACTION
     ON UPDATE CASCADE)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Migohood`.`category`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Migohood`.`category` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(45) NOT NULL,
+  `code` INT NULL,
+  `languaje` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`id`))
 ENGINE = InnoDB;
 
 
@@ -895,6 +888,29 @@ CREATE TABLE IF NOT EXISTS `Migohood`.`price_history_has_duration` (
   CONSTRAINT `fk_price_history_has_duration_duration1`
     FOREIGN KEY (`duration_id`)
     REFERENCES `Migohood`.`duration` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Migohood`.`service_category`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Migohood`.`service_category` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `service_id` INT NOT NULL,
+  `category_id` INT NOT NULL,
+  INDEX `fk_service_has_category_category1_idx` (`category_id` ASC),
+  INDEX `fk_service_has_category_service1_idx` (`service_id` ASC),
+  PRIMARY KEY (`id`),
+  CONSTRAINT `fk_service_has_category_service1`
+    FOREIGN KEY (`service_id`)
+    REFERENCES `Migohood`.`service` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_service_has_category_category1`
+    FOREIGN KEY (`category_id`)
+    REFERENCES `Migohood`.`category` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
