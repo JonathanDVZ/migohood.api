@@ -115,7 +115,7 @@ $app->post('/service/space/step-7/description','ControllerService@AddNewSpaceSte
 //Agregar un rules description (space-step8)
 $app->post('/service/space/step-8/rules','ControllerService@AddNewSpaceStep8Rules');
 //Agregar imagen (space-step9)
-$app->post('/service/space/step-9/imagen','ControllerService@AddNewSpaceStep9');
+$app->post('/service/space/step-9/image','ControllerService@AddNewSpaceStep9');
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //Agrgar Accommodation
