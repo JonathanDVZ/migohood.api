@@ -22,6 +22,7 @@ use App\Models\Image;
 use App\Models\Type;
 use App\Models\Duration;
 use App\Models\Payment;
+use App\Models\Service_Category;;
 use App\Models\Service_Calendar;
 use App\Models\Service_Accommodation;
 use App\Models\Service_Payment;
@@ -60,14 +61,20 @@ class ControllerService extends Controller
                  //Busca el usuario
                  $user = User::select()->where('id',$request->input("user_id"))->first();  
                  $accommodation=Accommodation::select('id')->where('code',$request->input("accommodation_code"))->get(); 
+                   $category=Category::select('id')->where('code',$request->input("category_code"))->get(); 
                  if(count($user)>0){///Verifica el usuario
-                 if(count($accommodation)>0){
+                 if(count($accommodation)>0 && count($category)>0){
                        $newservice=new Service();
                        $dt = new DateTime();
                        $newservice->user_id=$user->id;
                        $newservice->date=$dt->format('Y-m-d (H:m:s)');
-                       $newservice->category_id=1;
                        $newservice->save();
+                     foreach ($category as $categorys){
+                        $newservicateg=new Service_Category;
+                        $newservicateg->service_id=$newservice->id;
+                        $newservicateg->category_id=$categorys->id;
+                        $newservicateg->save();
+                    }
                        foreach ($accommodation as $accommodations){
                         $newserviacco=new Service_Accommodation;
                         $newserviacco->service_id=$newservice->id;
@@ -664,7 +671,7 @@ class ControllerService extends Controller
             return response()->json($validator->errors()->all());
         } else {
             $user = User::select()->where('id',$request->input("user_id"))->first(); 
-            $category=Category::select()->where('id',1)->first();  
+            $category=Category::select('id')->where('code',$request->input("category_code"))->get(); 
             $type=Type::select()->where('category_id','=',$category->id)->where('code','=',$request->input("type_id"))->get();  
            // $accommodation=Accommodation::select()->where('id',$request->input("accommodation_id"))->first(); 
             $accommodation=Accommodation::select('id')->where('code',$request->input("accommodation_code"))->get(); 
@@ -677,9 +684,14 @@ class ControllerService extends Controller
                             $newspace=new Service;
                             $newspace->user_id=$user->id;
                             $newspace->date=$dt->format('Y-m-d');
-                            $newspace->category_id=$category->id;
                             $newspace->live=$request->input("live");
                             $newspace->save();
+                          foreach ($category as $categorys){
+                            $newservicateg=new Service_Category;
+                            $newservicateg->service_id=$newservice->id;
+                            $newservicateg->category_id=$categorys->id;
+                            $newservicateg->save();
+                           }
                             foreach($accommodation as $accommodations){
                               $newacco=new Service_Accommodation;
                               $newacco->service_id=$newspace->id;
