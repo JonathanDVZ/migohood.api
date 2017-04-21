@@ -90,7 +90,7 @@ $app->post('service/space/check-in-and-check-out','ControllerService@AddNewCheck
 //Agrega Reservation Preferent
 $app->post('service/space/reservation-preference','ControllerService@AddNewReservationPrerence');
 //Agrega Imagen and description
-$app->post('/service/add-image','ControllerService@AddNewSpaceStep9');
+$app->post('/service/space/add-image','ControllerService@AddNewSpaceStep9');
 
 
 
@@ -107,7 +107,7 @@ $app->put('/service/space/step-3/bathroom','ControllerService@AddNewStep3');
 //Agregar un servicio (space-step4)
 $app->put('/service/space/step-4/location','ControllerService@AddNewSpaceStep4Location');
 //Agregar un Amenities (space-step5)
-$app->post('/service/space/step-5/amenities','ControllerService@AddNewSpaceStep5Amenities');
+$app->post('/service/space/step-5/amenities','ControllerService@AddNewStep5');
 //Agregar un cancellation policy (space-step6)
 $app->post('/service/space/step-6/hosting','ControllerService@AddNewSpaceStep6');
 //Agregar un description service (space-step7)

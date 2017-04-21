@@ -156,110 +156,125 @@ class ControllerUser extends Controller
 
     //Actualiza thumbnail 
     public function UpdateThumbnail(Request $request){
-     $rules = array(
-            'user_id'  => 'required|numeric|min:1',
-            'thumbnail' => 'image'
+     
+        $rules = array(            
+            'thumbnail' => 'required|image',
+            'user_id'=>'required|min:1'
         );
         $validator = \Validator::make($request->all(), $rules);
         if($validator->fails())
         {
-            return response()->json($validator->errors()->all());
+            return response()->json($validator->errors()->all())->setStatusCode(400, 'Bad Request');
         }
         else
-        { 
-             // Buscamos el usuario que posea el id ingresado, una vez que se halle entra a la condición
-            $user = User::select()->where('id',$request->input("user_id"))->first();
-            if ($user){
-                try{
-                    // Se definen las credenciales del cliente s3 de amazon
-                    $s3 = new S3Client([
-                        'version'     => env('S3_VERSION'),
-                        'region'      => env('S3_REGION'),
-                        'credentials' => [
-                            'key'    => env('S3_KEY'),
-                            'secret' => env('S3_SECRET')
-                        ]
-                    ]);
-                    $image_link = 'https://s3.'.env('S3_REGION').'.amazonaws.com/'.env('S3_BUCKET').'/files/thumbnails/';
-                    // Obtenemos el campo file definido en el formulario
-                    $file = $request->file('thumbnail');            
-                    // Creamos un nombre para nuestro thumnail
-                    $name = 'thumbnail_'.str_random(20).'_user_'.$user->id.'.'.$file->getClientOriginalExtension();         
-                    // Movemos el archivo a la caperta temporal
-                    $file->move('files/thumbnails/',$name);
-                    //
-                    $old_thumbnail = str_replace($image_link,'',$user->thumbnail);
-                    //
-                    $s3->deleteObject([
-                        'Bucket' => env('S3_BUCKET'),
-                        'Key'    => 'files/thumbnails/'.$old_thumbnail
-                    ]);
-                    //
-                    $s3->putObject([
-                        'Bucket' => env('S3_BUCKET'),
-                        'Key'    => 'files/thumbnails/'.$name,
-                        'Body'   => fopen('files/thumbnails/'.$name, 'r'),
-                        'ACL'    => 'public-read'
-                    ]);
-                    //
-                    // Borramos el arrchivo de la carpeta temporal
-                    unlink('files/thumbnails/'.$name);
-                    // Actualizamos la fila thumbnail del usuario respectivo
-                    DB::table('user')->where('id', $user->id )->update(['thumbnail' => $image_link.$name]);
-                    return json_encode('Update completed!', true);
-                }
-                catch (\Exception $e){
-                    return response()->json($e->getMessage());
-                }
+        {
+             // Buscamos el usuario que posea el id ingresado
+            $user = User::select()->where('id',$request->header('user_id'))->first();
+            
+            try{
+                // Se definen las credenciales del cliente s3 de amazon
+                $s3 = new S3Client([
+                    'version'     => env('S3_VERSION'),
+                    'region'      => env('S3_REGION'),
+                    'credentials' => [
+                        'key'    => env('S3_KEY'),
+                        'secret' => env('S3_SECRET')
+                    ]
+                ]);
+
+                $avatar_link = 'https://s3.'.env('S3_REGION').'.amazonaws.com/'.env('S3_BUCKET').'/files/avatars/';
+                $avatar_original_link = 'https://s3.'.env('S3_REGION').'.amazonaws.com/'.env('S3_BUCKET').'/files/avatars_originals/';
+
+                // Obtenemos el campo file definido en el formulario
+                $file = $request->file('thumbnail');            
+                // Creamos un nombre para nuestro thumnail
+                $name = date('dmYHis').'_thumbnail_user_'.$user->id.'.'.$file->getClientOriginalExtension();            
+                // Movemos el archivo a una carpeta temporal
+                $file->move('files/avatars_originals/',$name);
+
+                $old_thumbnail = str_replace($avatar_link,'',$user->avatar);
+
+                $s3->deleteObject([
+                    'Bucket' => env('S3_BUCKET'),
+                    'Key'    => 'files/avatars/'.$old_thumbnail
+                ]);  
+
+                $s3->deleteObject([
+                    'Bucket' => env('S3_BUCKET'),
+                    'Key'    => 'files/avatars_originals/'.$old_thumbnail
+                ]);  
+
+                $s3->putObject([
+                    'Bucket' => env('S3_BUCKET'),
+                    'Key'    => 'files/avatars_originals/'.$name,
+                    'Body'   => fopen('files/avatars_originals/'.$name, 'r'),
+                    'ACL'    => 'public-read'
+                ]);                 
+
+                // Borramos el arrchivo de la carpeta temporal
+                $this->createThumbnail($name);
+                unlink('files/avatars_originals/'.$name);
+
+                DB::table('User')
+                    ->where('id', $user->id )
+                    ->update(['avatar' => $avatar_link.$name, 'avatar_original' => $avatar_original_link.$name]);
+                
+                return response()->json(['message' => 'Update completed!', 'avatar' => $avatar_link.$name, 'avatar_original' => $avatar_original_link.$name ])->setStatusCode(200, 'Ok');
             }
-            else
-                return response()->json('The user is not exist!');
+            catch (S3Exception $e) {
+                return response()->json($e->getMessage())->setStatusCode(400, 'Bad Request');
+            } catch (AwsException $e) {
+                return response()->json($e->getMessage())->setStatusCode(400, 'Bad Request');
+            }catch (\Exception $e){
+                return response()->json($e->getMessage())->setStatusCode(400, 'Bad Request');
+            }
         }
     } 
 
-    //Actualiza SecondName
-    public function UpdateSecondname(Request $request){
-      $rule=[
-           'id' => 'required|numeric|min:1',
-           'secondname'=>"string|regex:/^[a-zA-Z_áéíóúàèìòùñ'\s]*$/|max:45"
-      ];
-      $validator=Validator::make($request->all(),$rule);
-      if ($validator->fails()) {
-        return response()->json($validator->errors()->all());
-        }else{
-             $date=User::where('id','=',$request->input('id'))->first();
-             if($date!=null){
-                  $date->secondname=ucwords(strtolower($request->input('secondname')));  
-                  if($date->save()){
-                       return response()->json('Update Secondname');
-                   }
-              }else{
-                  return response()->json('User not found ');
-              }
-        }
-    } 
+   private function createThumbnail($image){
+        $thumbnail = $image;
+        
+        // Ponemos el .antes del nombre del archivo porque estamos considerando que la ruta está a partir del archivo thumb.php
+        $file_info = getimagesize("files/avatars_originals/" . $thumbnail);
+        $width = $file_info[0];
+        $height = $file_info[1];
+        $type = $file_info[2];
+        
+        // Obtenemos la relación de aspecto
+        $ratio = $width / $height;
+        // Calculamos las nuevas dimensiones
+        $newwidth = 400;
+        $newheight = round($newwidth / $ratio);
 
-    //Actualiza LastName
-    public function UpdateLastname(Request $request){
-      $rule=[
-           'id' => 'required|numeric|min:1',
-           'lastname' => "required|string|regex:/^[a-zA-Z_áéíóúàèìòùñ'\s]*$/|max:45",
-      ];
-      $validator=Validator::make($request->all(),$rule);
-      if ($validator->fails()) {
-        return response()->json($validator->errors()->all());
-        }else{
-             $date=User::where('id','=',$request->input('id'))->first();
-             if($date!=null){
-                 $date->lastname=ucwords(strtolower($request->input('lastname'))); 
-                  if($date->save()){
-                       return response()->json('Update Lastname');
-                   }
-              }else{
-                  return response()->json('User not found ');
-              }
-        }
-    } 
+        // Dependiendo del tipo de imagen llamamos a distintas funciones
+        if($type==1)    $img=imagecreatefromgif("files/avatars_originals/" . $thumbnail); 
+        if($type==2)    $img=imagecreatefromjpeg("files/avatars_originals/" . $thumbnail); 
+        if($type==3)    $img=imagecreatefrompng("files/avatars_originals/" . $thumbnail); 
+        
+        // Creamos la miniatura
+        $thumb = imagecreatetruecolor($newwidth, $newheight);
+        // La redimensionamos
+        imagecopyresampled($thumb, $img, 0, 0, 0, 0, $newwidth, $newheight, $width, $height);
+        // Reescribir imagen original por la nueva y liberar memoria
+        imagejpeg($thumb,'files/avatars_originals/'.$thumbnail);
+        imagedestroy($thumb);
+
+        $s3 = new S3Client([
+            'version'     => env('S3_VERSION'),
+            'region'      => env('S3_REGION'),
+            'credentials' => [
+                'key'    => env('S3_KEY'),
+                'secret' => env('S3_SECRET')
+            ]
+        ]);
+
+        $s3->putObject([
+            'Bucket' => env('S3_BUCKET'),
+            'Key'    => 'files/avatars/'.$thumbnail,
+            'Body'   => fopen('files/avatars_originals/'.$thumbnail, 'r'),
+            'ACL'    => 'public-read'
+        ]); 
+    }
 
    //Actualiza Address
     public function UpdateAddress(Request $request){
@@ -575,7 +590,8 @@ public function UserOauth(Request $request){
                         $newuser=New User;
                         $newuser->name=ucwords(strtolower($request->input('name')));
                         $newuser->email=strtolower($request->input("email"));
-                        $newuser->thumbnail=$request->input("thumbnail");
+                        $newuser->avatar=$request->input("avatar");
+                        $newuser->avatar_original=$request->input("avatar_original");
                         $newuser->remember_token=str_random(100);
                         $newuser->confirm_token=str_random(100);
                         $newuser->save();
