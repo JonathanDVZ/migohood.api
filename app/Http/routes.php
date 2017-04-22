@@ -289,5 +289,5 @@ $app->post('/state/get-state','ControllerCombobox@GetState');
 
 
 $app->get('/make_token',function(){
-    return str_random(100);
+    return str_random(32);
 });

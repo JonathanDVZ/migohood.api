@@ -15,6 +15,8 @@ use Aws\S3\S3Client;
 use Aws\Exception\AwsException;
 use Aws\S3\Exception\S3Exception;
 use DB;
+use Carbon\Carbon;
+
 
 class ControllerUser extends Controller
 {
@@ -30,22 +32,20 @@ class ControllerUser extends Controller
             'name'=>"required|string|regex:/^[a-zA-Z_áéíóúàèìòùñ'\s]*$/|max:45",
             'email'=>'required|email|unique:user,email',
             'password'=>'required',
-            'lastname'=>"required|string|regex:/^[a-zA-Z_áéíóúàèìòùñ'\s]*$/|max:45",
-            'city_id'=>'numeric|min:1'
+            'lastname'=>"required|string|regex:/^[a-zA-Z_áéíóúàèìòùñ'\s]*$/|max:45"
         ];
         $validator=Validator::make($request->all(),$rule);
         if ($validator->fails()) {
             return response()->json($validator->errors()->all());
         }
         else{ //devuelve un email
-            $user = User::select()->where('email', strtolower($request->input("email")))->first();        
-                if ($user==null){//si es null es por que no esta registrado
+           try{
                        $newUser=new User();
                        $newUser->name=ucwords(strtolower($request->input('name')));
                        $newUser->email=strtolower($request->input('email'));
                        $newUser->password=Crypt::encrypt($request->input('password'));
-                       $newuser->avatar = url('/').'/files/avatars/avatar_default.png';
-                       $newuser->avatar_original = url('/').'/files/avatars_originals/avatar_original_default.png';
+                       $newUser->avatar=url('/').'/files/avatars/avatar_default.png';
+                       $newUser->avatar_original = url('/').'/files/avatars_originals/avatar_original_default.png';
                        $newUser->lastname=ucwords(strtolower($request->input('lastname')));
                        $newUser->remember_token=str_random(100);
                        $newUser->confirm_token=str_random(100);
@@ -53,13 +53,12 @@ class ControllerUser extends Controller
                        if( $newUser->save()){
                           return response()->json($newUser); 
                        }
-                    }
-                    else{
-                         return response()->json("Existing user"); 
-                    }
+                 
+            }catch(Exception $e){
+                return response()->json($e);
             }
         }
-  
+    }
     //Muestra todos los usuarios
     public function Read( ){
         return User::all();
@@ -161,7 +160,7 @@ class ControllerUser extends Controller
             'thumbnail' => 'required|image',
             'user_id'=>'required|min:1'
         );
-        $validator = \Validator::make($request->all(), $rules);
+        $validator =Validator::make($request->all(), $rules);
         if($validator->fails())
         {
             return response()->json($validator->errors()->all())->setStatusCode(400, 'Bad Request');
@@ -169,7 +168,7 @@ class ControllerUser extends Controller
         else
         {
              // Buscamos el usuario que posea el id ingresado
-            $user = User::select()->where('id',$request->header('user_id'))->first();
+            $user = User::select()->where('id',$request->input('user_id'))->first();
             
             try{
                 // Se definen las credenciales del cliente s3 de amazon
@@ -207,7 +206,7 @@ class ControllerUser extends Controller
                 $s3->putObject([
                     'Bucket' => env('S3_BUCKET'),
                     'Key'    => 'files/avatars_originals/'.$name,
-                    'Body'   => fopen('files/avatars_originals/'.$name, 'r'),
+                    'Body'   => fopen('files/avatars_originals/'.$name,'r'),
                     'ACL'    => 'public-read'
                 ]);                 
 
@@ -215,9 +214,9 @@ class ControllerUser extends Controller
                 $this->createThumbnail($name);
                 unlink('files/avatars_originals/'.$name);
 
-                DB::table('User')
+                DB::table('user')
                     ->where('id', $user->id )
-                    ->update(['avatar' => $avatar_link.$name, 'avatar_original' => $avatar_original_link.$name]);
+                    ->update(['avatar' => $avatar_link.$name,'avatar_original' => $avatar_original_link.$name]);
                 
                 return response()->json(['message' => 'Update completed!', 'avatar' => $avatar_link.$name, 'avatar_original' => $avatar_original_link.$name ])->setStatusCode(200, 'Ok');
             }
@@ -225,7 +224,7 @@ class ControllerUser extends Controller
                 return response()->json($e->getMessage())->setStatusCode(400, 'Bad Request');
             } catch (AwsException $e) {
                 return response()->json($e->getMessage())->setStatusCode(400, 'Bad Request');
-            }catch (\Exception $e){
+            }catch (Exception $e){
                 return response()->json($e->getMessage())->setStatusCode(400, 'Bad Request');
             }
         }
@@ -235,7 +234,7 @@ class ControllerUser extends Controller
         $thumbnail = $image;
         
         // Ponemos el .antes del nombre del archivo porque estamos considerando que la ruta está a partir del archivo thumb.php
-        $file_info = getimagesize("files/avatars_originals/" . $thumbnail);
+        $file_info = getimagesize("files/avatars_originals/".$thumbnail);
         $width = $file_info[0];
         $height = $file_info[1];
         $type = $file_info[2];
@@ -247,9 +246,9 @@ class ControllerUser extends Controller
         $newheight = round($newwidth / $ratio);
 
         // Dependiendo del tipo de imagen llamamos a distintas funciones
-        if($type==1)    $img=imagecreatefromgif("files/avatars_originals/" . $thumbnail); 
-        if($type==2)    $img=imagecreatefromjpeg("files/avatars_originals/" . $thumbnail); 
-        if($type==3)    $img=imagecreatefrompng("files/avatars_originals/" . $thumbnail); 
+        if($type==1)    $img=imagecreatefromgif("files/avatars_originals/".$thumbnail); 
+        if($type==2)    $img=imagecreatefromjpeg("files/avatars_originals/".$thumbnail); 
+        if($type==3)    $img=imagecreatefrompng("files/avatars_originals/".$thumbnail); 
         
         // Creamos la miniatura
         $thumb = imagecreatetruecolor($newwidth, $newheight);
@@ -271,7 +270,7 @@ class ControllerUser extends Controller
         $s3->putObject([
             'Bucket' => env('S3_BUCKET'),
             'Key'    => 'files/avatars/'.$thumbnail,
-            'Body'   => fopen('files/avatars_originals/'.$thumbnail, 'r'),
+            'Body'   => fopen('files/avatars_originals/'.$thumbnail,'r'),
             'ACL'    => 'public-read'
         ]); 
     }
