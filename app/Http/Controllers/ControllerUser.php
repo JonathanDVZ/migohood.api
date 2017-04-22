@@ -44,12 +44,12 @@ class ControllerUser extends Controller
                        $newUser->name=ucwords(strtolower($request->input('name')));
                        $newUser->email=strtolower($request->input('email'));
                        $newUser->password=Crypt::encrypt($request->input('password'));
-                    // $newUser->thumbnail=$request->input('thumbnail');
+                       $newuser->avatar = url('/').'/files/avatars/avatar_default.png';
+                       $newuser->avatar_original = url('/').'/files/avatars_originals/avatar_original_default.png';
                        $newUser->lastname=ucwords(strtolower($request->input('lastname')));
                        $newUser->remember_token=str_random(100);
                        $newUser->confirm_token=str_random(100);
                        $newUser->address=strtolower($request->input('address'));
-                    // $newUser->city_id=$request->input('city_id');
                        if( $newUser->save()){
                           return response()->json($newUser); 
                        }
@@ -580,7 +580,8 @@ public function UserOauth(Request $request){
      $rule=[
            'email' => 'required|email|unique:user,email',
            'name'=>'required',
-           'thumbnail'=>'required'
+           'avatar'=>'required',
+           'avatar_original'=>'required'
       ];
       $validator=Validator::make($request->all(),$rule);
       if ($validator->fails()) {
