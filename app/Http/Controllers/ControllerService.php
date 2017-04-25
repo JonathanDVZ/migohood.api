@@ -61,7 +61,7 @@ class ControllerService extends Controller
                  //Busca el usuario
                  $user = User::select()->where('id',$request->input("user_id"))->first();  
                  $accommodation=Accommodation::select('id')->where('code',$request->input("accommodation_code"))->get(); 
-                   $category=Category::select('id')->where('code',$request->input("category_code"))->get(); 
+                   $category=Category::select('id')->where('code',1)->get(); 
                  if(count($user)>0){///Verifica el usuario
                  if(count($accommodation)>0 && count($category)>0){
                        $newservice=new Service();
@@ -274,18 +274,18 @@ class ControllerService extends Controller
     //Agrega step6 movil
     public function AddNewStep6(Request $request){
                 $rule=[  'service_id'=>'required|numeric|min:1',
-                'politic_payment_id'=>'required|numeric|min:1|max:3',
+                'politic_payment_code'=>'required|numeric|min:1|max:3',
                 'price'=>'required|numeric',
                 'currency_id'=>'required|numeric',
-                'duration_id'=>'required|numeric'
+                'duration_code'=>'required|numeric'
             ];
             $validator=Validator::make($request->all(),$rule);
             if ($validator->fails()) {
                 return response()->json($validator->errors()->all());
             }else{
                 $service=Service::where('id',$request->input("service_id"))->first();
-                $payment=Payment::select('id')->where('code',$request->input("politic_payment_id"))->get();
-                $duration=Duration::select('id')->where('code',$request->input("duration_id"))->get();  
+                $payment=Payment::select('id')->where('code',$request->input("politic_payment_code"))->get();
+                $duration=Duration::select('id')->where('code',$request->input("duration_code"))->get();  
                 if(count($service)>0 and count($payment)>0){      
                       $newhistory=new Price_History;
                       $dt = new DateTime();
@@ -682,7 +682,7 @@ class ControllerService extends Controller
                             $dt = new DateTime();
                             $newspace=new Service;
                             $newspace->user_id=$user->id;
-                            $newspace->date=$dt->format('Y-m-d');
+                            $newspace->date=$dt->format('Y-m-d (H:m:s)');
                             $newspace->live=$request->input("live");
                             $newspace->save();
                           foreach ($category as $categorys){
@@ -959,10 +959,11 @@ class ControllerService extends Controller
         $rule=[  'service_id'=>'required|numeric|min:1',
                   'currency_id'=>'required',
                   'price'=>'numeric|min:0',
-                  'duration_id'=>'required',
+                  'duration_code'=>'required',
                   'stardate'=>'required',
                   'finishdate'=>'required',
-                  'price_optional'=>'numeric'
+                  'price_optional'=>'numeric',
+                  'politic_payment_code'=>'numeric'
 
             ];
             $validator=Validator::make($request->all(),$rule);
@@ -970,8 +971,8 @@ class ControllerService extends Controller
                 return response()->json($validator->errors()->all());
             }else{
                 $service=Service::where('id',$request->input("service_id"))->first();
-                $payment=Payment::select('id')->where('code',$request->input("politic_payment_id"))->get();
-                $duration=Duration::select('id')->where('code',$request->input("duration_id"))->get();  
+                $payment=Payment::select('id')->where('code',$request->input("politic_payment_code"))->get();
+                $duration=Duration::select('id')->where('code',$request->input("duration_code"))->get();  
                 if(count($service)>0 && count($payment)>0 && count($duration)){
                 try{
                       $newhistory=new Price_History;
@@ -1009,7 +1010,7 @@ class ControllerService extends Controller
                       $newoptionalprice->finishdate=$request->input("finishdate");
                       $newoptionalprice->price=$request->input("price_optional");
                       $newoptionalprice->save();
-                      return response()->json('Add Step6'); 
+                      return response()->json($newhistory); 
                     }catch(exception $e){
                        return response()->json($e); 
                     }
