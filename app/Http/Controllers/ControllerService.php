@@ -22,7 +22,7 @@ use App\Models\Image;
 use App\Models\Type;
 use App\Models\Duration;
 use App\Models\Payment;
-use App\Models\Service_Category;;
+use App\Models\Service_Category;
 use App\Models\Service_Calendar;
 use App\Models\Service_Accommodation;
 use App\Models\Service_Payment;
