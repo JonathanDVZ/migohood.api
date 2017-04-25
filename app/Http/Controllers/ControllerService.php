@@ -661,7 +661,7 @@ class ControllerService extends Controller
         $rule=[
             // Comente esto, ya que aun no poseo ningun id service
             //'service_id' => 'required|numeric|min:1',
-            'type_id'=>'required|numeric|min:1',
+            'type_code'=>'required|numeric|min:1',
             'accommodation_code'=>'required|numeric|min:1',
             'live'=>'required|boolean',
             'user_id'=>'required|numeric|min:1'
@@ -671,9 +671,8 @@ class ControllerService extends Controller
             return response()->json($validator->errors()->all());
         } else {
             $user = User::select()->where('id',$request->input("user_id"))->first(); 
-            $category=Category::select('id')->where('code',$request->input("category_code"))->get(); 
-            $type=Type::select()->where('category_id','=',$category->id)->where('code','=',$request->input("type_id"))->get();  
-           // $accommodation=Accommodation::select()->where('id',$request->input("accommodation_id"))->first(); 
+            $category=Category::select('id')->where('code',1)->get(); 
+            $type=Type::select('id_type')->where('category_id','=',1)->where('code','=',$request->input("type_code"))->get();   
             $accommodation=Accommodation::select('id')->where('code',$request->input("accommodation_code"))->get(); 
             if(count($user)>0){
                 if(count($category)>0){
@@ -688,7 +687,7 @@ class ControllerService extends Controller
                             $newspace->save();
                           foreach ($category as $categorys){
                             $newservicateg=new Service_Category;
-                            $newservicateg->service_id=$newservice->id;
+                            $newservicateg->service_id=$newspace->id;
                             $newservicateg->category_id=$categorys->id;
                             $newservicateg->save();
                            }

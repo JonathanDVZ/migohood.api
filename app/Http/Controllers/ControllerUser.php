@@ -15,7 +15,8 @@ use Aws\S3\S3Client;
 use Aws\Exception\AwsException;
 use Aws\S3\Exception\S3Exception;
 use DB;
-
+use Carbon\Carbon;
+use  App\Http\Controllers\imagecreatefromjpeg;
 
 
 class ControllerUser extends Controller

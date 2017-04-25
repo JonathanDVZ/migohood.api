@@ -167,7 +167,7 @@ public function GetBedBedroomData(Request $request){
             if(count($amenitie)>0){
                   return response()->json($amenitie);
             }else{ 
-                  return response()->json("Country not found");
+                  return response()->json("Amenities not found");
             }
       }
     }
