@@ -485,7 +485,7 @@ class ControllerService extends Controller
                     $newreservation->check=$request->input("positive_valuation");
                     $newreservation->save();       
                     return response()->json('Add Preference Reservation');             
-                  }catch(Exception $e){
+                  }catch(\Exception $e){
                       return response()->json($e); 
                   }                 
                 }else{
@@ -730,7 +730,8 @@ class ControllerService extends Controller
     public function AddNewSpaceStep2(Request $request){
         $rule=[
            'service_id' => 'required|numeric|min:1',
-           'num_guest'=>'required|numeric|min:0'
+           'num_guest'=>'required|numeric|min:0',
+           'num_bedroom'=>'required|numeric'
         ];
         $validator=Validator::make($request->all(),$rule);
         if ($validator->fails()) {
@@ -785,6 +786,7 @@ class ControllerService extends Controller
             if(count($servicespace)>0){
               $bedroom=Bedroom::select()->where('service_id','=',$servicespace->id)->where('id','=',$request->input("bedroom_id"))->first();
               if(count($bedroom)>0){
+                try{  
                  $newbedroomdouble=new Bedroom_Bed;
                  $newbedroomdouble->bedroom_id=$bedroom->id;
                  $newbedroomdouble->bed_id=1;
@@ -832,10 +834,13 @@ class ControllerService extends Controller
                  $newbedroomother->save();
                  $newbedroomother=new Bedroom_Bed;
                  $newbedroomother->bedroom_id=$bedroom->id;
-                 $newbedroomother->bed_id=5;
+                 $newbedroomother->bed_id=10;
                  $newbedroomother->quantity=$request->input("other_bed");
                  $newbedroomother->save();
-                    return response()->json('Add  Bedroom-Beds '); 
+                    return response()->json('Add  Bedroom-Beds');
+                }catch(Exception $e){
+                    return response()->json($e);
+                }   
               }else{
                     return response()->json('Bedroom not found'); 
               }

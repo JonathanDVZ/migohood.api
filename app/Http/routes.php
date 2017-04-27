@@ -270,15 +270,12 @@ $app->get('/category/get-category','ControllerCombobox@GetCategory');
 $app->get('/amenities/get-space-amenities','ControllerCombobox@GetSpaceAmenities');
 //Muestra todos los dias de la semana
 $app->get('/calendar/get-calendar','ControllerCombobox@GetCalendar');
-//Muestra todos los tipos
-$app->get('/type/get-type','ControllerCombobox@GetType');
 //Muestra todas las duraciones
 $app->get('/duration/get-duration','ControllerCombobox@GetDuration');
-
-//Muestra la interseccion cama con habitacion
-$app->post('/service/get-bed-bedroom','ControllerCombobox@GetBedBedroom');
+//Muestra todas las  habitaciones que tiene un servicio
+$app->get('/service/get-bed-bedroom','ControllerCombobox@GetBedBedroom');
 //Muestra datos de una habitacion
-$app->post('/service/get-bed-bedroom-data','ControllerCombobox@GetBedBedroomData');
+$app->get('/service/get-bed-bedroom-data','ControllerCombobox@GetBedBedroomData');
 //Muestra todas los paises
 $app->get('/country/get-country','ControllerCombobox@GetCountry');
 //Muestra todas las ciudades

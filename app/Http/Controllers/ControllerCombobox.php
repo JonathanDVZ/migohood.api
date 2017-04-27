@@ -17,16 +17,42 @@ use DB;
 
 class ControllerCombobox extends Controller
 {
-    public function GetCategory(){
-         return Category::all();
+    public function GetCategory(Request $request){
+            $rule=[
+             'languaje' => 'required'
+      ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+        return response()->json($validator->errors()->all());
+        }else{   
+               $category=Category::select('id','name','code')->where('languaje','=',$request->input("languaje"))->get();
+            if(count($category)>0){
+                  return response()->json($category);
+            }else{
+                  return response()->json("Category not found"); 
+            }
     }
+}
 
    public function RulesHouse(){
          return House_Rules::all();
     }
 
-    public function GetAccommodation(){
-          return Accommodation::all();        
+    public function GetAccommodation(Request $request){
+             $rule=[
+             'languaje' => 'required'
+      ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+        return response()->json($validator->errors()->all());
+        }else{   
+               $accommodation=Accommodation::select('id','name','code')->where('languaje','=',$request->input("languaje"))->get();
+            if(count($accommodation)>0){
+                  return response()->json($accommodation);
+            }else{
+                  return response()->json("Accommodation not found"); 
+            } 
+       }   
     }
     
     
@@ -34,29 +60,45 @@ class ControllerCombobox extends Controller
           return Calendar::all();        
     }
     
-    public function GetType(){
-          return Type::all();        
-    }
 
-    public function GetDuration(){
-          return Duration::all();        
+    public function GetDuration(Request $request){
+               $rule=[
+           'service_id' => 'required|numeric|min:1',
+           'languaje'=>'required'
+      ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+            $type=Duration::select('id','type','code')->where('languaje','=',$request->input("languaje"))->get();
+            if(count($type)>0){
+                  return response()->json($type);
+            }else{
+                  return response()->json("Duration not found"); 
+            }
+      }     
     }
 
 
 
     public function TypeGet(Request $request){
-         
-            $type=Type::select()->where('category_id','=',1)->get();
+         $rule=[
+           'service_id' => 'required|numeric|min:1',
+           'languaje'=>'required'
+      ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+            $type=Type::select('id_type','name','code')->where('category_id','=',$request->input('category_id'))->where('languaje','=',$request->input("languaje"))->get();
             if(count($type)>0){
                   return response()->json($type);
             }else{
-                  return response()->json("Error"); 
+                  return response()->json("Type not found"); 
             }
+      }
     }
 
     public function GetBedBedroom(Request $request){
       $rule=[
-           'service_id' => 'required|numeric|min:1'
+           'service_id' => 'required|numeric|min:1',
+           'languaje'=>'required'
       ];
       $validator=Validator::make($request->all(),$rule);
       if ($validator->fails()) {
@@ -66,7 +108,8 @@ class ControllerCombobox extends Controller
                               ->leftjoin('bedroom_bed','bedroom_bed.bedroom_id','=','bedroom.id')
                               ->leftjoin('bed','bed.id','=','bedroom_bed.bed_id')
                               ->where('bedroom.service_id','=',$request->input("service_id"))
-                              ->select('bedroom.id as bedroom_id','bedroom_bed.quantity as bed_quantity','bed.id as bed_id','bed.type as bed_type')
+                              ->where('bed.languaje','=',$request->input("languaje"))
+                              ->select('bedroom.id as bedroom_id','bed.id as bed_id','bedroom_bed.quantity as bed_quantity','bed.type as bed_type')
                               ->get();
           if(count($newbedbedroom)>0){
                 return response()->json($newbedbedroom);
@@ -79,7 +122,8 @@ class ControllerCombobox extends Controller
 public function GetBedBedroomData(Request $request){
          $rule=[
            'user_id'=>'required|min:1',
-           'bedroom_id'=>'required|min:1'
+           'bedroom_id'=>'required|min:1',
+             'languaje' => 'required'
       ];
       $validator=Validator::make($request->all(),$rule);
       if ($validator->fails()) {
@@ -91,9 +135,9 @@ public function GetBedBedroomData(Request $request){
                ->leftjoin('bed','bed.id','=','bedroom_bed.bed_id')
                ->where('service.user_id','=',$request->input("user_id"))
                ->where('bedroom.id','=',$request->input("bedroom_id"))
-               ->select('bedroom_bed.*','service.id as service_id')
+               ->where('bed.languaje','=',$request->input('languaje'))  
+               ->select('bedroom_bed.*','bed.type as type')
                ->get();
-               //dd($newbedbedroomdata);
                if(count($newbedbedroomdata)>0){
                    return response()->json($newbedbedroomdata);
                }else{ 
