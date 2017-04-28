@@ -61,20 +61,22 @@ class ControllerCombobox extends Controller
     }
     
 
-    public function GetDuration(Request $request){
-               $rule=[
-           'service_id' => 'required|numeric|min:1',
-           'languaje'=>'required'
-      ];
-      $validator=Validator::make($request->all(),$rule);
-      if ($validator->fails()) {
-            $type=Duration::select('id','type','code')->where('languaje','=',$request->input("languaje"))->get();
-            if(count($type)>0){
-                  return response()->json($type);
+      public function GetDuration(Request $request){
+            $rule=[
+                'service_id' => 'required|numeric|min:1',
+                'languaje'=>'required'
+            ];
+            $validator=Validator::make($request->all(),$rule);
+            if ($validator->fails()) {
+                  return response()->json($validator->errors()->all());
             }else{
-                  return response()->json("Duration not found"); 
-            }
-      }     
+                  $type=Duration::select('id','type','code')->where('languaje','=',$request->input("languaje"))->get();
+                  if(count($type)>0){
+                        return response()->json($type);
+                  }else{
+                        return response()->json("Duration not found"); 
+                  }
+            }     
     }
 
 
