@@ -78,21 +78,22 @@ class ControllerCombobox extends Controller
     }
 
 
-
-    public function TypeGet(Request $request){
-      $rule=[
-            'languaje'=>'required'
-      ];
-      $validator=Validator::make($request->all(),$rule);
-      if ($validator->fails()) {
-            $type=Type::select('id_type','name','code')->where('category_id','=',1)->where('languaje','=',$request->input("languaje"))->get();
-            if(count($type)>0){
-                  return response()->json($type);
+      public function TypeGet(Request $request){
+            $rule=[
+                  'languaje'=>'required'
+            ];
+            $validator=Validator::make($request->all(),$rule);
+            if ($validator->fails()) {
+                  return response()->json($validator->errors()->all());
             }else{
-                  return response()->json("Type not found"); 
+                  $type=Type::select('id_type','name','code')->where('category_id','=',1)->where('languaje','=',$request->input("languaje"))->get();
+                  if(count($type)>0){
+                        return response()->json($type);
+                  }else{
+                        return response()->json("Type not found"); 
+                  }
             }
       }
-    }
 
     public function GetBedBedroom(Request $request){
       $rule=[
