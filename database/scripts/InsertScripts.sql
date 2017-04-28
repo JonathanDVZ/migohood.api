@@ -60,7 +60,7 @@ insert into calendar(day,code,languaje) value("All_Days",1,"EN"),("Sunday",2,"EN
 ("Todos_los_Dias",1,"ES"),("Domigo",2,"ES"),("Lunes",3,"ES"),("Martes",3,"ES"),("Miercoles",4,"EN"),("Jueves",5,"ES"),("Viernes",6,"ES"),("Sabado",7,"ES");
 insert into duration(type,code,languaje) values("Minute",1,"EN"),("Hour",2,"EN"),("Week",3,"EN"),("Month",4,"EN"),("Minuto",1,"ES"),("Hora",2,"ES"),("Semana",3,"ES"),("Mes",4,"ES");
 insert into type_number(type,code,languaje)values("Fixed",1,"EN"),("Cell",2,"EN"),("Fijo",1,"ES"),("Celular",2,"ES");
-insert into description(type)values("Title"),("Address1"),("Address2"),("Desc_Neighborhood"),("Desc_Surroundings"),("desc_length"),("desc_latitud"),("description"),("apt"),("desc_around"),("desc_crib"),("desc_acce"),("socialize"),("available"),("desc_guest"),("desc_note");
+insert into description(type)values("Title"),("Address1"),("Address2"),("Neighborhood"),("Surroundings"),("desc_length"),("desc_latitud"),("Description"),("apt"),("Around"),("Crib"),("desc_acce"),("socialize"),("Available"),("Guest access"),("Note");
 
 insert into house_rules(id,type,code,languaje)values
 (1,"Suitable for children (2 to 12 years old)",1,"EN"),
