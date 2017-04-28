@@ -80,13 +80,12 @@ class ControllerCombobox extends Controller
 
 
     public function TypeGet(Request $request){
-         $rule=[
-           'service_id' => 'required|numeric|min:1',
-           'languaje'=>'required'
+      $rule=[
+            'languaje'=>'required'
       ];
       $validator=Validator::make($request->all(),$rule);
       if ($validator->fails()) {
-            $type=Type::select('id_type','name','code')->where('category_id','=',$request->input('category_id'))->where('languaje','=',$request->input("languaje"))->get();
+            $type=Type::select('id_type','name','code')->where('category_id','=',1)->where('languaje','=',$request->input("languaje"))->get();
             if(count($type)>0){
                   return response()->json($type);
             }else{
