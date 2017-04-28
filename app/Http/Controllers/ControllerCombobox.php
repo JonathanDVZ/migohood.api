@@ -180,7 +180,7 @@ public function GetBedBedroomData(Request $request){
     }
 
     public function GetState(Request $request){
-        $rule=[
+      $rule=[
            'country_id' => 'required|numeric|min:1'
       ];
       $validator=Validator::make($request->all(),$rule);
