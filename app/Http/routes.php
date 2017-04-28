@@ -279,9 +279,9 @@ $app->get('/service/get-bed-bedroom-data','ControllerCombobox@GetBedBedroomData'
 //Muestra todas los paises
 $app->get('/country/get-country','ControllerCombobox@GetCountry');
 //Muestra todas las ciudades
-$app->post('/city/get-city','ControllerCombobox@GetCity');
+$app->get('/city/get-city','ControllerCombobox@GetCity');
 //Muestra todas los estados
-$app->post('/state/get-state','ControllerCombobox@GetState');
+$app->get('/state/get-state','ControllerCombobox@GetState');
 
 
 
