@@ -522,7 +522,7 @@ public function LoginOauth(Request $request){
       if ($validator->fails()) {
         return response()->json($validator->errors()->all());
         }else{
-            $user=User::where('email','=',$request->input("email"))->get();
+            $user=User::where('email','=',$request->input("email"))->first();
            if(count($user)>0){
                 return response()->json($user);
            }else{
