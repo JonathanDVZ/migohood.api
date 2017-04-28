@@ -90,7 +90,7 @@ $app->post('service/space/check-in-and-check-out','ControllerService@AddNewCheck
 //Agrega Reservation Preferent
 $app->post('service/space/reservation-preference','ControllerService@AddNewReservationPrerence');
 //Agrega Imagen and description
-$app->post('/service/add-image','ControllerImagen@AddNewSpaceStep9');
+$app->post('/service/space/add-image','ControllerService@AddNewSpaceStep9');
 
 
 
@@ -107,7 +107,7 @@ $app->put('/service/space/step-3/bathroom','ControllerService@AddNewStep3');
 //Agregar un servicio (space-step4)
 $app->put('/service/space/step-4/location','ControllerService@AddNewSpaceStep4Location');
 //Agregar un Amenities (space-step5)
-$app->post('/service/space/step-5/amenities','ControllerService@AddNewSpaceStep5Amenities');
+$app->post('/service/space/step-5/amenities','ControllerService@AddNewStep5');
 //Agregar un cancellation policy (space-step6)
 $app->post('/service/space/step-6/hosting','ControllerService@AddNewSpaceStep6');
 //Agregar un description service (space-step7)
@@ -115,7 +115,7 @@ $app->post('/service/space/step-7/description','ControllerService@AddNewSpaceSte
 //Agregar un rules description (space-step8)
 $app->post('/service/space/step-8/rules','ControllerService@AddNewSpaceStep8Rules');
 //Agregar imagen (space-step9)
-$app->post('/service/space/step-9/imagen','ControllerService@AddNewSpaceStep9');
+$app->post('/service/space/step-9/image','ControllerService@AddNewSpaceStep9');
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //Agrgar Accommodation
@@ -266,23 +266,25 @@ $app->get('/category/space/get-type','ControllerCombobox@TypeGet');
 $app->get('/rules/space/house','ControllerCombobox@RulesHouse');
 //Muestra la Category
 $app->get('/category/get-category','ControllerCombobox@GetCategory');
-//Muestra todos los GetAmenities
-$app->get('/amenitie/get-amenitie','ControllerCombobox@GetAmenities');
+//Muestra todos los GetAmenities--->18/4/2017
+$app->get('/amenities/get-space-amenities','ControllerCombobox@GetSpaceAmenities');
 //Muestra todos los dias de la semana
 $app->get('/calendar/get-calendar','ControllerCombobox@GetCalendar');
-//Muestra todos los tipos
-$app->get('/type/get-type','ControllerCombobox@GetType');
 //Muestra todas las duraciones
 $app->get('/duration/get-duration','ControllerCombobox@GetDuration');
+//Muestra todas las  habitaciones que tiene un servicio
+$app->get('/service/get-bed-bedroom','ControllerCombobox@GetBedBedroom');
+//Muestra datos de una habitacion
+$app->get('/service/get-bed-bedroom-data','ControllerCombobox@GetBedBedroomData');
+//Muestra todas los paises
+$app->get('/country/get-country','ControllerCombobox@GetCountry');
 //Muestra todas las ciudades
 $app->post('/city/get-city','ControllerCombobox@GetCity');
-//Muestra la interseccion cama con habitacion
-$app->post('/service/get-bed-bedroom','ControllerCombobox@GetBedBedroom');
-//Muestra datos de una habitacion
-$app->post('/service/get-bed-bedroom-data','ControllerCombobox@GetBedBedroomData');
+//Muestra todas los estados
+$app->post('/state/get-state','ControllerCombobox@GetState');
 
 
 
 $app->get('/make_token',function(){
-    return str_random(100);
+    return str_random(32);
 });

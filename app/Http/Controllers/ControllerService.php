@@ -11,16 +11,21 @@ use App\Models\Bedroom_Bed;
 use App\Models\Check_out;
 use App\Models\City;
 use App\Models\Service_Rules;
+use App\Models\Price_history_has_duration;
 use App\Models\Service_Reservation;
 use App\Models\Service_Description;
 use App\Models\Category;
 use App\Models\SpecialDate;
-use App\Models\Service_Cancellation;
 use App\Models\Service_Amenite;
 use App\Models\Service_Type;
+use App\Models\Image;
 use App\Models\Type;
+use App\Models\Duration;
 use App\Models\Payment;
+use App\Models\Service_Category;
 use App\Models\Service_Calendar;
+use App\Models\Service_Accommodation;
+use App\Models\Service_Payment;
 use App\Models\Calendar;
 use App\Models\Price_History;
 use Illuminate\Http\Request;
@@ -28,6 +33,9 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Contracts\Encryption\DecryptException;
 use	Illuminate\Encryption\Encrypter;
 use validator;
+use Aws\S3\S3Client;
+use Aws\Exception\AwsException;
+use Aws\S3\Exception\S3Exception;
 use DateTime;
 use DB;
 class ControllerService extends Controller
@@ -38,12 +46,12 @@ class ControllerService extends Controller
     return Service::all();   
     }
    
-    //Agreg New Step 1 
+    //Agreg New Step 1 -Movil
     public function AddNewStep(Request $request){
              //Regla de validacion       
               $rule=[
                     'user_id'=>'required|numeric|min:1',
-                    'accommodation_id'=>'required|numeric|min:1',
+                    'accommodation_code'=>'required|numeric|min:1',
              ];
              $validator=Validator::make($request->all(),$rule);
              if ($validator->fails()) {
@@ -51,20 +59,30 @@ class ControllerService extends Controller
                }
              else{
                  //Busca el usuario
-                 $user = User::select()->where('id',$request->input("user_id"))->first(); 
-                 $accommodation = Accommodation::where('id',$request->input("accommodation_id"))->first(); 
+                 $user = User::select()->where('id',$request->input("user_id"))->first();  
+                 $accommodation=Accommodation::select('id')->where('code',$request->input("accommodation_code"))->get(); 
+                   $category=Category::select('id')->where('code',1)->get(); 
                  if(count($user)>0){///Verifica el usuario
-                 if(count($accommodation)>0){
+                 if(count($accommodation)>0 && count($category)>0){
                        $newservice=new Service();
                        $dt = new DateTime();
                        $newservice->user_id=$user->id;
                        $newservice->date=$dt->format('Y-m-d (H:m:s)');
-                       $newservice->category_id=1;
-                       $newservice->accommodation_id=$request->input("accommodation_id");
                        $newservice->save();
-                       if($newservice->save()){
+                     foreach ($category as $categorys){
+                        $newservicateg=new Service_Category;
+                        $newservicateg->service_id=$newservice->id;
+                        $newservicateg->category_id=$categorys->id;
+                        $newservicateg->save();
+                    }
+                       foreach ($accommodation as $accommodations){
+                        $newserviacco=new Service_Accommodation;
+                        $newserviacco->service_id=$newservice->id;
+                        $newserviacco->accommodation_id=$accommodations->id;
+                        $newserviacco->save();
+                    }
                               return response()->json($newservice);
-                       }
+
                  }else{
                         return response()->json('Accommodation not found');                 
                  }  
@@ -75,38 +93,28 @@ class ControllerService extends Controller
     }
      
    
-     //Agrega New Step-1
+     //Agrega New Step-1-Movil
     public function AddNewStep1(Request $request){
-          $rule=['type_id'=>'required|numeric|min:1',
+          $rule=['type_code'=>'required|numeric|min:1',
                  'service_id'=>'required|numeric|min:1'
             ];
             $validator=Validator::make($request->all(),$rule);
             if ($validator->fails()) {
                 return response()->json($validator->errors()->all());
             }else{
-                 $type=Type::select()->where('id_type',$request->input("type_id"))->first();        
-                 $service=Service::select()->where('id',$request->input("service_id"))->first();
-               
+                 $type=Type::select('id_type')->where('category_id',1)->where('code',$request->input("type_code"))->get(); 
+                    //  $accommodation=Accommodation::select('id')->where('code',$request->input("accommodation_code"))->get();        
                  if(count($type)>0){
+                      $service=Service::select()->where('id',$request->input("service_id"))->first();
                          if(count($service)>0){
-                              $val= DB::select('select * from service_type where service_id=? and type_id=?', [$service->id,$type->id_type]);
-                                if(count($val)==0){
-                                    $typenum=intval($type->category_id);
-                                    $servicenum=intval($service->category_id);
-                                    if (strcmp($typenum,$servicenum)==0){
-                                      $typeservice=new Service_Type;
-                                      $typeservice->service_id=$service->id;
-                                      $typeservice->type_id=$type->id_type;
-                                      if($typeservice->save()){
-                                           return response()->json('Add Step 2');  
-                                       }
-                                     }else{
-                                        return response()->json('Does not belong to category'); 
-                                    }
-                                }else{
-                                     return response()->json('The type was already selected');
-                                } 
-                         }else{
+                               foreach ($type as $types){
+                                 $newservitype=new Service_Type;
+                                 $newservitype->service_id=$service->id;
+                                 $newservitype->type_id=$types->id_type;
+                                 $newservitype->save();
+                                }
+                              return response()->json("Add Step1");  
+                       }else{
                              return response()->json('Service not found'); 
                          }   
                  }else{
@@ -115,7 +123,7 @@ class ControllerService extends Controller
           }
     }
    
-   //Agrega New Step 2
+   //Agrega New Step 2-Movil
     public function AddNewStep2(Request $request){
         //Reglas de validacion
         $rule=[  'service_id'=>'required|numeric|min:1',
@@ -127,9 +135,8 @@ class ControllerService extends Controller
                 return response()->json($validator->errors()->all());
             }else{
                 $service=Service::select()->where('id',$request->input("service_id"))->first();
-                 $val= DB::select('select * from bedroom where service_id = ?', [$service->id]); 
                 if(count($service)>0){
-                    if(count($val)==0){
+                 
                      $service->num_guest=$request->input("num_guests");
                      $service->save();
                      for($i=1;$i<=$request->input("num_bedroom");$i++){
@@ -137,11 +144,7 @@ class ControllerService extends Controller
                            $bedroom->service_id=$service->id; 
                            $bedroom->save();
                     }
-                     return response()->json('Add Step2');  
-                    }else{
-                         return response()->json('The service already has selected rooms');
-                     }  
-                      
+                     return response()->json($bedroom);                
                 }else{
                      return response()->json('Service not found'); 
                 }
@@ -150,7 +153,7 @@ class ControllerService extends Controller
     }  
 
     
-    //Agrega New Step 3
+    //Agrega New Step 3-Movil
     public function AddNewStep3(Request $request){
          $rule=[  'service_id'=>'required|numeric|min:1',
               'num_bathroom'=>'required|numeric|min:1'
@@ -172,7 +175,7 @@ class ControllerService extends Controller
     }
 
 
-   //Agrega New Step 4
+   //Agrega New Step 4-Movil
     public function AddNewStep4(Request $request){
         $rule=[  'service_id'=>'required|numeric|min:1',
               'city_id'=>'numeric|min:1',
@@ -235,54 +238,54 @@ class ControllerService extends Controller
 
     //Agrega(step5) a un service amenities nota:solo category 1 y 2 tienen amenities 
     public function AddNewStep5(Request $request){
-        $rule=['codigo'=>'required|numeric|min:1',
-                 'id'=>'required|numeric|min:1'
-            ];
-            $validator=Validator::make($request->all(),$rule);
-            if ($validator->fails()) {
-                return response()->json($validator->errors()->all());
-            }else{
-                 $amenite=Amenite::where('category_id','=',1)->where('codigo',$request->input("codigo"))->first();        
-                 if(count($amenite)>0){
-                 $service=Service::select()->where('id',$request->input("id"))->first();
-                 $val= DB::select('select * from service_amenites where service_id = ? and amenite_id=?', [$request->input("id"),$request->input("codigo")]);
-                 if(count($val)==0){
-                    if(count($service)>0){
-                        $amenitenum=intval($amenite->category_id);
-                        $servicenum=intval($service->category_id);
-                        if (strcmp($amenitenum,$servicenum)==0){
-                            $newserviceame=new Service_Amenite;
-                            $newserviceame->service_id=$service->id;
-                            $newserviceame->amenite_id=$amenite->codigo;
-                            $newserviceame->save();
-                            return response()->json('Add Step 5');  
-                       }else{
-                           return response()->json('Does not belong to category'); 
-                       }
-                  }else{
-                    return response()->json('Service not found'); 
-                }}else{
-                    if(count($val)==1){
-                   return response()->json('The amenite was already selected'); 
+        $rule=[
+            'amenitie_code'=>'required|numeric|min:1',
+            'service_id'=>'required|numeric|min:1'
+        ];
+        $validator=Validator::make($request->all(),$rule);
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+        }else{
+            // Selecciono los amenites que posean el código recibido
+            $amenites=Amenite::select('id')->where('category_id','=',1)->where('code',$request->input("amenitie_code"))->get();     
+            if(count($amenites)>0){    
+                // Selecciono el service que posea el id recibido
+                $service=Service::select()->where('id',$request->input("service_id"))->first();
+                if(count($service)>0){
+                    // Recorro el array amenities e inserto cada uno en la tabla interseccion Service_Amenite junto con el service correspondiente
+                    foreach ($amenites as $amenite){
+                        $newserviceame=new Service_Amenite;
+                        $newserviceame->service_id=$service->id;
+                        $newserviceame->amenite_id=$amenite->id;
+                        $newserviceame->save();
+                    }
+                    return response()->json('Add Step 5');
                 }
-             }
-             }else{
-                  return response()->json('Amenite not found'); 
-             }
-         } 
+                else{
+                    return response()->json('Service not found'); 
+                }
+            }
+            else{
+                return response()->json('Amenite not found'); 
+            }
+        } 
     }
  
     //Agrega step6 movil
     public function AddNewStep6(Request $request){
                 $rule=[  'service_id'=>'required|numeric|min:1',
-                'politic_payment'=>'required|numeric:1|min:1|max:3'
+                'politic_payment_code'=>'required|numeric|min:1|max:3',
+                'price'=>'required|numeric',
+                'currency_id'=>'required|numeric',
+                'duration_code'=>'required|numeric'
             ];
             $validator=Validator::make($request->all(),$rule);
             if ($validator->fails()) {
                 return response()->json($validator->errors()->all());
             }else{
                 $service=Service::where('id',$request->input("service_id"))->first();
-                $payment=Payment::where('id',$request->input("politic_payment"))->first();
+                $payment=Payment::select('id')->where('code',$request->input("politic_payment_code"))->get();
+                $duration=Duration::select('id')->where('code',$request->input("duration_code"))->get();  
                 if(count($service)>0 and count($payment)>0){      
                       $newhistory=new Price_History;
                       $dt = new DateTime();
@@ -290,10 +293,20 @@ class ControllerService extends Controller
                       $newhistory->service_id=$service->id;
                       $newhistory->price=$request->input("price");
                       $newhistory->currency_id=$request->input("currency_id");
-                      $newhistory->duration_id=$request->input("duration_id");
                       $newhistory->save();
-                      $service->payment_id=$request->input("politic_payment");
-                      $service->save() ;
+                      foreach($payment as $payments){
+                         $newpayment=new Service_Payment;
+                         $newpayment->service_id=$service->id;
+                         $newpayment->payment_id=$payments->id;
+                         $newpayment->save();
+                       }
+                       foreach($duration as $durations){
+                         $newpriceduration=new Price_history_has_duration;
+                         $newpriceduration->price_history_starDate=$newhistory->starDate;
+                         $newpriceduration->price_history_service_id=$newhistory->service_id;
+                         $newpriceduration->duration_id=$durations->id;
+                         $newpriceduration->save();
+                       }
                       return response()->json($newhistory);
                    }else{
                       return response()->json('Service or Payment not found');
@@ -472,7 +485,7 @@ class ControllerService extends Controller
                     $newreservation->check=$request->input("positive_valuation");
                     $newreservation->save();       
                     return response()->json('Add Preference Reservation');             
-                  }catch(Exception $e){
+                  }catch(\Exception $e){
                       return response()->json($e); 
                   }                 
                 }else{
@@ -481,31 +494,7 @@ class ControllerService extends Controller
     }
    }
 
-   //Agregar accommodation
-    public function AddAccommodation(Request $request){
-        $rule=[  'service_id'=>'required|numeric|min:1',
-              'accommodation_id'=>'required|numeric|min:1'
-            ];
-            $validator=Validator::make($request->all(),$rule);
-            if ($validator->fails()) {
-                return response()->json($validator->errors()->all());
-            }else{
-                $service=Service::where('id','=',$request->input("service_id"))->first();
-                $accommodation=Accommodation::where('id','=',$request->input("accommodation_id"))->first();
-                if(count($service)>0){
-                    if(count($accommodation)>0){
-                     DB::table('service')->where('id',$service->id)->update(
-                            ['accommodation_id'=>$request->input("accommodation_id")
-                            ]);
-                         return response()->json('Add Accommodation'); 
-                    }else{
-                        return response()->json('Accommodation not found');
-                    }    
-                }else{
-                    return response()->json('Service not found');
-                }        
-            }
-    }
+   
     
     //Eliminar Service
     public function DeleteService(Request $request){
@@ -527,28 +516,7 @@ class ControllerService extends Controller
               }        
     }
        
-    //Muestra todos los type-service
-    public function GetTypeService(request $request){
-          $rule=[
-           'user_id' => 'required|numeric|min:1'
-      ];
-      $validator=Validator::make($request->all(),$rule);
-      if ($validator->fails()) {
-        return response()->json($validator->errors()->all());
-        }else{
-             $getrent = DB::table('service')->join('service_type','service.id', '=','service_type.service_id')
-               ->join('type','type.id_type','=','service_type.type_id')
-               ->select('service.title','service.date','type.name as name')
-               ->where('service.user_id','=',$request->input("user_id"))
-               ->get();
-               if(count($getrent)>0){
-                      return response()->json($getrent);
-               }
-               else{
-                    return response()->json("Type not fount");
-               }
-        }
-    } 
+   
       
     //Elimina un service-type
     public function DeleteTypeService(request $request){
@@ -595,37 +563,7 @@ class ControllerService extends Controller
             }
     }   
 
-    //Agrega a un service un dia de la semana ->tabla (service_calender)
-    public function AddServiceCalendar(request $request){
-          $rule=[
-                 'id'=>'required|numeric|min:1',
-                 'codigo_id'=>'required|numeric|min:1|max:8' 
-            ];
-            $validator=Validator::make($request->all(),$rule);
-            if ($validator->fails()) {
-                return response()->json($validator->errors()->all());
-            }else{
-                 $calendar=Calendar::select()->where('codigo_id',$request->input("codigo_id"))->first();        
-                 $service=Service::select()->where('id',$request->input("id"))->first();
-                 $val= DB::select('select * from service_calendar where service_id = ? and calendar_id=?', [$request->input("id"),$request->input("codigo_id")]);
-                 
-                 if(count($service)>0){
-                     if(count($val)==0){
-                       $newcalendar=new Service_Calendar;
-                       $newcalendar->service_id=$service->id;
-                       $newcalendar->calendar_id=$calendar->codigo_id;
-                       $newcalendar->save();
-                       return response()->json('Add date to service');  
-                     }else{
-                         return response()->json('The amenite was already selected'); 
-                     }
-                    }else{
-                        return response()->json('Service not found'); 
-                    }
-
-                }
-    }
-
+    
     //Muestra un service-Calendar en especifico
     public function ReadCalendarService(Request $request){
       $rule=[
@@ -686,7 +624,7 @@ class ControllerService extends Controller
         return response()->json($validator->errors()->all());
         }else{
                $getrent = DB::table('service')->join('service_amenites','service.id', '=','service_amenites.service_id')
-               ->join('amenities','service_amenites.amenite_id','=','amenities.codigo')
+               ->join('amenities','service_amenites.amenite_id','=','amenities.id')
                ->select('service.title','service.date','amenities.name as amenities')
                ->where('service.user_id','=',$request->input("user_id"))
                ->get();
@@ -698,26 +636,7 @@ class ControllerService extends Controller
               
         }
     }
-     
-    //Elimina tabla  Service-Amenites
-    public function DeleteServiceAmenite(request $request){
-             $rule=[
-                    'id'=>'required|numeric|min:1'
-             ];
-             $validator=Validator::make($request->all(),$rule);
-             if ($validator->fails()) {
-                return response()->json($validator->errors()->all());
-             }
-             else{
-                 $seramenite = Service_Amenite::select()->where('id',$request->input("id"))->first();
-                 if(count($seramenite)>0){
-                    DB::table('service_amenites')->where('id',$seramenite->id)->delete();
-                    return response()->json('Service-Amenitie Delete');
-                 }else{
-                    return response()->json('Service-Amenitie Not delete');   
-                 }
-              }   
-    }
+
 
     Public function ReadServiceUser(Request $request){
             $rule=[
@@ -742,8 +661,8 @@ class ControllerService extends Controller
         $rule=[
             // Comente esto, ya que aun no poseo ningun id service
             //'service_id' => 'required|numeric|min:1',
-            'type_id'=>'required|numeric|min:1',
-            'accommodation_id'=>'required|numeric|min:1',
+            'type_code'=>'required|numeric|min:1',
+            'accommodation_code'=>'required|numeric|min:1',
             'live'=>'required|boolean',
             'user_id'=>'required|numeric|min:1'
         ];
@@ -752,9 +671,9 @@ class ControllerService extends Controller
             return response()->json($validator->errors()->all());
         } else {
             $user = User::select()->where('id',$request->input("user_id"))->first(); 
-            $category=Category::select()->where('id',1)->first();  
-            $type=Type::select()->where('category_id','=',$category->id)->where('id_type','=',$request->input("type_id"))->first();  
-            $accommodation=Accommodation::select()->where('id',$request->input("accommodation_id"))->first(); 
+            $category=Category::select('id')->where('code',1)->get(); 
+            $type=Type::select('id_type')->where('category_id','=',1)->where('code','=',$request->input("type_code"))->get();   
+            $accommodation=Accommodation::select('id')->where('code',$request->input("accommodation_code"))->get(); 
             if(count($user)>0){
                 if(count($category)>0){
                     if(count($type)>0){
@@ -763,17 +682,27 @@ class ControllerService extends Controller
                             $dt = new DateTime();
                             $newspace=new Service;
                             $newspace->user_id=$user->id;
-                            $newspace->date=$dt->format('Y-m-d');
-                            $newspace->category_id=$category->id;
-                            $newspace->accommodation_id = $accommodation->id;
+                            $newspace->date=$dt->format('Y-m-d (H:m:s)');
                             $newspace->live=$request->input("live");
                             $newspace->save();
-                            $newtype=new Service_Type;
-                            $newtype->service_id = $newspace->id;
-                            $newtype->type_id = $type->id_type;
-                            $newtype->save();
-                            // Permito que me devuelva el arreglo, ya que necesito el id del servicio creado
-                            //return response()->json('Add Service');
+                          foreach ($category as $categorys){
+                            $newservicateg=new Service_Category;
+                            $newservicateg->service_id=$newspace->id;
+                            $newservicateg->category_id=$categorys->id;
+                            $newservicateg->save();
+                           }
+                            foreach($accommodation as $accommodations){
+                              $newacco=new Service_Accommodation;
+                              $newacco->service_id=$newspace->id;
+                              $newacco->accommodation_id=$accommodations->id;
+                              $newacco->save();
+                            }
+                            foreach($type as $types){
+                              $newtype=new Service_Type;
+                              $newtype->service_id = $newspace->id;
+                              $newtype->type_id=$types->id_type;
+                              $newtype->save();
+                            }
                             return response()->json($newspace);
                           }catch(exception $e){
                               return response()->json($e);
@@ -801,7 +730,8 @@ class ControllerService extends Controller
     public function AddNewSpaceStep2(Request $request){
         $rule=[
            'service_id' => 'required|numeric|min:1',
-           'num_guest'=>'required|numeric|min:0'
+           'num_guest'=>'required|numeric|min:0',
+           'num_bedroom'=>'required|numeric'
         ];
         $validator=Validator::make($request->all(),$rule);
         if ($validator->fails()) {
@@ -856,9 +786,15 @@ class ControllerService extends Controller
             if(count($servicespace)>0){
               $bedroom=Bedroom::select()->where('service_id','=',$servicespace->id)->where('id','=',$request->input("bedroom_id"))->first();
               if(count($bedroom)>0){
+                try{  
                  $newbedroomdouble=new Bedroom_Bed;
                  $newbedroomdouble->bedroom_id=$bedroom->id;
                  $newbedroomdouble->bed_id=1;
+                 $newbedroomdouble->quantity=$request->input("double_bed");
+                 $newbedroomdouble->save();
+                 $newbedroomdouble=new Bedroom_Bed;
+                 $newbedroomdouble->bedroom_id=$bedroom->id;
+                 $newbedroomdouble->bed_id=6;
                  $newbedroomdouble->quantity=$request->input("double_bed");
                  $newbedroomdouble->save();
                  $newbedroomqueen=new Bedroom_Bed;
@@ -866,9 +802,19 @@ class ControllerService extends Controller
                  $newbedroomqueen->bed_id=2;
                  $newbedroomqueen->quantity=$request->input("queen_bed");
                  $newbedroomqueen->save();
+                 $newbedroomqueen=new Bedroom_Bed;
+                 $newbedroomqueen->bedroom_id=$bedroom->id;
+                 $newbedroomqueen->bed_id=7;
+                 $newbedroomqueen->quantity=$request->input("queen_bed");
+                 $newbedroomqueen->save();
                  $newbedroomindividual=new Bedroom_Bed;
                  $newbedroomindividual->bedroom_id=$bedroom->id;
                  $newbedroomindividual->bed_id=3;
+                 $newbedroomindividual->quantity=$request->input("individual_bed");
+                 $newbedroomindividual->save();
+                 $newbedroomindividual=new Bedroom_Bed;
+                 $newbedroomindividual->bedroom_id=$bedroom->id;
+                 $newbedroomindividual->bed_id=8;
                  $newbedroomindividual->quantity=$request->input("individual_bed");
                  $newbedroomindividual->save();
                  $newbedroomsofa=new Bedroom_Bed;
@@ -876,11 +822,25 @@ class ControllerService extends Controller
                  $newbedroomsofa->bed_id=4;
                  $newbedroomsofa->quantity=$request->input("sofa_bed");
                  $newbedroomsofa->save();
+                 $newbedroomsofa=new Bedroom_Bed;
+                 $newbedroomsofa->bedroom_id=$bedroom->id;
+                 $newbedroomsofa->bed_id=9;
+                 $newbedroomsofa->quantity=$request->input("sofa_bed");
+                 $newbedroomsofa->save();
                  $newbedroomother=new Bedroom_Bed;
                  $newbedroomother->bedroom_id=$bedroom->id;
                  $newbedroomother->bed_id=5;
                  $newbedroomother->quantity=$request->input("other_bed");
                  $newbedroomother->save();
+                 $newbedroomother=new Bedroom_Bed;
+                 $newbedroomother->bedroom_id=$bedroom->id;
+                 $newbedroomother->bed_id=10;
+                 $newbedroomother->quantity=$request->input("other_bed");
+                 $newbedroomother->save();
+                    return response()->json('Add  Bedroom-Beds');
+                }catch(Exception $e){
+                    return response()->json($e);
+                }   
               }else{
                     return response()->json('Bedroom not found'); 
               }
@@ -962,7 +922,7 @@ class ControllerService extends Controller
     
        
     //Agregar Service(space-step5)-Web
-    public function AddNewSpaceStep5Amenities(Request $request){
+  /*  public function AddNewSpaceStep5Amenities(Request $request){
             $rule=[
            'service_id' => 'required|numeric|min:1',
            'select_amenitie'=>'required|numeric|min:1',
@@ -996,7 +956,7 @@ class ControllerService extends Controller
                  return response()->json("Service not found");
             }
          }
-   }
+   }*/
    
         
     //Agregar Service(space-step6)-Web
@@ -1004,11 +964,11 @@ class ControllerService extends Controller
         $rule=[  'service_id'=>'required|numeric|min:1',
                   'currency_id'=>'required',
                   'price'=>'numeric|min:0',
-                  'duration_id'=>'required',
-                  'check_cancellation'=>'numeric|required',
-                  'stardate'=>'required|date_format:Y-m-d|before:today',
-                  'finishdate'=>'required|date_format:Y-m-d|after:today',
-                  'price_optional'=>'numeric'
+                  'duration_code'=>'required',
+                  'stardate'=>'required',
+                  'finishdate'=>'required',
+                  'price_optional'=>'numeric',
+                  'politic_payment_code'=>'numeric'
 
             ];
             $validator=Validator::make($request->all(),$rule);
@@ -1016,7 +976,9 @@ class ControllerService extends Controller
                 return response()->json($validator->errors()->all());
             }else{
                 $service=Service::where('id',$request->input("service_id"))->first();
-                if(count($service)>0){
+                $payment=Payment::select('id')->where('code',$request->input("politic_payment_code"))->get();
+                $duration=Duration::select('id')->where('code',$request->input("duration_code"))->get();  
+                if(count($service)>0 && count($payment)>0 && count($duration)){
                 try{
                       $newhistory=new Price_History;
                       $dt = new DateTime();
@@ -1024,7 +986,6 @@ class ControllerService extends Controller
                       $newhistory->service_id=$service->id;
                       $newhistory->price=$request->input("price");
                       $newhistory->currency_id=$request->input("currency_id");
-                      $newhistory->duration_id=$request->input("duration_id");
                       $newhistory->save();
                       $newcheck_in=new Check_in;
                       $newcheck_in->time_entry=$request->input("time_entry");
@@ -1035,17 +996,26 @@ class ControllerService extends Controller
                       $newcheck_out->departure_time=$request->input("departure_time");
                       $newcheck_out->service_id=$service->id;
                       $newcheck_out->save();
-                      $newcancellation=new Service_Cancellation;
-                      $newcancellation->service_id=$service->id;
-                      $newcancellation->cancellation_id=$request->input("check_cancellation");
-                      $newcancellation->save();
+                     foreach($payment as $payments){
+                         $newpayment=new Service_Payment;
+                         $newpayment->service_id=$service->id;
+                         $newpayment->payment_id=$payments->id;
+                         $newpayment->save();
+                       }
+                        foreach($duration as $durations){
+                         $newpriceduration=new Price_history_has_duration;
+                         $newpriceduration->price_history_starDate=$newhistory->starDate;
+                         $newpriceduration->price_history_service_id=$newhistory->service_id;
+                         $newpriceduration->duration_id=$durations->id;
+                         $newpriceduration->save();
+                       }
                       $newoptionalprice=new SpecialDate;
                       $newoptionalprice->service_id=$service->id;;
                       $newoptionalprice->stardate=$request->input("stardate");
                       $newoptionalprice->finishdate=$request->input("finishdate");
                       $newoptionalprice->price=$request->input("price_optional");
                       $newoptionalprice->save();
-                      return response()->json('Add Step6'); 
+                      return response()->json($newhistory); 
                     }catch(exception $e){
                        return response()->json($e); 
                     }
@@ -1228,7 +1198,7 @@ class ControllerService extends Controller
    public function AddNewSpaceStep9(Request $request){
         $rule=[
            'service_id' => 'required|numeric|min:1',
-           'ruta'=>'imagen'
+           'image'=>'required|image'
            ];
       $validator=Validator::make($request->all(),$rule);
       if ($validator->fails()) {
@@ -1246,33 +1216,31 @@ class ControllerService extends Controller
                             'secret' => env('S3_SECRET')
                         ]
                     ]);
-                    $image_link = 'https://s3.'.env('S3_REGION').'.amazonaws.com/'.env('S3_BUCKET').'/files/imagen/';
+                    $image_link = 'https://s3.'.env('S3_REGION').'.amazonaws.com/'.env('S3_BUCKET').'/files/images/';
                     // Obtenemos el campo file definido en el formulario
-                    $file = $request->file('imagen');            
-                    // Creamos un nombre para nuestro thumnail
-                    $name = 'imagen'.str_random(20).'_service_'.$service->id.'.'.$file->getClientOriginalExtension();         
+                    $file = $request->file('image');            
+                    // Creamos un nombre para nuestro imagen
+                    $name = 'image'.str_random(20).'_service_'.$service->id.'.'.$file->getClientOriginalExtension();         
                     // Movemos el archivo a la caperta temporal
-                    $file->move('files/imagen/',$name);
-                    //
-                    $old_thumbnail = str_replace($image_link,'',$service->imagen);
-                    //
-                    $s3->deleteObject([
-                        'Bucket' => env('S3_BUCKET'),
-                        'Key'    => 'files/imagen/'.$old_thumbnail
-                    ]);
-                    //
+                    $file->move('files/images/',$name);
+                    $newruta=new Image();
+                    $old_image = str_replace($image_link,'',$newruta->ruta); 
                     $s3->putObject([
-                        'Bucket' => env('S3_BUCKET'),
-                        'Key'    => 'files/imagen/'.$name,
-                        'Body'   => fopen('files/imagen/'.$name, 'r'),
-                        'ACL'    => 'public-read'
-                    ]);
-                    //
+                    'Bucket' => env('S3_BUCKET'),
+                    'Key'    => 'files/images/'.$name,
+                    'Body'   => fopen('files/images/'.$name,'r'),
+                    'ACL'    => 'public-read'
+                    ]); 
+                     unlink('files/images/'.$name);
+                    $newruta->service_id=$service->id;
+                    $newruta->ruta=$image_link.$name;
+                    $newruta->description=$request->input("description");
+                    $newruta->save();
                     // Borramos el arrchivo de la carpeta temporal
-                    unlink('files/imagen/'.$name);
+                   
                     // Actualizamos la fila thumbnail del usuario respectivo
-                    DB::table('service')->where('id', $service->id )->update(['ruta' => $image_link.$name,
-                    'description'=>$request->input("description")]);
+                    /*DB::table('imagen')->where('service_id', $service->id )->update(['ruta' => $image_link.$name,
+                    'description'=>$request->input("description")]);*/
 
                     return json_encode('Update completed!', true);
                 }

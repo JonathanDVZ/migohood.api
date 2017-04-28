@@ -7,6 +7,7 @@ use Illuminate\Encryption\Encrypter;
 use validator;
 use App\Models\Category;
 use App\Models\Amenite;
+use App\Models\Country;
 use App\Models\Accommodation;
 use App\Models\Calendar;
 use App\Models\Duration;
@@ -16,20 +17,42 @@ use DB;
 
 class ControllerCombobox extends Controller
 {
-    public function GetCategory(){
-         return Category::all();
+    public function GetCategory(Request $request){
+            $rule=[
+             'languaje' => 'required'
+      ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+        return response()->json($validator->errors()->all());
+        }else{   
+               $category=Category::select('id','name','code')->where('languaje','=',$request->input("languaje"))->get();
+            if(count($category)>0){
+                  return response()->json($category);
+            }else{
+                  return response()->json("Category not found"); 
+            }
     }
-
-    public function GetAmenities(){
-         return Amenite::all();
-    }
+}
 
    public function RulesHouse(){
          return House_Rules::all();
     }
 
-    public function GetAccommodation(){
-          return Accommodation::all();        
+    public function GetAccommodation(Request $request){
+             $rule=[
+             'languaje' => 'required'
+      ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+        return response()->json($validator->errors()->all());
+        }else{   
+               $accommodation=Accommodation::select('id','name','code')->where('languaje','=',$request->input("languaje"))->get();
+            if(count($accommodation)>0){
+                  return response()->json($accommodation);
+            }else{
+                  return response()->json("Accommodation not found"); 
+            } 
+       }   
     }
     
     
@@ -37,48 +60,45 @@ class ControllerCombobox extends Controller
           return Calendar::all();        
     }
     
-    public function GetType(){
-          return Type::all();        
-    }
 
-    public function GetDuration(){
-          return Duration::all();        
-    }
-
-    public function GetCity(Request $request){
-        $rule=[
-           'city_id' => 'required|numeric|min:1'
+    public function GetDuration(Request $request){
+               $rule=[
+           'service_id' => 'required|numeric|min:1',
+           'languaje'=>'required'
       ];
       $validator=Validator::make($request->all(),$rule);
       if ($validator->fails()) {
-        return response()->json($validator->errors()->all());
-        }else{
-              $getrent = DB::table('city')->join('state','city.state_id','=','state.id')
-              ->join('country','country.id','=','state.country_id')
-              ->where('city.id','=',$request->input("city_id"))
-              ->select('country.name as country','state.name as state','city.name as city','country.iso','country.iso3','country.numcode','country.phonecode')
-             ->get(); 
-             if(count($getrent)>0){
-               return response()->json($getrent);
-             }else{
-                return response()->json("city_id not found");
-             }
-        }
-    }
-
-    public function TypeGet(Request $request){
-         
-            $type=Type::select()->where('category_id','=',1)->get();
+            $type=Duration::select('id','type','code')->where('languaje','=',$request->input("languaje"))->get();
             if(count($type)>0){
                   return response()->json($type);
             }else{
-                  return response()->json("Error"); 
+                  return response()->json("Duration not found"); 
             }
+      }     
+    }
+
+
+
+    public function TypeGet(Request $request){
+         $rule=[
+           'service_id' => 'required|numeric|min:1',
+           'languaje'=>'required'
+      ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+            $type=Type::select('id_type','name','code')->where('category_id','=',$request->input('category_id'))->where('languaje','=',$request->input("languaje"))->get();
+            if(count($type)>0){
+                  return response()->json($type);
+            }else{
+                  return response()->json("Type not found"); 
+            }
+      }
     }
 
     public function GetBedBedroom(Request $request){
       $rule=[
-           'service_id' => 'required|numeric|min:1'
+           'service_id' => 'required|numeric|min:1',
+           'languaje'=>'required'
       ];
       $validator=Validator::make($request->all(),$rule);
       if ($validator->fails()) {
@@ -88,7 +108,8 @@ class ControllerCombobox extends Controller
                               ->leftjoin('bedroom_bed','bedroom_bed.bedroom_id','=','bedroom.id')
                               ->leftjoin('bed','bed.id','=','bedroom_bed.bed_id')
                               ->where('bedroom.service_id','=',$request->input("service_id"))
-                              ->select('bedroom.id as bedroom_id','bedroom_bed.quantity as bed_quantity','bed.id as bed_id','bed.type as bed_type')
+                              ->where('bed.languaje','=',$request->input("languaje"))
+                              ->select('bedroom.id as bedroom_id','bed.id as bed_id','bedroom_bed.quantity as bed_quantity','bed.type as bed_type')
                               ->get();
           if(count($newbedbedroom)>0){
                 return response()->json($newbedbedroom);
@@ -101,7 +122,8 @@ class ControllerCombobox extends Controller
 public function GetBedBedroomData(Request $request){
          $rule=[
            'user_id'=>'required|min:1',
-           'bedroom_id'=>'required|min:1'
+           'bedroom_id'=>'required|min:1',
+             'languaje' => 'required'
       ];
       $validator=Validator::make($request->all(),$rule);
       if ($validator->fails()) {
@@ -113,9 +135,9 @@ public function GetBedBedroomData(Request $request){
                ->leftjoin('bed','bed.id','=','bedroom_bed.bed_id')
                ->where('service.user_id','=',$request->input("user_id"))
                ->where('bedroom.id','=',$request->input("bedroom_id"))
-               ->select('bedroom_bed.*','service.id as service_id')
+               ->where('bed.languaje','=',$request->input('languaje'))  
+               ->select('bedroom_bed.*','bed.type as type')
                ->get();
-               //dd($newbedbedroomdata);
                if(count($newbedbedroomdata)>0){
                    return response()->json($newbedbedroomdata);
                }else{ 
@@ -126,6 +148,74 @@ public function GetBedBedroomData(Request $request){
         }
 
   }
+
+  public function GetCountry(){
+         
+      $country = DB::table('country')->select('id','name')->get();
+      if(count($country)>0){
+            return response()->json($country);
+      }else{ 
+            return response()->json("Country not found");
+      }
+  }
+
+  public function GetCity(Request $request){
+        $rule=[
+           'state_id' => 'required|numeric|min:1'
+      ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+        return response()->json($validator->errors()->all());
+        }else{
+              $getrent = DB::table('city')->join('state','city.state_id','=','state.id')
+              ->where('state.id','=',$request->input("state_id"))
+              ->select('city.id as id','city.name as city')
+             ->get(); 
+             if(count($getrent)>0){
+               return response()->json($getrent);
+             }else{
+                return response()->json('state not found');
+             }
+        }
+    }
+
+    public function GetState(Request $request){
+        $rule=[
+           'country_id' => 'required|numeric|min:1'
+      ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+        return response()->json($validator->errors()->all());
+        }else{
+              $getrent = DB::table('country')->join('state','state.country_id','=','country.id')
+              ->where('country.id','=',$request->input("country_id"))
+              ->select('state.id as id','state.name as state')
+             ->get(); 
+             if(count($getrent)>0){
+               return response()->json($getrent);
+             }else{
+                return response()->json('Country not found');
+             }
+        }
+    }
+    
+    public function GetSpaceAmenities(Request $request){
+      $rule=[
+           'languaje' => 'required'
+      ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+      }else{
+            $amenitie = DB::table('amenities')->select('code','name')->where('languaje','=',$request->input("languaje"))->where('category_id','=',1)->get();
+            if(count($amenitie)>0){
+                  return response()->json($amenitie);
+            }else{ 
+                  return response()->json("Amenities not found");
+            }
+      }
+    }
+
   
 }
     
