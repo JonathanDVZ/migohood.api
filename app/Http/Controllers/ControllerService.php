@@ -786,6 +786,8 @@ class ControllerService extends Controller
             if(count($servicespace)>0){
               $bedroom=Bedroom::select()->where('service_id','=',$servicespace->id)->where('id','=',$request->input("bedroom_id"))->first();
               if(count($bedroom)>0){
+                $val=Bedroom_Bed::select()->where('bedroom_id','=',$bedroom->id)->first();   
+                if(count($val)==0){
                 try{  
                  $newbedroomdouble=new Bedroom_Bed;
                  $newbedroomdouble->bedroom_id=$bedroom->id;
@@ -840,7 +842,41 @@ class ControllerService extends Controller
                     return response()->json('Add  Bedroom-Beds');
                 }catch(Exception $e){
                     return response()->json($e);
-                }   
+                }
+            }else{
+                     DB::table('bedroom_bed')->where('bedroom_id',$bedroom->id)->where('bed_id',1)->update(
+                            ['quantity'=>$request->input("double_bed"),
+                            ]);
+                     DB::table('bedroom_bed')->where('bedroom_id',$bedroom->id)->where('bed_id',6)->update(
+                            ['quantity'=>$request->input("double_bed"),
+                            ]);   
+                     DB::table('bedroom_bed')->where('bedroom_id',$bedroom->id)->where('bed_id',2)->update(
+                            ['quantity'=>$request->input("queen_bed"),
+                            ]);
+                     DB::table('bedroom_bed')->where('bedroom_id',$bedroom->id)->where('bed_id',7)->update(
+                            ['quantity'=>$request->input("queen_bed"),
+                            ]);  
+                     DB::table('bedroom_bed')->where('bedroom_id',$bedroom->id)->where('bed_id',3)->update(
+                            ['quantity'=>$request->input("individual_bed"),
+                            ]);
+                     DB::table('bedroom_bed')->where('bedroom_id',$bedroom->id)->where('bed_id',8)->update(
+                            ['quantity'=>$request->input("individual_bed"),
+                            ]);  
+                     DB::table('bedroom_bed')->where('bedroom_id',$bedroom->id)->where('bed_id',4)->update(
+                            ['quantity'=>$request->input("sofa_bed"),
+                            ]);
+                     DB::table('bedroom_bed')->where('bedroom_id',$bedroom->id)->where('bed_id',9)->update(
+                            ['quantity'=>$request->input("sofa_bed"),
+                            ]);                
+                     DB::table('bedroom_bed')->where('bedroom_id',$bedroom->id)->where('bed_id',5)->update(
+                            ['quantity'=>$request->input("other_bed"),
+                            ]);
+                     DB::table('bedroom_bed')->where('bedroom_id',$bedroom->id)->where('bed_id',10)->update(
+                            ['quantity'=>$request->input("other_bed"),
+                            ]);                
+                                    
+                     return response()->json('Update  Bedroom-Beds');
+                 }    
               }else{
                     return response()->json('Bedroom not found'); 
               }
