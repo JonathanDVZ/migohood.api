@@ -61,93 +61,132 @@ class ControllerCombobox extends Controller
     }
     
 
-      public function GetDuration(Request $request){
-            $rule=[
-                'service_id' => 'required|numeric|min:1',
-                'languaje'=>'required'
-            ];
-            $validator=Validator::make($request->all(),$rule);
-            if ($validator->fails()) {
-                  return response()->json($validator->errors()->all());
-            }else{
-                  $type=Duration::select('id','type','code')->where('languaje','=',$request->input("languaje"))->get();
-                  if(count($type)>0){
-                        return response()->json($type);
-                  }else{
-                        return response()->json("Duration not found"); 
-                  }
-            }     
+    public function GetDuration(Request $request){
+          $rule=[
+              'service_id' => 'required|numeric|min:1',
+              'languaje'=>'required'
+          ];
+          $validator=Validator::make($request->all(),$rule);
+          if ($validator->fails()) {
+                return response()->json($validator->errors()->all());
+          }else{
+                $type=Duration::select('id','type','code')->where('languaje','=',$request->input("languaje"))->get();
+                if(count($type)>0){
+                      return response()->json($type);
+                }else{
+                      return response()->json("Duration not found"); 
+                }
+          }     
     }
 
 
-      public function TypeGet(Request $request){
-            $rule=[
-                  'languaje'=>'required'
-            ];
-            $validator=Validator::make($request->all(),$rule);
-            if ($validator->fails()) {
-                  return response()->json($validator->errors()->all());
+    public function TypeGet(Request $request){
+          $rule=[
+                'languaje'=>'required'
+          ];
+          $validator=Validator::make($request->all(),$rule);
+          if ($validator->fails()) {
+                return response()->json($validator->errors()->all());
+          }else{
+                $type=Type::select('id_type','name','code')->where('category_id','=',1)->where('languaje','=',$request->input("languaje"))->get();
+                if(count($type)>0){
+                      return response()->json($type);
+                }else{
+                      return response()->json("Type not found"); 
+                }
+          }
+    }
+
+    public function GetBeds(Request $request){
+        $rule=[
+            'service_id' => 'required|numeric|min:1',
+            //'languaje'=>'required'
+        ];
+        $validator=Validator::make($request->all(),$rule);
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+        } else {
+        
+            $newbedbedroom=DB::table('bedroom')
+                          //->leftjoin('bedroom_bed','bedroom_bed.bedroom_id','=','bedroom.id')
+                          //->leftjoin('bed','bed.id','=','bedroom_bed.bed_id')
+                          ->where('bedroom.service_id','=',$request->input("service_id"))
+                          ->select('bedroom.id as bedroom_id'/*,'bedroom_bed.quantity as bed_quantity'*/)
+                          ->get();
+            //dd($newbedbedroom);
+            if(count($newbedbedroom)>0){
+                return response()->json($newbedbedroom);
             }else{
-                  $type=Type::select('id_type','name','code')->where('category_id','=',1)->where('languaje','=',$request->input("languaje"))->get();
-                  if(count($type)>0){
-                        return response()->json($type);
-                  }else{
-                        return response()->json("Type not found"); 
-                  }
+                return response()->json('GetBedroom Not found'); 
             }
-      }
+            
+        }
+    }
 
     public function GetBedBedroom(Request $request){
-      $rule=[
-           'service_id' => 'required|numeric|min:1',
-           'languaje'=>'required'
-      ];
-      $validator=Validator::make($request->all(),$rule);
-      if ($validator->fails()) {
-        return response()->json($validator->errors()->all());
-        }else{
-          $newbedbedroom=DB::table('bedroom')
+        $rule=[
+            'bedroom_id' => 'required|numeric|min:1',
+            'languaje'=>'required'
+        ];
+        $validator=Validator::make($request->all(),$rule);
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+        } else {
+            $newbedbedroom=DB::table('bedroom')
                               ->leftjoin('bedroom_bed','bedroom_bed.bedroom_id','=','bedroom.id')
                               ->leftjoin('bed','bed.id','=','bedroom_bed.bed_id')
-                              ->where('bedroom.service_id','=',$request->input("service_id"))
+                              ->where('bedroom.id','=',$request->input("bedroom_id"))
                               ->where('bed.languaje','=',$request->input("languaje"))
-                              ->select('bedroom.id as bedroom_id','bed.id as bed_id','bedroom_bed.quantity as bed_quantity','bed.type as bed_type')
+                              ->select('bedroom.id as bedroom_id','bedroom_bed.quantity as bed_quantity','bed.type as bed_type','bed.id as bed_id')
                               ->get();
-          if(count($newbedbedroom)>0){
+            //dd($newbedbedroom);
+            //if(count($newbedbedroom)>0){
                 return response()->json($newbedbedroom);
-          }else{
+            /*}else{
                 return response()->json('GetBedroom Not found'); 
-          }
-       }
-  }
+                
+            }*/
+        }
+    }
 
-public function GetBedBedroomData(Request $request){
-         $rule=[
-           'user_id'=>'required|min:1',
-           'bedroom_id'=>'required|min:1',
-             'languaje' => 'required'
+  public function GetBedBedroomData(Request $request){
+      $rule=[
+          'user_id'=>'required|min:1',
+          'bedroom_id'=>'required|min:1',
+          'languaje' => 'required'
       ];
       $validator=Validator::make($request->all(),$rule);
       if ($validator->fails()) {
         return response()->json($validator->errors()->all());
-        }else{
-               $newbedbedroomdata=DB::table('service')
-               ->join('bedroom','bedroom.service_id','=','service.id')
-               ->leftjoin('bedroom_bed','bedroom_bed.bedroom_id','=','bedroom.id')
-               ->leftjoin('bed','bed.id','=','bedroom_bed.bed_id')
-               ->where('service.user_id','=',$request->input("user_id"))
-               ->where('bedroom.id','=',$request->input("bedroom_id"))
-               ->where('bed.languaje','=',$request->input('languaje'))  
-               ->select('bedroom_bed.*','bed.type as type')
-               ->get();
-               if(count($newbedbedroomdata)>0){
-                   return response()->json($newbedbedroomdata);
-               }else{ 
-                   return response()->json("The user does not have a room or user not found");
-                    
-               }
-
+      }else{
+        $exist=DB::table('service')
+                  ->join('bedroom','bedroom.service_id','=','service.id')
+                  ->where('service.user_id','=',$request->input("user_id"))
+                  ->where('bedroom.id','=',$request->input("bedroom_id"))  
+                  ->select('bedroom.id')
+                  ->get();
+        if(count($exist)>0){
+          $newbedbedroomdata=DB::table('service')
+                              ->join('bedroom','bedroom.service_id','=','service.id')
+                              ->leftjoin('bedroom_bed','bedroom_bed.bedroom_id','=','bedroom.id')
+                              ->leftjoin('bed','bed.id','=','bedroom_bed.bed_id')
+                              ->where('service.user_id','=',$request->input("user_id"))
+                              ->where('bedroom.id','=',$request->input("bedroom_id"))
+                              ->where('bed.languaje','=',$request->input("languaje"))  
+                              ->select('bedroom_bed.*', 'bed.type as type')
+                              ->get();
+          //if(count($newbedbedroomdata)>0){
+          return response()->json($newbedbedroomdata);
+          /*}else{ 
+            return response()->json("The user does not have a room or user not found");
+              
+          }*/
+        }else{ 
+          return response()->json("The user does not have a room or user not found");
+              
         }
+
+      }
 
   }
 

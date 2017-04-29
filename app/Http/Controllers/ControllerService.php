@@ -768,7 +768,7 @@ class ControllerService extends Controller
 
    //Agregar Service(space-step2-beds)-Web
    public function AddNewSpaceStep2Beds(Request $request){
-         $rule=[
+        $rule=[
            'service_id' => 'required|numeric|min:1',
            'bedroom_id'=>'required|numeric|min:0',
            'double_bed'=>'numeric|min:0',
@@ -777,10 +777,10 @@ class ControllerService extends Controller
            'sofa_bed'=>'numeric|min:0',
            'other_bed'=>'numeric|min:0|max:1'
            
-      ];
-      $validator=Validator::make($request->all(),$rule);
-      if ($validator->fails()) {
-        return response()->json($validator->errors()->all());
+        ];
+        $validator=Validator::make($request->all(),$rule);
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
         }else{
             $servicespace=Service::select()->where('id',$request->input("service_id"))->first();
             if(count($servicespace)>0){
@@ -837,7 +837,7 @@ class ControllerService extends Controller
                  $newbedroomother->bed_id=10;
                  $newbedroomother->quantity=$request->input("other_bed");
                  $newbedroomother->save();
-                    return response()->json('Add  Bedroom-Beds');
+                    return response()->json('Add Bedroom-Beds');
                 }catch(Exception $e){
                     return response()->json($e);
                 }   
