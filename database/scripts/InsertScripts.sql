@@ -1,5 +1,5 @@
 use Migohood;
-insert into category(name,code,languaje) values 
+insert into category(id,name,code,languaje) values 
 (1,"Space",1,"EN"),
 (2,"Workspace",2,"EN"),
 (3,"Parking space",3,"EN"),
@@ -9,7 +9,7 @@ insert into category(name,code,languaje) values
 (7,"Plaza de aparcamiento",3,"ES"),
 (8,"Servicio",4,"ES");
 
-insert into type(id,name,category_id,code,languaje) values
+insert into type(id_type,name,category_id,code,languaje) values
 (1,"Apartament",1,1,"EN"),
 (2,"House",1,2,"EN"),
 (3,"B&B",1,3,"EN"),
@@ -18,9 +18,9 @@ insert into type(id,name,category_id,code,languaje) values
 (6,"Apartamento",1,1,"ES"),
 (7,"Casa",1,2,"ES"),
 (8,"Cama y desayuno",1,3,"ES"),
-(9"Habitacion",1,4,"ES"),
+(9,"Habitacion",1,4,"ES"),
 (10,"Otros",1,5,"ES");
-insert into type(id,name,category_id,code,languaje) values
+insert into type(id_type,name,category_id,code,languaje) values
 (11,"Bussiness center",2,1,"EN"),
 (12,"Corporate office",2,2,"EN"),
 (13,"Coworking space",2,3,"EN"),
@@ -29,7 +29,7 @@ insert into type(id,name,category_id,code,languaje) values
 (16,"Oficina corporativa",2,2,"ES"),
 (17,"Espacio de trabajo",2,3,"ES"),
 (18,"Otros espacios",2,4,"ES");
-insert into type(id,name,category_id,code,languaje) values
+insert into type(id_type,name,category_id,code,languaje) values
 (19,"Driveway",3,1,"EN"),
 (20,"Garage",3,2,"EN"),
 (21,"Car park",3,3,"EN"),
@@ -38,7 +38,7 @@ insert into type(id,name,category_id,code,languaje) values
 (24,"Garaje",3,2,"ES"),
 (25,"Estacionamiento",3,3,"ES"),
 (26,"Otros",3,4,"ES");
-insert into type(id,name,category_id,code,languaje) values
+insert into type(id_type,name,category_id,code,languaje) values
 (27,"Tourism",4,1,"EN"),
 (28,"Educational",4,2,"EN"),
 (29,"Cultural",4,3,"EN"),
