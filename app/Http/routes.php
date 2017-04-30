@@ -273,6 +273,8 @@ $app->get('/calendar/get-calendar','ControllerCombobox@GetCalendar');
 //Muestra todas las duraciones
 $app->get('/duration/get-duration','ControllerCombobox@GetDuration');
 //Muestra todas las  habitaciones que tiene un servicio
+$app->get('/service/get-beds','ControllerCombobox@GetBeds');
+//Muestra todas las camas que tiene una habitacion
 $app->get('/service/get-bed-bedroom','ControllerCombobox@GetBedBedroom');
 //Muestra datos de una habitacion
 $app->get('/service/get-bed-bedroom-data','ControllerCombobox@GetBedBedroomData');
