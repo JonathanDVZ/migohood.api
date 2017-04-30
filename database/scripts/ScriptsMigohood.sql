@@ -602,6 +602,7 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `Migohood`.`description` (
   `description_id` INT NOT NULL AUTO_INCREMENT,
   `type` VARCHAR(45) NOT NULL,
+  `description` VARCHAR(100) NULL,
   PRIMARY KEY (`description_id`))
 ENGINE = InnoDB;
 
@@ -663,13 +664,12 @@ ENGINE = InnoDB;
 -- Table `Migohood`.`bedroom_bed`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `Migohood`.`bedroom_bed` (
-  `id` INT NOT NULL AUTO_INCREMENT,
   `bedroom_id` INT NOT NULL,
   `bed_id` INT NOT NULL,
   `quantity` INT NOT NULL,
   INDEX `fk_bedroom_has_bed_bed1_idx` (`bed_id` ASC),
   INDEX `fk_bedroom_has_bed_bedroom1_idx` (`bedroom_id` ASC),
-  PRIMARY KEY (`id`),
+  PRIMARY KEY (`bedroom_id`, `bed_id`),
   CONSTRAINT `fk_bedroom_has_bed_bedroom1`
     FOREIGN KEY (`bedroom_id`)
     REFERENCES `Migohood`.`bedroom` (`id`)
@@ -689,8 +689,6 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `Migohood`.`house_rules` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `type` VARCHAR(45) NOT NULL,
-  `code` INT NULL,
-  `languaje` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB;
 
