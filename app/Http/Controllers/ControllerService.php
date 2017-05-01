@@ -102,7 +102,7 @@ class ControllerService extends Controller
             if ($validator->fails()) {
                 return response()->json($validator->errors()->all());
             }else{
-                 $type=Type::select('id_type')->where('category_id',1)->where('code',$request->input("type_code"))->get(); 
+                 $type=Type::select('id')->where('category_id',1)->where('code',$request->input("type_code"))->get(); 
                     //  $accommodation=Accommodation::select('id')->where('code',$request->input("accommodation_code"))->get();        
                  if(count($type)>0){
                       $service=Service::select()->where('id',$request->input("service_id"))->first();
@@ -110,7 +110,7 @@ class ControllerService extends Controller
                                foreach ($type as $types){
                                  $newservitype=new Service_Type;
                                  $newservitype->service_id=$service->id;
-                                 $newservitype->type_id=$types->id_type;
+                                 $newservitype->type_id=$types->id;
                                  $newservitype->save();
                                 }
                               return response()->json("Add Step1");  
@@ -672,7 +672,7 @@ class ControllerService extends Controller
         } else {
             $user = User::select()->where('id',$request->input("user_id"))->first(); 
             $category=Category::select('id')->where('code',1)->get(); 
-            $type=Type::select('id_type')->where('category_id','=',1)->where('code','=',$request->input("type_code"))->get();   
+            $type=Type::select('id')->where('category_id','=',1)->where('code','=',$request->input("type_code"))->get();   
             $accommodation=Accommodation::select('id')->where('code',$request->input("accommodation_code"))->get(); 
             if(count($user)>0){
                 if(count($category)>0){
@@ -700,7 +700,7 @@ class ControllerService extends Controller
                             foreach($type as $types){
                               $newtype=new Service_Type;
                               $newtype->service_id = $newspace->id;
-                              $newtype->type_id=$types->id_type;
+                              $newtype->type_id=$types->id;
                               $newtype->save();
                             }
                             return response()->json($newspace);

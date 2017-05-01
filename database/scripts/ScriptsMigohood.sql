@@ -135,8 +135,6 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `Migohood`.`type_amenities` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NOT NULL,
-  `code` INT NULL,
-  `languaje` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB;
 
@@ -189,12 +187,12 @@ ENGINE = InnoDB;
 -- Table `Migohood`.`type`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `Migohood`.`type` (
-  `id_type` INT NOT NULL AUTO_INCREMENT,
+  `id` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NOT NULL,
   `category_id` INT NOT NULL,
   `code` INT NULL,
   `languaje` VARCHAR(45) NOT NULL,
-  PRIMARY KEY (`id_type`),
+  PRIMARY KEY (`id`),
   INDEX `fk_TYPE_CATEGORY1_idx` (`category_id` ASC),
   CONSTRAINT `fk_TYPE_CATEGORY1`
     FOREIGN KEY (`category_id`)
@@ -256,7 +254,7 @@ CREATE TABLE IF NOT EXISTS `Migohood`.`service_type` (
     ON UPDATE CASCADE,
   CONSTRAINT `type_id`
     FOREIGN KEY (`type_id`)
-    REFERENCES `Migohood`.`type` (`id_type`)
+    REFERENCES `Migohood`.`type` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB;

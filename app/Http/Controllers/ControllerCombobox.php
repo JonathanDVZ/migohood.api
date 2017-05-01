@@ -88,7 +88,7 @@ class ControllerCombobox extends Controller
           if ($validator->fails()) {
                 return response()->json($validator->errors()->all());
           }else{
-                $type=Type::select('id_type','name','code')->where('category_id','=',1)->where('languaje','=',$request->input("languaje"))->get();
+                $type=Type::select('id','name','code')->where('category_id','=',1)->where('languaje','=',$request->input("languaje"))->get();
                 if(count($type)>0){
                       return response()->json($type);
                 }else{
