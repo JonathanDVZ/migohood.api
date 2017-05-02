@@ -50,7 +50,7 @@ class ControllerService extends Controller
     public function AddNewStep(Request $request){
              //Regla de validacion       
               $rule=[
-                    'user_id'=>'required|numeric|min:1',
+                    'service_id'=>'required|numeric|min:1',
                     'accommodation_code'=>'required|numeric|min:1',
              ];
              $validator=Validator::make($request->all(),$rule);
@@ -59,38 +59,36 @@ class ControllerService extends Controller
                }
              else{
                  //Busca el usuario
-                 $user = User::select()->where('id',$request->input("user_id"))->first();  
-                 $accommodation=Accommodation::select('id')->where('code',$request->input("accommodation_code"))->get(); 
-                   $category=Category::select('id')->where('code',1)->get(); 
-                 if(count($user)>0){///Verifica el usuario
-                 if(count($accommodation)>0 && count($category)>0){
-                    $valacco=Service_Category::select('id')->where('code',1)->get(); 
-                       $newservice=new Service();
-                       $dt = new DateTime();
-                       $newservice->user_id=$user->id;
-                       $newservice->date=$dt->format('Y-m-d (H:m:s)');
-                       $newservice->save();
-                     foreach ($category as $categorys){
-                        $newservicateg=new Service_Category;
-                        $newservicateg->service_id=$newservice->id;
-                        $newservicateg->category_id=$categorys->id;
-                        $newservicateg->save();
-                    }
-                       foreach ($accommodation as $accommodations){
+                 $service=Service::where('id',$request->input("service_id"))->first();
+                 $accommodation=Accommodation::select('id')->where('code',$request->input("accommodation_code"))->get();  
+                 if(count($service)>0){///Verifica el usuario
+                 if(count($accommodation)>0){
+                    $valacco=Service_Accommodation::select()->where('service_id',$service->id)->get();
+                    if(count($valacco)==0){ 
+                        foreach ($accommodation as $accommodations){
                         $newserviacco=new Service_Accommodation;
-                        $newserviacco->service_id=$newservice->id;
+                        $newserviacco->service_id=$service->id;
                         $newserviacco->accommodation_id=$accommodations->id;
                         $newserviacco->save();
-                    }
-                              return response()->json($newservice);
-
-                 }else{
+                         return response()->json($newserviacco);
+                        }
+                    }else{
+                          DB::table('service_description')->where('service_id',$service->id)->delete();
+                          foreach ($accommodation as $accommodations){
+                          $newserviacco=new Service_Accommodation;
+                          $newserviacco->service_id=$service->id;
+                          $newserviacco->accommodation_id=$accommodations->id;
+                          $newserviacco->save();
+                          return response()->json($newserviacco);
+                          }
+                     }
+                    }else{
                         return response()->json('Accommodation not found');                 
-                 }  
-                }else{
-                    return response()->json('User not found');  
-                }
-            } 
+                    }  
+            }else{
+                return response()->json('Service not found');  
+            }
+    }
     }
      
    
@@ -108,13 +106,25 @@ class ControllerService extends Controller
                  if(count($type)>0){
                       $service=Service::select()->where('id',$request->input("service_id"))->first();
                          if(count($service)>0){
+                               $valtype=Service_Type::select()->where('service_id',$service->id)->get();
+                               if(count($valtype)==0){
                                foreach ($type as $types){
                                  $newservitype=new Service_Type;
                                  $newservitype->service_id=$service->id;
                                  $newservitype->type_id=$types->id;
                                  $newservitype->save();
+                                 }
+                                     return response()->json('Add Type'); 
+                                }else{
+                                 DB::table('service_type')->where('service_id',$service->id)->delete();
+                                 foreach ($type as $types){
+                                 $newservitype=new Service_Type;
+                                 $newservitype->service_id=$service->id;
+                                 $newservitype->type_id=$types->id;
+                                 $newservitype->save();
                                 }
-                              return response()->json("Add Step1");  
+                                   return response()->json('Update Type'); 
+                                } 
                        }else{
                              return response()->json('Service not found'); 
                          }   
@@ -144,7 +154,7 @@ class ControllerService extends Controller
                            $bedroom=new Bedroom;
                            $bedroom->service_id=$service->id; 
                            $bedroom->save();
-                    }
+                     }
                      return response()->json($bedroom);                
                 }else{
                      return response()->json('Service not found'); 
@@ -254,6 +264,8 @@ class ControllerService extends Controller
                 $service=Service::select()->where('id',$request->input("service_id"))->first();
                 if(count($service)>0){
                     // Recorro el array amenities e inserto cada uno en la tabla interseccion Service_Amenite junto con el service correspondiente
+                   $valamenitie=Service_Amenite::select()->where('service_id',$service->id)->first();
+                   if(count($valamenitie)==0){
                     foreach ($amenites as $amenite){
                         $newserviceame=new Service_Amenite;
                         $newserviceame->service_id=$service->id;
@@ -261,6 +273,16 @@ class ControllerService extends Controller
                         $newserviceame->save();
                     }
                     return response()->json('Add Step 5');
+                   }else{
+                        DB::table('service_amenites')->where('service_id',$service->id)->delete();
+                        foreach ($amenites as $amenite){
+                        $newserviceame=new Service_Amenite;
+                        $newserviceame->service_id=$service->id;
+                        $newserviceame->amenite_id=$amenite->id;
+                        $newserviceame->save();
+                        }
+                         return response()->json('Update Step 5');
+                    }
                 }
                 else{
                     return response()->json('Service not found'); 
@@ -378,6 +400,8 @@ class ControllerService extends Controller
             }else{
                 $service=Service::where('id',$request->input("service_id"))->first();
                 if(count($service)>0){
+                    $valrules=Service_Rules::where('service_id',$service->id)->first();
+                    if(count($valtrules)==0){
                     $newrules=new Service_Rules;
                     $newrules->service_id=$service->id;
                     $newrules->rules_id=1;
@@ -403,7 +427,36 @@ class ControllerService extends Controller
                     $newrules->rules_id=5;
                     $newrules->check=$request->input("Eventos");
                     $newrules->save();
-                    return response()->json('Add Rules'); 
+                    return response()->json('Add Rules');
+                    }else{
+                          DB::table('service_rules')->where('service_id',$service->id)->delete();
+                          $newrules=new Service_Rules;
+                          $newrules->service_id=$service->id;
+                          $newrules->rules_id=1;
+                          $newrules->check=$request->input("AptoDe2a12");
+                          $newrules->save();
+                          $newrules=new Service_Rules;
+                          $newrules->service_id=$service->id;
+                          $newrules->rules_id=2;
+                          $newrules->check=$request->input("AptoDe0a2");
+                          $newrules->save();
+                          $newrules=new Service_Rules;
+                          $newrules->service_id=$service->id;
+                          $newrules->rules_id=3;
+                          $newrules->check=$request->input("SeadmitenMascotas");
+                          $newrules->save();
+                          $newrules=new Service_Rules;
+                          $newrules->service_id=$service->id;
+                          $newrules->rules_id=4;
+                          $newrules->check=$request->input("PremitidoFumar");
+                          $newrules->save();
+                          $newrules=new Service_Rules;
+                          $newrules->service_id=$service->id;
+                          $newrules->rules_id=5;
+                          $newrules->check=$request->input("Eventos");
+                          $newrules->save();
+                          return response()->json('Update Rules');
+                    } 
                }else{
                     return response()->json('Service not found'); 
                 }
@@ -449,6 +502,8 @@ class ControllerService extends Controller
             if ($validator->fails()) {
                 $service=Service::where('id','=',$request->input("service_id"))->first();
                 if(count($service)>0){
+                  $valreservation=Service_Reservation::where('service_id',$service->id)->get();
+                 if(count($valreservation)==0){
                   try{
                     $newreservation=new Service_Reservation;
                     $newreservation->service_id=$service->id;
@@ -488,6 +543,44 @@ class ControllerService extends Controller
                     return response()->json('Add Preference Reservation');             
                   }catch(\Exception $e){
                       return response()->json($e); 
+                  }}else{
+                      DB::table('service_reservation')->where('service_id',$service->id)->delete();
+                       $newreservation=new Service_Reservation;
+                    $newreservation->service_id=$service->id;
+                    $newreservation->preference_id=1;
+                    $newreservation->check=$request->input("compliant_guests");
+                    $newreservation->save();
+                    $newreservation=new Service_Reservation;
+                    $newreservation->service_id=$service->id;
+                    $newreservation->preference_id=2;
+                    $newreservation->check=$request->input("send_request");
+                    $newreservation->save();
+                    $newreservation=new Service_Reservation;
+                    $newreservation->service_id=$service->id;
+                    $newreservation->preference_id=3;
+                    $newreservation->check=$request->input("phone_and_email");
+                    $newreservation->save();
+                    $newreservation=new Service_Reservation;
+                    $newreservation->service_id=$service->id;
+                    $newreservation->preference_id=4;
+                    $newreservation->check=$request->input("thumbnail");
+                    $newreservation->save(); 
+                    $newreservation=new Service_Reservation;
+                    $newreservation->service_id=$service->id;
+                    $newreservation->preference_id=5;
+                    $newreservation->check=$request->input("data_payment");
+                    $newreservation->save();
+                    $newreservation=new Service_Reservation;
+                    $newreservation->service_id=$service->id;
+                    $newreservation->preference_id=6;
+                    $newreservation->check=$request->input("id");
+                    $newreservation->save();
+                    $newreservation=new Service_Reservation;
+                    $newreservation->service_id=$service->id;
+                    $newreservation->preference_id=7;
+                    $newreservation->check=$request->input("positive_valuation");
+                    $newreservation->save();       
+                    return response()->json('Update Preference Reservation');
                   }                 
                 }else{
                      return response()->json('Service not found'); 

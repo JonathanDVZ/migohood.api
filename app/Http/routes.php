@@ -65,6 +65,8 @@ $app->post('/user/set-user-oauth','ControllerUser@UserOauth');//-->3/3/2017
 
 /*CRUD SERVICE Movil*//////////////////////////////////////////////////////////////
 /*Create*/
+//Agregar un servicio (space-step)
+$app->post('/service/space/create','ControllerService@AddNewSpaceStep');
 //Agrega una category
 $app->post('/service/space/step','ControllerService@AddNewStep');
 //Agrega  type
