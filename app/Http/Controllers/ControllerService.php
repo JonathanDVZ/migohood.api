@@ -64,6 +64,7 @@ class ControllerService extends Controller
                    $category=Category::select('id')->where('code',1)->get(); 
                  if(count($user)>0){///Verifica el usuario
                  if(count($accommodation)>0 && count($category)>0){
+                    $valacco=Service_Category::select('id')->where('code',1)->get(); 
                        $newservice=new Service();
                        $dt = new DateTime();
                        $newservice->user_id=$user->id;
@@ -654,56 +655,105 @@ class ControllerService extends Controller
               }
               
         }
+    }
+
+    //Agrega un espacio(web)
+    public function AddNewSpaceStep(Request $request){
+         $rule=[
+            'user_id' => 'required|numeric|min:1',
+            'category_code'=>'required|numeric|min:1',
+        ];
+        $validator=Validator::make($request->all(),$rule);
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+        }else{
+              $user=User::select()->where('id',$request->input("user_id"))->first(); 
+              $category=Category::select('id')->where('code',$request->input("category_code"))->get(); 
+              if(count($user)>0){
+                 if(count($category)>0){
+                     $newspace=new Service;
+                     $dt = new DateTime();
+                     $newspace->date=$dt->format('Y-m-d (H:m:s)');
+                     $newspace->user_id=$user->id;
+                     $newspace->save();
+                     foreach ($category as $categorys){
+                            $newservicateg=new Service_Category;
+                            $newservicateg->service_id=$newspace->id;
+                            $newservicateg->category_id=$categorys->id;
+                            $newservicateg->save();
+                           }
+                     return  response()->json($newspace); 
+                }else{
+                     return  response()->json("Category Not Found");
+                 }
+              }else{
+                 return  response()->json("User Not Found");
+              }
+        }
+
     }  
 
    //Agregar Service(space-step1)-Web
     public function AddNewSpaceStep1(Request $request){
         $rule=[
             // Comente esto, ya que aun no poseo ningun id service
-            //'service_id' => 'required|numeric|min:1',
+            'service_id' => 'required|numeric|min:1',
             'type_code'=>'required|numeric|min:1',
-            'accommodation_code'=>'required|numeric|min:1',
             'live'=>'required|boolean',
-            'user_id'=>'required|numeric|min:1'
+            'accommodation_code'=>'required|numeric|min:1'
         ];
         $validator=Validator::make($request->all(),$rule);
         if ($validator->fails()) {
             return response()->json($validator->errors()->all());
         } else {
-            $user = User::select()->where('id',$request->input("user_id"))->first(); 
-            $category=Category::select('id')->where('code',1)->get(); 
+            $service=Service::select()->where('id',$request->input("service_id"))->first();
             $type=Type::select('id')->where('category_id','=',1)->where('code','=',$request->input("type_code"))->get();   
             $accommodation=Accommodation::select('id')->where('code',$request->input("accommodation_code"))->get(); 
-            if(count($user)>0){
-                if(count($category)>0){
+                if(count($service)>0){
                     if(count($type)>0){
                         if(count($accommodation)>0){
+                          $valacco=Service_Accommodation::select('id')->where('service_id',$service->id)->get();
+                          $valtype=Service_Type::select()->where('service_id',$service->id)->first();
                           try{
-                            $dt = new DateTime();
-                            $newspace=new Service;
-                            $newspace->user_id=$user->id;
-                            $newspace->date=$dt->format('Y-m-d (H:m:s)');
-                            $newspace->live=$request->input("live");
-                            $newspace->save();
-                          foreach ($category as $categorys){
-                            $newservicateg=new Service_Category;
-                            $newservicateg->service_id=$newspace->id;
-                            $newservicateg->category_id=$categorys->id;
-                            $newservicateg->save();
-                           }
-                            foreach($accommodation as $accommodations){
-                              $newacco=new Service_Accommodation;
-                              $newacco->service_id=$newspace->id;
-                              $newacco->accommodation_id=$accommodations->id;
-                              $newacco->save();
-                            }
-                            foreach($type as $types){
-                              $newtype=new Service_Type;
-                              $newtype->service_id = $newspace->id;
-                              $newtype->type_id=$types->id;
-                              $newtype->save();
-                            }
-                            return response()->json($newspace);
+                              if(count($valacco)==0 && count($valtype)==0){ 
+                                DB::table('service')->where('id',$service->id)->update(
+                                ['live'=>$request->input("live"),
+                                ]);
+                             
+                                foreach($accommodation as $accommodations){
+                                  $newacco=new Service_Accommodation;
+                                  $newacco->service_id=$service->id;
+                                  $newacco->accommodation_id=$accommodations->id;
+                                  $newacco->save();
+                                }
+                                foreach($type as $types){
+                                  $newtype=new Service_Type;
+                                  $newtype->service_id = $service->id;
+                                  $newtype->type_id=$types->id;
+                                  $newtype->save();
+                                 }
+                                return response()->json('Add Accommodaton and Type ');
+                            }else{
+                            DB::table('service_type')->where('service_id',$service->id)->delete();
+                            DB::table('service_accommodation')->where('service_id',$service->id)->delete();
+                            DB::table('service')->where('id',$service->id)->update(
+                                ['live'=>$request->input("live"),
+                                ]);
+                             
+                                foreach($accommodation as $accommodations){
+                                  $newacco=new Service_Accommodation;
+                                  $newacco->service_id=$service->id;
+                                  $newacco->accommodation_id=$accommodations->id;
+                                  $newacco->save();
+                                }
+                                foreach($type as $types){
+                                  $newtype=new Service_Type;
+                                  $newtype->service_id = $service->id;
+                                  $newtype->type_id=$types->id;
+                                  $newtype->save();
+                                 }
+                                  return response()->json('Update Accommodation and Type ');  
+                            }   
                           }catch(exception $e){
                               return response()->json($e);
                           }
@@ -719,10 +769,6 @@ class ControllerService extends Controller
                 }else{
                    return response()->json('Category not found'); 
                 }
-              
-            }else{
-                return response()->json('User not found'); 
-            }
         }
     }
 
@@ -1073,7 +1119,9 @@ class ControllerService extends Controller
         }else{
             $service=Service::where('id',$request->input("service_id"))->first();
             if(count($service)>0){
-                try{
+                $valdescription=Service_Description::where('service_id',$service->id)->get();
+                if(count($valdescription)==0){
+                try{  
                   $des_title=new Service_Description;
                   $des_title->service_id=$service->id;
                   $des_title->description_id=1;
@@ -1097,12 +1145,12 @@ class ControllerService extends Controller
                   $socialize=new Service_Description;
                   $socialize->service_id=$service->id;
                   $socialize->description_id=11;
-                  $socialize->content=$request->input("bool_socialize");
+                  $socialize->check=$request->input("bool_socialize");
                   $socialize->save();
                   $available=new Service_Description;
                   $available->service_id=$service->id;
                   $available->description_id=12;
-                  $available->content=$request->input("bool_available");
+                  $available->check=$request->input("bool_available");
                   $available->save();
                   $des_guest=new Service_Description;
                   $des_guest->service_id=$service->id;
@@ -1114,10 +1162,54 @@ class ControllerService extends Controller
                   $des_note->description_id=14;
                   $des_note->content=$request->input("desc_note");
                   $des_note->save();
-                  return response()->json('Add Step-7'); 
+                  return response()->json('Add Step-7');   
                 }catch(Exception $e){
                     return response()->json($e); 
                }
+            }else{
+               DB::table('service_description')->where('service_id',$service->id)->delete();
+                  $des_title=new Service_Description;
+                  $des_title->service_id=$service->id;
+                  $des_title->description_id=1;
+                  $des_title->content=$request->input("des_title");
+                  $des_title->save();
+                  $des_description=new Service_Description;
+                  $des_description->service_id=$service->id;
+                  $des_description->description_id=8;
+                  $des_description->content=$request->input("description");
+                  $des_description->save();
+                  $des_crib=new Service_Description;
+                  $des_crib->service_id=$service->id;
+                  $des_crib->description_id=9;
+                  $des_crib->content=$request->input("desc_crib");
+                  $des_crib->save();
+                  $des_acc=new Service_Description;
+                  $des_acc->service_id=$service->id;
+                  $des_acc->description_id=10;
+                  $des_acc->content=$request->input("desc_acc");
+                  $des_acc->save();
+                  $socialize=new Service_Description;
+                  $socialize->service_id=$service->id;
+                  $socialize->description_id=11;
+                  $socialize->check=$request->input("bool_socialize");
+                  $socialize->save();
+                  $available=new Service_Description;
+                  $available->service_id=$service->id;
+                  $available->description_id=12;
+                  $available->check=$request->input("bool_available");
+                  $available->save();
+                  $des_guest=new Service_Description;
+                  $des_guest->service_id=$service->id;
+                  $des_guest->description_id=13;
+                  $des_guest->content=$request->input("desc_guest");
+                  $des_guest->save();
+                  $des_note=new Service_Description;
+                  $des_note->service_id=$service->id;
+                  $des_note->description_id=14;
+                  $des_note->content=$request->input("desc_note");
+                  $des_note->save();
+                  return response()->json('Update Step-7');  
+                }
             }else{
                 return response()->json('Service not found'); 
             }
@@ -1145,6 +1237,8 @@ class ControllerService extends Controller
         }else{
             $service=Service::where('id',$request->input("service_id"))->first();
             if(count($service)>0){
+               $valtrules=Service_Rules::where('service_id',$service->id)->get();
+               if(count($valtrules)==0){
                 try{
                  $newrules=new Service_Rules;
                  $newrules->service_id=$service->id;
@@ -1224,6 +1318,86 @@ class ControllerService extends Controller
                  return response()->json('Add Step-8'); 
                 }catch(Exception $e){
                        return response()->json($e); 
+                }
+            }else{
+                DB::table('service_rules')->where('service_id',$service->id)->delete();
+                  $newrules=new Service_Rules;
+                 $newrules->service_id=$service->id;
+                 $newrules->rules_id=1;
+                 $newrules->check=$request->input("AptoDe2a12");
+                 $newrules->save();
+                 $newrules=new Service_Rules;
+                 $newrules->service_id=$service->id;
+                 $newrules->rules_id=2;
+                 $newrules->check=$request->input("AptoDe0a2");
+                 $newrules->save();
+                 $newrules=new Service_Rules;
+                 $newrules->service_id=$service->id;
+                 $newrules->rules_id=3;
+                 $newrules->check=$request->input("SeadmitenMascotas");
+                 $newrules->save();
+                 $newrules=new Service_Rules;
+                 $newrules->service_id=$service->id;
+                 $newrules->rules_id=4;
+                 $newrules->check=$request->input("PermitidoFumar");
+                 $newrules->save();
+                 $newrules=new Service_Rules;
+                 $newrules->service_id=$service->id;
+                 $newrules->rules_id=5;
+                 $newrules->check=$request->input("Eventos");
+                 $newrules->save();
+                 $newrules=new Service_Rules; 
+                 $newrules->service_id=$service->id;
+                 $newrules->rules_id=6;
+                 $newrules->description=$request->input("Desc_Otro_Evento ");
+                 $newrules->save();
+                 $newrequirement=new Service_Rules;
+                 $newrequirement->service_id=$service->id;
+                 $newrequirement->rules_id=7;
+                 $newrequirement->check=$request->input("guest_phone");
+                 $newrequirement->save();
+                 $newrequirement=new Service_Rules;
+                 $newrequirement->service_id=$service->id;
+                 $newrequirement->rules_id=8;
+                 $newrequirement->check=$request->input("guest_email");
+                 $newrequirement->save();
+                 $newrequirement=new Service_Rules;
+                 $newrequirement->service_id=$service->id;
+                 $newrequirement->rules_id=9;
+                 $newrequirement->check=$request->input("guest_profile");
+                 $newrequirement->save();
+                 $newrequirement=new Service_Rules;
+                 $newrequirement->service_id=$service->id;
+                 $newrequirement->rules_id=10;
+                 $newrequirement->check=$request->input("guest_payment");
+                 $newrequirement->save();
+                 $newrequirement=new Service_Rules;
+                 $newrequirement->service_id=$service->id;
+                 $newrequirement->rules_id=11;
+                 $newrequirement->check=$request->input("guest_provided");
+                 $newrequirement->save();
+                 $newrequirement=new Service_Rules;
+                 $newrequirement->service_id=$service->id;
+                 $newrequirement->rules_id=12;
+                 $newrequirement->check=$request->input("guest_recomendation");
+                 $newrequirement->save();
+                 $newrules=new Service_Rules; 
+                 $newrules->service_id=$service->id;
+                 $newrules->rules_id=13;
+                 $newrules->description=$request->input("Desc_Instructions");
+                 $newrules->save();
+                 $newrules=new Service_Rules; 
+                 $newrules->service_id=$service->id;
+                 $newrules->rules_id=14;
+                 $newrules->description=$request->input("Desc_Name_Network");
+                 $newrules->save();
+                 $newrules=new Service_Rules; 
+                 $newrules->service_id=$service->id;
+                 $newrules->rules_id=15;
+                 $newrules->description=Crypt::encrypt($request->input("Password_Wifi"));
+                 $newrules->save();
+                 return response()->json('Update Step-8'); 
+
                 }
             }else{
                  return response()->json('Service not found'); 

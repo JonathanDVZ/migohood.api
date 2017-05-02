@@ -96,6 +96,8 @@ $app->post('/service/space/add-image','ControllerService@AddNewSpaceStep9');
 
 
 /*Crud Service Web */////////////////////////////////////////////////////////////////->en proces0
+//Agregar un servicio (space-step)
+$app->post('/service/space/step/create','ControllerService@AddNewSpaceStep');
 //Agregar un servicio (space-step1)
 $app->post('/service/space/step-1/create','ControllerService@AddNewSpaceStep1');
 //Agregar un servicio (space-step2-bedroom)
