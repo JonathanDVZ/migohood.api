@@ -15,7 +15,7 @@ use App\Models\House_Rules;
 use App\Models\Type;
 use App\Models\Currency;
 use App\Models\Service;
-
+use App\Models\Image;
 use DB;
 
 class ControllerCombobox extends Controller
