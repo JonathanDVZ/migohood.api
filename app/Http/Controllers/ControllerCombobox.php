@@ -251,7 +251,7 @@ class ControllerCombobox extends Controller
       if ($validator->fails()) {
             return response()->json($validator->errors()->all());
       }else{
-            $amenitie = DB::table('amenities')->select('code','name')->where('languaje','=',$request->input("languaje"))->where('category_id','=',1)->get();
+            $amenitie = DB::table('amenities')->select('code','name','type_amenities_id')->where('languaje','=',$request->input("languaje"))->where('category_id','=',1)->get();
             if(count($amenitie)>0){
                   return response()->json($amenitie);
             }else{ 
