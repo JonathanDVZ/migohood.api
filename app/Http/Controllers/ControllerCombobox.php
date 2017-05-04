@@ -13,6 +13,8 @@ use App\Models\Calendar;
 use App\Models\Duration;
 use App\Models\House_Rules;
 use App\Models\Type;
+use App\Models\Service;
+
 use DB;
 
 class ControllerCombobox extends Controller
@@ -256,7 +258,144 @@ class ControllerCombobox extends Controller
             }
       }
     }
+    public function ReturnStep(Request $request){
+           $rule=[
+           'service_id' => 'required|numeric'
+      ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+      }else{
+             $getreturn = DB::table('service')->join('service_category','service.id','=','service_category.service_id')
+              ->join('category','category.code','=','service_category.category_id')
+              ->where('service_id','=',$request->input("service_id"))
+              ->where('category.languaje','=',$request->input("languaje"))
+              ->select('service.id','service.date','category.name')
+             ->get();
+             if(count($getreturn)>0){
+                    return response()->json($getreturn);
+             }else{
+                     return response()->json('Not Found');
+             }
 
+      }
+    }
+    public function ReturnStep1(Request $request){
+            $rule=[
+           'service_id' => 'required|numeric'
+      ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+      }else{
+               $getstep1 = DB::table('service')->join('service_accommodation','service.id','=','service_accommodation.service_id')
+              ->join('accommodation','service_accommodation.accommodation_id','=','accommodation.code')
+              ->join('service_type','service_type.service_id','=','service.id')
+              ->join('type','type.code','=','service_type.type_id')
+              ->where('service.id','=',$request->input("service_id"))
+              ->where('type.languaje','=',$request->input("languaje"))
+              ->where('accommodation.languaje','=',$request->input("languaje"))
+              ->select('service.id','service.live','type.name as Type','accommodation.name as Accommodation')
+              ->first() ;
+              if(count($getstep1)>0){
+                    return response()->json($getstep1);
+              }else{
+                    return response()->json('Not Found');
+              }
+      }
+
+    } 
+
+    public function ReturnStep2(Request $request){
+             $rule=[
+           'service_id' => 'required|numeric'
+      ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+      }else{
+            $getstep2 = DB::table('service')->join('bedroom','service.id','=','bedroom.service_id')
+            ->where('service.id','=',$request->input("service_id"))
+            ->select('service.id','service.num_guest','bedroom.id as num_bedroom')
+            ->orderBy('bedroom.id','desc')
+            ->take(1)
+            ->get();
+            if(count($getstep2)>0){
+                  return response()->json($getstep2);
+            }else{
+                  return response()->json('Not Found'); 
+            }
+      }
+    }
+
+    public function ReturnStep3(Request $request){
+           $rule=[
+           'service_id' => 'required|numeric'
+      ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+      }else{
+        $getstep3=Service::select('id','num_bathroom')->where('id','=',$request->input("service_id"))->first();
+        if(count($getstep3)>0){
+             return response()->json($getstep3);
+        }else{
+             return response()->json('Not Found');  
+        }
+      }
+
+    }
+
+    public function ReturnStep4Location(Request $request){
+           $rule=[
+           'service_id' => 'required|numeric'
+      ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+      }else{
+            $getstep4 = DB::table('service')
+             ->join('service_description','service_description.service_id','=','service.id')
+            ->join('description','service_description.description_id','=','description.description_id')
+            ->join('city','service.city_id','=','city.id')
+            ->join('state','city.state_id','=','state.id')
+            ->join('country','country.id','=','state.country_id')
+            ->where('service.id','=',$request->input("service_id"))
+            ->select('service.id','service.zipcode','city.name as city','state.name as state','country.name as country','description.type','service_description.content')
+            ->get();
+            if(count($getstep4)>0){
+                 return response()->json($getstep4);  
+            }else{
+
+             return response()->json('Not Found'); 
+            }
+      }
+    }
+
+    public function ReturnStep5(Request $request){
+              $rule=[
+           'service_id' => 'required|numeric'
+      ];
+    $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+      }else{
+        $getstep5=DB::table('service')
+        ->join('service_amenites','service_amenites.service_id','=','service.id')
+        ->join('amenities','amenities.code','=','service_amenites.amenite_id')
+        ->where('service.id','=',$request->input("service_id"))
+        ->where('amenities.languaje','=',$request->input("languaje"))
+        ->select('service.id','amenities.name')
+        ->get();
+        if(count($getstep5)>0){
+                return response()->json($getstep5); 
+        }else{
+                return response()->json("Not Found"); 
+        }
+
+             
+              }
+    }
   
 }
     

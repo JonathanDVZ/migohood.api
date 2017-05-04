@@ -289,6 +289,29 @@ $app->get('/city/get-city','ControllerCombobox@GetCity');
 //Muestra todas los estados
 $app->get('/state/get-state','ControllerCombobox@GetState');
 
+////////////////////////////////////////////////////////////////////////////////////////
+//next and back
+$app->get('/service/space/step/create','ControllerCombobox@ReturnStep');
+
+$app->get('/service/space/step-1/create','ControllerCombobox@ReturnStep1');
+//Agregar un servicio (space-step2-bedroom)
+$app->get('/service/space/step-2/bedrooms','ControllerCombobox@ReturnStep2');
+//Agregar un servicio (space-step2-beds)
+$app->get('/service/space/step-2/beds/details','ControllerCombobox@ReturnStep2Beds');
+//Agregar un servicio (space-step3-bathroom)
+$app->get('/service/space/step-3/bathroom','ControllerCombobox@ReturnStep3');
+//Agregar un servicio (space-step4)
+$app->get('/service/space/step-4/location','ControllerCombobox@ReturnStep4Location');
+//Agregar un Amenities (space-step5)
+$app->get('/service/space/step-5/amenities','ControllerCombobox@ReturnStep5');///hasta aqui
+//Agregar un cancellation policy (space-step6)
+$app->get('/service/space/step-6/hosting','ControllerCombobox@ReturnStep6');
+//Agregar un description service (space-step7)
+$app->get('/service/space/step-7/description','ControllerCombobox@ReturnStep7Description');
+//Agregar un rules description (space-step8)
+$app->get('/service/space/step-8/rules','ControllerCombobox@ReturnStep8Rules');
+
+
 
 
 $app->get('/make_token',function(){
