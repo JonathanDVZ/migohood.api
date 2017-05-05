@@ -290,9 +290,9 @@ class ControllerCombobox extends Controller
             return response()->json($validator->errors()->all());
       }else{
                $getstep1 = DB::table('service')->join('service_accommodation','service.id','=','service_accommodation.service_id')
-              ->join('accommodation','service_accommodation.accommodation_id','=','accommodation.code')
+              ->join('accommodation','service_accommodation.accommodation_id','=','accommodation.id')
               ->join('service_type','service_type.service_id','=','service.id')
-              ->join('type','type.code','=','service_type.type_id')
+              ->join('type','type.id','=','service_type.type_id')
               ->where('service.id','=',$request->input("service_id"))
               ->where('type.languaje','=',$request->input("languaje"))
               ->where('accommodation.languaje','=',$request->input("languaje"))
@@ -362,7 +362,7 @@ class ControllerCombobox extends Controller
             ->join('state','city.state_id','=','state.id')
             ->join('country','country.id','=','state.country_id')
             ->where('service.id','=',$request->input("service_id"))
-            ->select('service.id','service.zipcode','city.name as city','state.name as state','country.name as country','description.type','service_description.content')
+            ->select('service.id','service.zipcode','city.name as city','state.name as state','state.id as state_id','country.name as country','country.id as country_id','description.type','service_description.content')
             ->get();
             if(count($getstep4)>0){
                  return response()->json($getstep4);  
@@ -386,7 +386,7 @@ class ControllerCombobox extends Controller
         ->join('amenities','amenities.code','=','service_amenites.amenite_id')
         ->where('service.id','=',$request->input("service_id"))
         ->where('amenities.languaje','=',$request->input("languaje"))
-        ->select('service.id','amenities.name')
+        ->select('service.id','amenities.name', 'amenities.type_amenities_id', 'amenities.code')
         ->get();
         if(count($getstep5)>0){
                 return response()->json($getstep5); 
