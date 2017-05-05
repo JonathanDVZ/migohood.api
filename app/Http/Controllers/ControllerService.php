@@ -265,25 +265,14 @@ class ControllerService extends Controller
                 $service=Service::select()->where('id',$request->input("service_id"))->first();
                 if(count($service)>0){
                     // Recorro el array amenities e inserto cada uno en la tabla interseccion Service_Amenite junto con el service correspondiente
-                   $valamenitie=Service_Amenite::select()->where('service_id',$service->id)->first();
-                   if(count($valamenitie)==0){
-                    foreach ($amenites as $amenite){
-                        $newserviceame=new Service_Amenite;
-                        $newserviceame->service_id=$service->id;
-                        $newserviceame->amenite_id=$amenite->id;
-                        $newserviceame->save();
-                    }
+                      foreach ($amenites as $amenite){
+                       $newserviceame=new Service_Amenite;
+                       $newserviceame->service_id=$service->id;
+                       $newserviceame->amenite_id=$amenite->id;
+                       $newserviceame->save();
+                      }
+                    
                     return response()->json('Add Step 5');
-                   }else{
-                        DB::table('service_amenites')->where('service_id',$service->id)->delete();
-                        foreach ($amenites as $amenite){
-                        $newserviceame=new Service_Amenite;
-                        $newserviceame->service_id=$service->id;
-                        $newserviceame->amenite_id=$amenite->id;
-                        $newserviceame->save();
-                        }
-                         return response()->json('Update Step 5');
-                    }
                 }
                 else{
                     return response()->json('Service not found'); 

@@ -104,21 +104,21 @@ insert into type_number(id,type,code,languaje)values
 (3,"Fijo",1,"ES"),
 (4,"Celular",2,"ES");
 
-insert into description(description_id,type,description)values
+insert into description(id,type,description)values
 (1,"Title","his item is used to specify the title of the service"),
 (2,"Address1","First address of the service"),
 (3,"Address2","Second address of the service"),
 (4,"Desc_Neighborhood","Neighborhood description"),
 (5,"Desc_Surroundings","Surroundings description"),
-(6,"desc_length","Length for google map"),
-(7,"desc_latitud","Latitud for google map"),
-(8,"description","service description"),
-(9,"crib","crib description"),
-(10,"guest access","User access description"),
-(11,"socialize","check the socialize"),
-(12,"available","check the available"),
-(13,"desc_guest","guest description"),
-(14,"desc_note","Any note you want to leave");
+(6,"Longitude","Length for google map"),
+(7,"Latitude","Latitud for google map"),
+(8,"Description","service description"),
+(9,"Crib","crib description"),
+(10,"Guest Access","User access description"),
+(11,"Socialize","check the socialize"),
+(12,"Available","check the available"),
+(13,"Desc_Guest","guest description"),
+(14,"Desc_Note","Any note you want to leave");
 
 insert into house_rules(id,type)values
 (1,"Suitable for children (2 to 12 years old)"),
@@ -146,15 +146,10 @@ insert into type_amenities(id,name)values
 (2,"Your_offer"),
 (3,"Guest_use");
 -- ingles--
-insert into amenities(name,category_id,type_amenities_id,languaje,code)values("Pets allowed",1,1,"EN",1),("Events allowed",1,1,"EN",2),("Production allowed",1,1,"EN",3),("Family friendly",1,1,"EN",4),("Business guests",1,1,"EN",5),("Smoke free",1,1,"EN",6),("Gym",1,1,"EN",7),("Parking",1,1,"EN",8);
-insert into amenities(name,category_id,type_amenities_id,languaje,code)values("Essential",1,2,"EN",9),("Shampoo",1,2,"EN",10),("Wifi",1,2,"EN",11),("TV",1,2,"EN",12);
-insert into amenities(name,category_id,type_amenities_id,languaje,code)values("Kitchen",1,3,"EN",13),("Laundry washer",1,3,"EN",14),("Laundry dryer",1,3,"EN",15),("Hot tub",1,3,"EN",16),("Parking",1,3,"EN",17),("Elevator",1,3,"EN",18),("Pool",1,3,"EN",19),("Gym",1,3,"EN",20);
+insert into amenities(id,name,category_id,type_amenities_id,languaje,code)values(1,"Pets allowed",1,1,"EN",1),(2,"Events allowed",1,1,"EN",2),(3,"Production allowed",1,1,"EN",3),(4,"Family friendly",1,1,"EN",4),(5,"Business guests",1,1,"EN",5),(6,"Smoke free",1,1,"EN",6),(7,"Gym",1,1,"EN",7),(8,"Parking",1,1,"EN",8);
+insert into amenities(id,name,category_id,type_amenities_id,languaje,code)values(9,"Essential",1,2,"EN",9),(10,"Shampoo",1,2,"EN",10),(11,"Wifi",1,2,"EN",11),(12,"TV",1,2,"EN",12);
+insert into amenities(id,name,category_id,type_amenities_id,languaje,code)values(13,"Kitchen",1,3,"EN",13),(14,"Laundry washer",1,3,"EN",14),(15,"Laundry dryer",1,3,"EN",15),(16,"Hot tub",1,3,"EN",16),(17,"Parking",1,3,"EN",17),(18,"Elevator",1,3,"EN",18),(19,"Pool",1,3,"EN",19),(20,"Gym",1,3,"EN",20);
 -- español--
-
-insert into amenities(name,category_id,type_amenities_id,languaje,code)values("mascotas_permitidas",1,1,"ES",1),("eventos_permitida",1,1,"ES",2),("produccion_permitida",1,1,"ES",3),("familia_amable",1,1,"ES",4),("cliente_negocio",1,1,"ES",5),("libre_de_humo",1,1,"ES",6),("gimnasio",1,1,"ES",7),("estacionamiento",1,1,"ES",8);
-insert into amenities(name,category_id,type_amenities_id,languaje,code)values("esencial",1,2,"ES",9),("champu",1,2,"ES",10),("wifi",1,2,"ES",11),("television",1,2,"ES",12);
-insert into amenities(name,category_id,type_amenities_id,languaje,code)values("cocina",1,3,"ES",13),("lavadero",1,3,"ES",14),("secadora",1,3,"ES",15),("tina_caliente",1,3,"ES",16),("estacionamiento",1,3,"ES",17),("ascensor",1,3,"ES",18),("piscina",1,3,"ES",19),("gimnasio",1,3,"ES",20);
-
-insert into amenities(name,category_id,type_amenities_id,languaje,code)values("Mascotas permitidas",1,1,"ES",1),("Eventos permitida",1,1,"ES",2),("Produccion permitida",1,1,"ES",3),("Familia amable",1,1,"ES",4),("Cliente negocio",1,1,"ES",5),("Libre de humo",1,1,"ES",6),("Gimnasio",1,1,"ES",7),("Estacionamiento",1,1,"ES",8);
-insert into amenities(name,category_id,type_amenities_id,languaje,code)values("Esencial",1,2,"ES",9),("Champú",1,2,"ES",10),("Wifi",1,2,"ES",11),("Television",1,2,"ES",12);
-insert into amenities(name,category_id,type_amenities_id,languaje,code)values("Cocina",1,3,"ES",13),("Lavadero",1,3,"ES",14),("Secadora",1,3,"ES",15),("Tina caliente",1,3,"ES",16),("Estacionamiento",1,3,"ES",17),("Ascensor",1,3,"ES",18),("Piscina",1,3,"ES",19),("Gimnasio",1,3,"ES",20); 
+insert into amenities(id,name,category_id,type_amenities_id,languaje,code)values(20,"Mascotas permitidas",1,1,"ES",1),(21,"Eventos permitida",1,1,"ES",2),(22,"Produccion permitida",1,1,"ES",3),(23,"Familia amable",1,1,"ES",4),(24,"Cliente negocio",1,1,"ES",5),(25,"Libre de humo",1,1,"ES",6),(26,"Gimnasio",1,1,"ES",7),(27,"Estacionamiento",1,1,"ES",8);
+insert into amenities(id,name,category_id,type_amenities_id,languaje,code)values(28,"Esencial",1,2,"ES",9),(29,"Champú",1,2,"ES",10),(30,"Wifi",1,2,"ES",11),(31,"Television",1,2,"ES",12);
+insert into amenities(id,name,category_id,type_amenities_id,languaje,code)values(32,"Cocina",1,3,"ES",13),(33,"Lavadero",1,3,"ES",14),(34,"Secadora",1,3,"ES",15),(35,"Tina caliente",1,3,"ES",16),(36,"Estacionamiento",1,3,"ES",17),(37,"Ascensor",1,3,"ES",18),(38,"Piscina",1,3,"ES",19),(39,"Gimnasio",1,3,"ES",20); 
