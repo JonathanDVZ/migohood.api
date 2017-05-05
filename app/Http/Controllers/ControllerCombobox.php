@@ -386,7 +386,7 @@ class ControllerCombobox extends Controller
         ->join('amenities','amenities.code','=','service_amenites.amenite_id')
         ->where('service.id','=',$request->input("service_id"))
         ->where('amenities.languaje','=',$request->input("languaje"))
-        ->select('service.id','amenities.name')
+        ->select('service.id','amenities.name', 'amenities.type_amenities_id', 'amenities.code')
         ->get();
         if(count($getstep5)>0){
                 return response()->json($getstep5); 
