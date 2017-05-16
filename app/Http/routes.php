@@ -327,3 +327,11 @@ $app->get('/service/space/step-8/rules','ControllerCombobox@ReturnStep8Rules');
 $app->get('/make_token',function(){
     return str_random(32);
 });
+$app->get('/make_token',function(){
+    return str_random(32);
+});
+
+$app->get('/make_token',function(){
+    return str_random(32);
+});
+
