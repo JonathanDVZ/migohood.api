@@ -10,6 +10,8 @@ use App\Models\Check_in;
 use App\Models\Bedroom_Bed;
 use App\Models\Check_out;
 use App\Models\City;
+use App\Models\Languaje;
+use App\Models\Service_Languaje;
 use App\Models\Country;
 use App\Models\Service_Rules;
 use App\Models\Price_history_has_duration;
@@ -868,26 +870,32 @@ class ControllerService extends Controller
         } else {
             $servicespace=Service::select()->where('id',$request->input("service_id"))->first();
             // Habia un error, la variable se llama servicespace, no service
-            if(count($servicespace)>0){
-                try{ 
+            if(count($servicespace)>0){        
                     $servicespace->num_guest=$request->input("num_guest");
                     $servicespace->save();
+                    $val=Bedroom::where('service_id',$servicespace->id)->first();
+                    if(count($val)==0){
                     for($i=1;$i<=$request->input("num_bedroom");$i++){
                         $bedroom=new Bedroom;
                         // Habia un error, la variable se llama servicespace, no service
                         $bedroom->service_id=$servicespace->id; 
                         $bedroom->save();
                     }
+                    }else{
+                      DB::table('bedroom')->where('service_id',$servicespace->id)->delete();
+                         for($i=1;$i<=$request->input("num_bedroom");$i++){
+                        $bedroom=new Bedroom;
+                        // Habia un error, la variable se llama servicespace, no service
+                        $bedroom->service_id=$servicespace->id; 
+                        $bedroom->save();
+                    }
+                    }
                     /** 
                     *   Envio como respuesta el servicio junto con el numero de habitaciones,
                     *   ya que para la vista siguiente son necesarios dichos datos
                     */
                     return response()->json("Add Space Bedroom"); 
-                    //$servicespace->num_bedrooms = $request->input("num_bedroom");
-                    //return response()->json($servicespace);  
-                 } catch(Exception $e) {
-                     return response()->json($e); 
-                 }  
+ 
             } else {
                 return response()->json('Service not found'); 
             }
@@ -1130,9 +1138,6 @@ class ControllerService extends Controller
                   'currency_id'=>'required',
                   'price'=>'numeric|min:0',
                   'duration_code'=>'required',
-                  'stardate'=>'required',
-                  'finishdate'=>'required',
-                  'price_optional'=>'numeric',
                   'politic_payment_code'=>'numeric'
 
             ];
@@ -1143,7 +1148,7 @@ class ControllerService extends Controller
                 $service=Service::where('id',$request->input("service_id"))->first();
                 $payment=Payment::select('id')->where('code',$request->input("politic_payment_code"))->get();
                 $duration=Duration::select('id')->where('code',$request->input("duration_code"))->get();  
-                if(count($service)>0 && count($payment)>0 && count($duration)){
+                if(count($service)>0 && count($payment)>0 && count($duration)>0){
                 try{
                       $newhistory=new Price_History;
                       $dt = new DateTime();
@@ -1174,13 +1179,13 @@ class ControllerService extends Controller
                          $newpriceduration->duration_id=$durations->id;
                          $newpriceduration->save();
                        }
-                      $newoptionalprice=new SpecialDate;
+                     /* $newoptionalprice=new SpecialDate;
                       $newoptionalprice->service_id=$service->id;;
                       $newoptionalprice->stardate=$request->input("stardate");
                       $newoptionalprice->finishdate=$request->input("finishdate");
                       $newoptionalprice->price=$request->input("price_optional");
                       $newoptionalprice->save();
-                      return response()->json($newhistory); 
+                      return response()->json($newhistory);*/ 
                     }catch(exception $e){
                        return response()->json($e); 
                     }
@@ -1485,6 +1490,35 @@ class ControllerService extends Controller
             }else{
                  return response()->json('Service not found'); 
             }
+       }
+   }
+
+   public function AddLanguaje(Request $request){
+    $rule=[
+        'service_id'=>'required|numeric',
+        'languaje_id'=>'required|numeric'
+    ];
+    $validator=Validator::make($request->all(),$rule);
+    if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+    }else{
+        $service=Service::where('id',$request->input("service_id"))->first();
+        $languaje=Languaje::where('id',$request->input("languaje_id"))->first();
+        if(count($service)>0 && count($languaje)>0){
+            $val=Service_Languaje::where("languaje_id",$languaje->id)->where("service_id",$service->id)->first();
+            if(count($val)==0){
+            $newlanguaje=new Service_Languaje;
+            $newlanguaje->service_id=$service->id;
+            $newlanguaje->languaje_id=$languaje->id;
+            $newlanguaje->save();
+            return response()->json($newlanguaje); 
+            }else{
+               return response()->json('It is already selected');  
+            }
+        }else{
+               return response()->json('Service or Languaje not found'); 
+        }
+             
        }
    }
 

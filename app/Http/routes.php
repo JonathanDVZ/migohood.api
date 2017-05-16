@@ -116,6 +116,8 @@ $app->post('/service/space/step-5/amenities','ControllerService@AddNewStep5');
 $app->post('/service/space/step-6/hosting','ControllerService@AddNewSpaceStep6');
 //Agregar un description service (space-step7)
 $app->post('/service/space/step-7/description','ControllerService@AddNewSpaceStep7Description');
+//Agregar lenguaje
+$app->post('/service/space/description/add-languaje','ControllerService@AddLanguaje');
 //Agregar un rules description (space-step8)
 $app->post('/service/space/step-8/rules','ControllerService@AddNewSpaceStep8Rules');
 //Agregar imagen (space-step9)
