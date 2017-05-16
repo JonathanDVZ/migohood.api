@@ -30,6 +30,7 @@ use App\Models\Service_Calendar;
 use App\Models\Service_Accommodation;
 use App\Models\Service_Payment;
 use App\Models\Calendar;
+use App\Models\Availability;
 use App\Models\Price_History;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
@@ -1184,8 +1185,8 @@ class ControllerService extends Controller
                       $newoptionalprice->stardate=$request->input("stardate");
                       $newoptionalprice->finishdate=$request->input("finishdate");
                       $newoptionalprice->price=$request->input("price_optional");
-                      $newoptionalprice->save();
-                      return response()->json($newhistory);*/ 
+                      $newoptionalprice->save();*/
+                      return response()->json($newcheck_in); 
                     }catch(exception $e){
                        return response()->json($e); 
                     }
@@ -1579,9 +1580,90 @@ class ControllerService extends Controller
             }
 
         }
-
-
+    }
+    
+    public function AddDate(Request $request){
+         $rule=[
+        'service_id'=>'required|numeric',
+        'date'=>'required|date_format:Y-m-d|after:today',
+        'lock'=>'bool'
+    ];
+    $validator=Validator::make($request->all(),$rule);
+    if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+    }else{
+        $service=Service::where('id',$request->input("service_id"))->first();
+        if(count($service)>0){
+           $val=Availability::where('service_id',$service->id)->where('day',$request->input("date"))->first();
+           if(count($val)==0){
+             $newdate=new Availability;
+             $newdate->day=$request->input("date");
+             $newdate->service_id=$request->input("service_id");
+             $newdate->lock=$request->input("lock");
+             $newdate->save();
+             return response()->json($newdate);
+           }else{
+             return response()->json('Is already selected');  
+           }
+        }else{
+            return response()->json('Service not found'); 
+        }
+    }
    }
+
+   public function UpdateDate(Request $request){
+    $rule=[
+        'service_id'=>'required|numeric',
+        'date'=>'required|date_format:Y-m-d',
+        'lock'=>'bool'
+    ];
+    $validator=Validator::make($request->all(),$rule);
+    if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+    }else{
+       $service=Service::where('id',$request->input("service_id"))->first();
+       if(count($service)>0){
+          $valid=Availability::where('service_id',$service->id)->where('day',$request->input("date"))->first();
+          if(count($valid)>0){
+            $val=DB::table('availability')->where('service_id',$service->id)->where('day',$request->input("date"))->update(
+                            ['lock'=>$request->input("lock"),
+                            ]);
+            return response()->json($valid); 
+          }else{
+            return response()->json('Date not found'); 
+          }
+      }else{
+        return response()->json('Service not found'); 
+      }
+    }
+   }
+
+   public function DeleteLanguaje(Request $request){
+        $rule=[
+        'service_id'=>'required|numeric',
+        'languaje_id'=>'required|numeric'
+    ];
+    $validator=Validator::make($request->all(),$rule);
+    if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+    }else{
+         $service=Service::where('id',$request->input("service_id"))->first();
+       if(count($service)>0){
+                $val=DB::table('service_languaje')->where('languaje_id',$request->input("languaje_id"))->where('service_id',$service->id)->delete();
+                if($val==0){
+                   return response()->json('Languaje Not Found');
+                }else{
+                   return response()->json('Languaje Delete!!');
+                }
+       }else{
+          return response()->json('Service not found');  
+       }
+
+
+    }
+   }
+
 
 }
 
+   

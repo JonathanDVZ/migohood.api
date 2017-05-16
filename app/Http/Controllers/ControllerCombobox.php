@@ -373,6 +373,29 @@ class ControllerCombobox extends Controller
       }
     }
 
+    public function GetLanguaje(Request $request){
+              $rule=[
+           'service_id' => 'required|numeric'
+      ];
+    $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+      }else{
+                $languaje=DB::table('service')
+                ->join('service_languaje','service.id','=','service_languaje.service_id')
+                ->join('languaje','languaje.id','=','service_languaje.languaje_id')
+                ->where("service.id","=",$request->input("service_id"))
+                ->select("languaje.name")
+                ->get();
+                if(count($languaje)>0){
+                        return response()->json($languaje); 
+                }else{
+                    return response()->json("Not Found");   
+                }
+      } 
+          
+    }
+
     public function ReturnStep5(Request $request){
               $rule=[
            'service_id' => 'required|numeric'

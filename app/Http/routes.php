@@ -122,6 +122,14 @@ $app->post('/service/space/description/add-languaje','ControllerService@AddLangu
 $app->post('/service/space/step-8/rules','ControllerService@AddNewSpaceStep8Rules');
 //Agregar imagen (space-step9)
 $app->post('/service/space/step-9/image','ControllerService@AddNewSpaceStep9');
+//Agrega fecha en el calendario->16/5/2017
+$app->post('/service/day','ControllerService@AddDate');
+//Bloquear o desbloquear fecha
+$app->put('/service/update-day','ControllerService@UpdateDate');
+//Borrar lenguaje
+$app->delete('/service/space/delete-languaje','ControllerService@DeleteLanguaje');
+//Muestra todos los lenguajes uqe tiene un servicio
+$app->get('/service/space/description/languaje','ControllerCombobox@GetLanguaje');
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //Agrgar Accommodation

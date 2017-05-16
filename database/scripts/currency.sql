@@ -15,7 +15,7 @@ INSERT INTO `currency` (`currency_iso`, `Language`, `currency_name`, `money`, `s
         ('BYR', 'EN', 'Belarussian Ruble', 'Рубель', 'B'),
         ('BZD', 'EN', 'Belize Dollar', 'Dollar', 'B'),
         ('BMD', 'EN', 'Bermudian Dollar', 'Dollar', 'B'),
-        ('VEF', 'EN', 'Bolivar Fuerte', 'Bolívar', 'B'),
+        ('VEF', 'EN', 'Bolivar ', 'Bolívar', 'B'),
         ('BOB', 'EN', 'Boliviano', 'Boliviano', 'B'),
         ('BRL', 'EN', 'Brazilian Real', 'Real', 'R'),
         ('BND', 'EN', 'Brunei Dollar', 'Ringgit', 'B'),
