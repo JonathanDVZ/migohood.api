@@ -1028,10 +1028,9 @@ class ControllerService extends Controller
      public function AddNewSpaceStep4Location(Request $request){
             $rule=[
            'service_id' => 'required|numeric|min:1',
-           'country_id'=>'numeric|min:1',
+          // 'country_id'=>'numeric|min:1',
            'city_id'=>'numeric|min:1',
-           'zipcode'=>'numeric|min:0',
-           'state_id'=>'numeric|min:1',
+        //   'state_id'=>'numeric|min:1',
 
       ];
       $validator=Validator::make($request->all(),$rule);
@@ -1039,16 +1038,21 @@ class ControllerService extends Controller
         return response()->json($validator->errors()->all());
         }else{
             $servicespace=Service::select()->where('id',$request->input("service_id"))->first();
-            $country=Country::select()->where('id',$request->input("country_id"))->first();
-            $state=State::select()->where('country_id',$country->id)->where('id',$request->input("state_id"))->first();
-            $city=City::select()->where('state_id','=',$state->id)->where('id',$request->input("city_id"))->first();
+        //    $country=Country::select()->where('id',$request->input("country_id"))->first();
+          //  $state=State::select()->where('country_id',$country->id)->where('id',$request->input("state_id"))->first();
+            $city=City::select()->where('id',$request->input("city_id"))->first();
             if(count($servicespace)>0){
                 if(count($city)>0){
-                    if(count($state)>0){
-                        if(count($country)>0){
-                            try{
-                                $servicespace->city_id=$request->input("city_id");
-                                $servicespace->save();
+                   // if(count($state)>0){
+                     //   if(count($country)>0){
+                            $val=Service_Description::select()->where('service_id',$request->input("service_id"))->first();
+                            if(count($val)==0){
+                                  DB::table('service')->where('id',$servicespace->id)->update(
+                                    ['city_id'=>$request->input("city_id"),
+                               ]);   
+                                 DB::table('service')->where('id',$servicespace->id)->update(
+                                    ['zipcode'=>$request->input("zipcode"),
+                               ]);        
                                 $des_address1=new Service_Description;
                                 $des_address1->service_id=$servicespace->id;
                                 $des_address1->description_id=2;
@@ -1059,8 +1063,6 @@ class ControllerService extends Controller
                                 $des_apt->description_id=3;
                                 $des_apt->content=$request->input("apt");
                                 $des_apt->save();
-                                $servicespace->zipcode=$request->input("zipcode");
-                                $servicespace->save();
                                 $des_neighborhood=new Service_Description;
                                 $des_neighborhood->service_id=$servicespace->id;
                                 $des_neighborhood->description_id=4;
@@ -1071,17 +1073,64 @@ class ControllerService extends Controller
                                 $des_around->description_id=5;
                                 $des_around->content=$request->input("des_around");
                                 $des_around->save();
-                                return response()->json('Add Location');
-                            }catch(Exception $e){
-                                return response()->json($e);
-                            }     
-                        }else{
+                                $des_longitude=new Service_Description;
+                                $des_longitude->service_id=$servicespace->id;
+                                $des_longitude->description_id=6;
+                                $des_longitude->content=$request->input("des_longitude");
+                                $des_longitude->save();
+                                $des_latitude=new Service_Description;
+                                $des_latitude->service_id=$servicespace->id;
+                                $des_latitude->description_id=7;
+                                $des_latitude->content=$request->input("des_latitude");
+                                $des_latitude->save();
+                                return response()->json('Add Location');  
+                            }else{
+                                   DB::table('service_description')->where('service_id',$servicespace->id)->delete();
+                                     DB::table('service')->where('id',$servicespace->id)->update(
+                                    ['city_id'=>$request->input("city_id"),
+                               ]);   
+                                 DB::table('service')->where('id',$servicespace->id)->update(
+                                    ['zipcode'=>$request->input("zipcode"),
+                               ]);        
+                                $des_address1=new Service_Description;
+                                $des_address1->service_id=$servicespace->id;
+                                $des_address1->description_id=2;
+                                $des_address1->content=$request->input("address1");
+                                $des_address1->save();
+                                $des_apt=new Service_Description;
+                                $des_apt->service_id=$servicespace->id;
+                                $des_apt->description_id=3;
+                                $des_apt->content=$request->input("apt");
+                                $des_apt->save();
+                                $des_neighborhood=new Service_Description;
+                                $des_neighborhood->service_id=$servicespace->id;
+                                $des_neighborhood->description_id=4;
+                                $des_neighborhood->content=$request->input("des_neighborhood");
+                                $des_neighborhood->save();
+                                $des_around=new Service_Description;
+                                $des_around->service_id=$servicespace->id;
+                                $des_around->description_id=5;
+                                $des_around->content=$request->input("des_around");
+                                $des_around->save();
+                                $des_longitude=new Service_Description;
+                                $des_longitude->service_id=$servicespace->id;
+                                $des_longitude->description_id=6;
+                                $des_longitude->content=$request->input("des_longitude");
+                                $des_longitude->save();
+                                $des_latitude=new Service_Description;
+                                $des_latitude->service_id=$servicespace->id;
+                                $des_latitude->description_id=7;
+                                $des_latitude->content=$request->input("des_latitude");
+                                $des_latitude->save();
+                                return response()->json('Update Location');
+                            }
+                   /*     }else{
                            return response()->json('Country not found');     
                         }
 
                     }else{
                          return response()->json('State not found');  
-                    }   
+                    } */  
                 }else{
                      return response()->json('City not found');  
                 }
