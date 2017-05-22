@@ -319,7 +319,7 @@ class ControllerCombobox extends Controller
             ->where('service.id','=',$request->input("service_id"))
             ->select('service.id','service.num_guest','bedroom.id as num_bedroom')
             ->orderBy('bedroom.id','desc')
-            ->take(1)
+            //->take(1)
             ->get();
             if(count($getstep2)>0){
                   return response()->json($getstep2);
