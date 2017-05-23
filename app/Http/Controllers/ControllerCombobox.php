@@ -317,7 +317,7 @@ class ControllerCombobox extends Controller
       }else{
             $getstep2 = DB::table('service')->join('bedroom','service.id','=','bedroom.service_id')
             ->where('service.id','=',$request->input("service_id"))
-            ->select('service.id','service.num_guest','bedroom.id as num_bedroom')
+            ->select('service.id','service.num_guest', DB::raw('count(*) as num_bedroom')/*'bedroom.id as num_bedroom'*/)
             ->orderBy('bedroom.id','desc')
             //->take(1)
             ->get();
