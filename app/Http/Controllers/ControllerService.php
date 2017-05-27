@@ -913,7 +913,7 @@ class ControllerService extends Controller
            'queen_bed'=>'numeric|min:0',
            'individual_bed'=>'numeric|min:0',
            'sofa_bed'=>'numeric|min:0',
-           'other_bed'=>'numeric|min:0|max:1'
+           'other_bed'=>'numeric|min:0'
            
         ];
         $validator=Validator::make($request->all(),$rule);

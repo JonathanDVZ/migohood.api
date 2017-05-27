@@ -16,6 +16,7 @@ use App\Models\Type;
 use App\Models\Currency;
 use App\Models\Service;
 use App\Models\Image;
+use App\Models\Payment;
 use DB;
 
 class ControllerCombobox extends Controller
@@ -66,7 +67,7 @@ class ControllerCombobox extends Controller
 
     public function GetDuration(Request $request){
           $rule=[
-              'service_id' => 'required|numeric|min:1',
+              //'service_id' => 'required|numeric|min:1',
               'languaje'=>'required'
           ];
           $validator=Validator::make($request->all(),$rule);
@@ -82,6 +83,41 @@ class ControllerCombobox extends Controller
           }     
     }
 
+    public function GetCurrency(Request $request){
+        $rule=[
+            //'service_id' => 'required|numeric|min:1',
+            'languaje'=>'required'
+        ];
+        $validator=Validator::make($request->all(),$rule);
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+        }else{
+            $currency=Currency::select('*')->where('language','=',$request->input("languaje"))->get();
+            if(count($currency)>0){
+                return response()->json($currency);
+            }else{
+                return response()->json("Currency not found"); 
+            }
+        }     
+    }
+
+    public function GetPayment(Request $request){
+        $rule=[
+            //'service_id' => 'required|numeric|min:1',
+            'languaje'=>'required'
+        ];
+        $validator=Validator::make($request->all(),$rule);
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+        }else{
+            $payment=Payment::select('*')->where('languaje','=',$request->input("languaje"))->get();
+            if(count($payment)>0){
+                return response()->json($payment);
+            }else{
+                return response()->json("Payment not found"); 
+            }
+        }     
+    }
 
     public function TypeGet(Request $request){
           $rule=[
@@ -317,7 +353,7 @@ class ControllerCombobox extends Controller
       }else{
             $getstep2 = DB::table('service')->join('bedroom','service.id','=','bedroom.service_id')
             ->where('service.id','=',$request->input("service_id"))
-            ->select('service.id','service.num_guest','bedroom.id as num_bedroom')
+            ->select('service.id','service.num_guest', DB::raw('count(*) as num_bedroom')/*'bedroom.id as num_bedroom'*/)
             ->orderBy('bedroom.id','desc')
             //->take(1)
             ->get();
@@ -357,7 +393,7 @@ class ControllerCombobox extends Controller
       }else{
             $getstep4 = DB::table('service')
              ->join('service_description','service_description.service_id','=','service.id')
-            ->join('description','service_description.description_id','=','description.description_id')
+            ->join('description','service_description.description_id','=','description.id')
             ->join('city','service.city_id','=','city.id')
             ->join('state','city.state_id','=','state.id')
             ->join('country','country.id','=','state.country_id')
