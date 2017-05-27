@@ -416,9 +416,84 @@ class ControllerCombobox extends Controller
         }else{
                 return response()->json("Not Found"); 
         }
+      }
+    }
 
-             
-              }
+    public function ReturnStep6(Request $request){
+           $rule=[
+           'service_id' => 'required|numeric'
+      ];
+    $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+      }else{
+         $getstep6=DB::table('service')
+        ->join('service_payment','service_payment.service_id','=','service.id')
+        ->join('payment','payment.code','=','service_payment.payment_id')
+        ->join('price_history','price_history.service_id','=','service.id')
+        ->join('price_history_has_duration','price_history_has_duration.price_history_service_id','=','price_history.service_id')
+        ->join('duration','duration.code','=','price_history_has_duration.duration_id')
+        ->join('check_in','check_in.service_id','=','service.id')
+        ->join('check_out','check_out.service_id','=','service.id')
+        ->join('currency','currency.id','=','price_history.currency_id')
+        ->where('service.id','=',$request->input("service_id"))
+        ->where('payment.languaje','=',$request->input("languaje"))
+        ->where('duration.languaje','=',$request->input("languaje"))
+        ->select('payment.type as Type-Payment','duration.type as Type-Duration'
+        ,'price_history.price as Price','currency.currency_name as Currency-Name'
+        ,'check_in.time_entry as Time-Entry','check_in.until as Until'
+        ,'check_out.departure_time as Departure-Time')
+        ->get();
+         if(count($getstep6)>0){
+                return response()->json($getstep6); 
+        }else{
+                return response()->json("Not Found"); 
+        }
+      }
+    }
+
+    public function ReturnStep7Description(Request $request){
+           $rule=[
+           'service_id' => 'required|numeric'
+      ];
+    $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+      }else{
+        $getstep7=DB::table('service')
+        ->join('service_description','service_description.service_id','=','service.id')
+        ->join('description','description.id','=','service_description.description_id')
+        ->where('service_id','=',$request->input("service_id"))
+        ->select('service_description.content','service_description.check')
+        ->get();
+          if(count($getstep7)>0){
+                return response()->json($getstep7); 
+        }else{
+                return response()->json("Not Found"); 
+        }
+
+      }   
+    }
+
+    public function ReturnStep8Rules(Request $request){
+            $rule=[
+           'service_id' => 'required|numeric'
+      ];
+    $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+      }else{
+        $getstep8=DB::table('service')
+        ->join('service_rules','service_rules.service_id','=','service.id')
+        ->join('house_rules','house_rules.id','=','service_rules.rules_id')
+        ->select('service_rules.description as Description','service_rules.check as Check')
+        ->get();
+        if(count($getstep8)>0){
+                return response()->json($getstep8); 
+        }else{
+                return response()->json("Not Found"); 
+        }
+      }
     }
   
 }

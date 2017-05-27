@@ -313,7 +313,7 @@ $app->get('/service/space/step-3/bathroom','ControllerCombobox@ReturnStep3');
 //Agregar un servicio (space-step4)
 $app->get('/service/space/step-4/location','ControllerCombobox@ReturnStep4Location');
 //Agregar un Amenities (space-step5)
-$app->get('/service/space/step-5/amenities','ControllerCombobox@ReturnStep5');///hasta aqui
+$app->get('/service/space/step-5/amenities','ControllerCombobox@ReturnStep5');
 //Agregar un cancellation policy (space-step6)
 $app->get('/service/space/step-6/hosting','ControllerCombobox@ReturnStep6');
 //Agregar un description service (space-step7)
