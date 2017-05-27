@@ -1235,7 +1235,7 @@ class ControllerService extends Controller
                       $newoptionalprice->finishdate=$request->input("finishdate");
                       $newoptionalprice->price=$request->input("price_optional");
                       $newoptionalprice->save();*/
-                      return response()->json($newcheck_in); 
+                      return response()->json('Add Step-6'); 
                     }catch(exception $e){
                        return response()->json($e); 
                     }
