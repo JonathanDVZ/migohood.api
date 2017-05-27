@@ -1360,7 +1360,7 @@ class ControllerService extends Controller
            'AptoDe2a12'=>'boolean',
            'AptoDe0a2'=>'boolean',
            'SeadmitenMascotas'=>'boolean',
-           'PremitidoFumar'=>'boolean',
+           'PermitidoFumar'=>'boolean',
            'Eventos'=>'boolean',
            'guest_phone'=>'boolean',
            'guest_email'=>'boolean',
@@ -1396,7 +1396,7 @@ class ControllerService extends Controller
                  $newrules=new Service_Rules;
                  $newrules->service_id=$service->id;
                  $newrules->rules_id=4;
-                 $newrules->check=$request->input("PremitidoFumar");
+                 $newrules->check=$request->input("PermitidoFumar");
                  $newrules->save();
                  $newrules=new Service_Rules;
                  $newrules->service_id=$service->id;
