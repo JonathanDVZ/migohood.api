@@ -343,11 +343,5 @@ $app->get('/service/space/step-11/number-emergency','ControllerCombobox@ReturnSt
 $app->get('/make_token',function(){
     return str_random(32);
 });
-$app->get('/make_token',function(){
-    return str_random(32);
-});
 
-$app->get('/make_token',function(){
-    return str_random(32);
-});
 
