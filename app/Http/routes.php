@@ -319,7 +319,7 @@ $app->get('/service/space/step-1/create','ControllerCombobox@ReturnStep1');
 //Retorna un servicio (space-step2-bedroom)
 $app->get('/service/space/step-2/bedrooms','ControllerCombobox@ReturnStep2');
 //Retorna un servicio (space-step2-beds)
-$app->geat('/service/space/step-2/beds/details','ControllerCombobox@ReturnStep2Beds');
+$app->get('/service/space/step-2/beds/details','ControllerCombobox@ReturnStep2Beds');
 //Retorn un servicio (space-step3-bathroom)
 $app->get('/service/space/step-3/bathroom','ControllerCombobox@ReturnStep3');
 //Retorna un servicio (space-step4)
