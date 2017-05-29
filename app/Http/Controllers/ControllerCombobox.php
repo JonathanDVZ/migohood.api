@@ -476,7 +476,7 @@ class ControllerCombobox extends Controller
         ->where('payment.languaje','=',$request->input("languaje"))
         ->where('duration.languaje','=',$request->input("languaje"))
         ->select('payment.type as Type-Payment','duration.type as Type-Duration'
-        ,'price_history.price as Price','currency.currency_name as Currency-Name'
+        ,'price_history.price as Price','currency.currency_iso as Currency-Name'
         ,'check_in.time_entry as Time-Entry','check_in.until as Until'
         ,'check_out.departure_time as Departure-Time')
         ->get();
@@ -500,7 +500,7 @@ class ControllerCombobox extends Controller
         ->join('service_description','service_description.service_id','=','service.id')
         ->join('description','description.id','=','service_description.description_id')
         ->where('service_id','=',$request->input("service_id"))
-        ->select('service_description.content','service_description.check')
+        ->select('service_description.content','service_description.check','service_description.description_id')
         ->get();
           if(count($getstep7)>0){
                 return response()->json($getstep7); 
@@ -522,7 +522,8 @@ class ControllerCombobox extends Controller
         $getstep8=DB::table('service')
         ->join('service_rules','service_rules.service_id','=','service.id')
         ->join('house_rules','house_rules.id','=','service_rules.rules_id')
-        ->select('service_rules.description as Description','service_rules.check as Check')
+        ->where('service.id','=',$request->input("service_id"))
+        ->select('service_rules.description as Description','service_rules.check as Check','service_rules.rules_id')
         ->get();
         if(count($getstep8)>0){
                 return response()->json($getstep8); 
