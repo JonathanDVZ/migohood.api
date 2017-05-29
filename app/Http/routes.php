@@ -122,6 +122,8 @@ $app->post('/service/space/description/add-languaje','ControllerService@AddLangu
 $app->post('/service/space/step-8/rules','ControllerService@AddNewSpaceStep8Rules');
 //Agregar imagen (space-step9)
 $app->post('/service/space/step-9/image','ControllerService@AddNewSpaceStep9');
+//Agregar Notas de Emergencia (space-step11)
+$app->post('/service/space/step-11','ControllerService@AddNewSpaceStep11');
 //Agrega fecha en el calendario->16/5/2017
 $app->post('/service/day','ControllerService@AddDate');
 //Bloquear o desbloquear fecha
@@ -130,6 +132,10 @@ $app->put('/service/update-day','ControllerService@UpdateDate');
 $app->delete('/service/space/delete-languaje','ControllerService@DeleteLanguaje');
 //Muestra todos los lenguajes uqe tiene un servicio
 $app->get('/service/space/description/languaje','ControllerCombobox@GetLanguaje');
+//Agrega numero de emergencia
+$app->post('/service/space/step-11/emergency-add','ControllerService@AddNewEmergency');
+//Elimina numero de emergencia
+$app->delete('/service/space/step-11/emergency-delete','ControllerService@DeleteNewEmergency');
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //Agrgar Accommodation
@@ -302,6 +308,8 @@ $app->get('/country/get-country','ControllerCombobox@GetCountry');
 $app->get('/city/get-city','ControllerCombobox@GetCity');
 //Muestra todas los estados
 $app->get('/state/get-state','ControllerCombobox@GetState');
+//Muestra todos los numeros de emergencia de un servicio
+$app->get('/space/get-number-emergency','ControllerCombobox@GetNumberEmergency');
 
 ////////////////////////////////////////////////////////////////////////////////////////
 //next and back

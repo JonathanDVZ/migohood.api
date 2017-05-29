@@ -531,6 +531,23 @@ class ControllerCombobox extends Controller
         }
       }
     }
+
+    public function GetNumberEmergency(Request $request)
+    {   $rule=[
+           'service_id' => 'required|numeric'
+        ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+      }else{
+          $number=DB::table('number_emergency')->where('service_id',$request->input("service_id"))->get();
+          if(count($number)>0){
+                  return response()->json($number); 
+          }else{
+                return response()->json("Not Found"); 
+          }
+      }
+    }
   
 }
     
