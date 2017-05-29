@@ -316,22 +316,26 @@ $app->get('/space/get-number-emergency','ControllerCombobox@GetNumberEmergency')
 $app->get('/service/space/step/create','ControllerCombobox@ReturnStep');
 
 $app->get('/service/space/step-1/create','ControllerCombobox@ReturnStep1');
-//Agregar un servicio (space-step2-bedroom)
+//Retorna un servicio (space-step2-bedroom)
 $app->get('/service/space/step-2/bedrooms','ControllerCombobox@ReturnStep2');
-//Agregar un servicio (space-step2-beds)
-$app->get('/service/space/step-2/beds/details','ControllerCombobox@ReturnStep2Beds');
-//Agregar un servicio (space-step3-bathroom)
+//Retorna un servicio (space-step2-beds)
+$app->geat('/service/space/step-2/beds/details','ControllerCombobox@ReturnStep2Beds');
+//Retorn un servicio (space-step3-bathroom)
 $app->get('/service/space/step-3/bathroom','ControllerCombobox@ReturnStep3');
-//Agregar un servicio (space-step4)
+//Retorna un servicio (space-step4)
 $app->get('/service/space/step-4/location','ControllerCombobox@ReturnStep4Location');
-//Agregar un Amenities (space-step5)
+//Retorna un Amenities (space-step5)
 $app->get('/service/space/step-5/amenities','ControllerCombobox@ReturnStep5');
-//Agregar un cancellation policy (space-step6)
+//Retorna un cancellation policy (space-step6)
 $app->get('/service/space/step-6/hosting','ControllerCombobox@ReturnStep6');
-//Agregar un description service (space-step7)
+//Retorna description service (space-step7)
 $app->get('/service/space/step-7/description','ControllerCombobox@ReturnStep7Description');
-//Agregar un rules description (space-step8)
+//Retorna description (space-step8)
 $app->get('/service/space/step-8/rules','ControllerCombobox@ReturnStep8Rules');
+//Retorna image (space-step9)
+$app->get('/service/space/step-9/get-image','ControllerCombobox@ReturnStep9');
+//Retorna (space-step11)
+$app->get('/service/space/step-11/number-emergency','ControllerCombobox@ReturnStep11');
 
 
 
