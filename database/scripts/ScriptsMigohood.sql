@@ -984,6 +984,60 @@ CREATE TABLE IF NOT EXISTS `Migohood`.`availability` (
 ENGINE = InnoDB;
 
 
+-- -----------------------------------------------------
+-- Table `Migohood`.`number_emergency`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Migohood`.`number_emergency` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `service_id` INT NOT NULL,
+  `number` VARCHAR(20) NOT NULL,
+  `name` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`id`, `service_id`),
+  INDEX `fk_number_emergency_service1_idx` (`service_id` ASC),
+  CONSTRAINT `fk_number_emergency_service1`
+    FOREIGN KEY (`service_id`)
+    REFERENCES `Migohood`.`service` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Migohood`.`note_emergency`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Migohood`.`note_emergency` (
+  `id` INT NOT NULL,
+  `type` VARCHAR(60) NOT NULL,
+  `code` INT NOT NULL,
+  `languaje` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Migohood`.`service_emergency`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Migohood`.`service_emergency` (
+  `service_id` INT NOT NULL,
+  `emergency_id` INT NOT NULL,
+  `content` VARCHAR(200) NOT NULL,
+  `check` TINYINT(1) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`service_id`, `emergency_id`),
+  INDEX `fk_service_has_note_emergency_note_emergency1_idx` (`emergency_id` ASC),
+  INDEX `fk_service_has_note_emergency_service1_idx` (`service_id` ASC),
+  CONSTRAINT `fk_service_has_note_emergency_service1`
+    FOREIGN KEY (`service_id`)
+    REFERENCES `Migohood`.`service` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_service_has_note_emergency_note_emergency1`
+    FOREIGN KEY (`emergency_id`)
+    REFERENCES `Migohood`.`note_emergency` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
