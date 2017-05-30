@@ -1608,7 +1608,7 @@ class ControllerService extends Controller
                     $s3->putObject([
                         'Bucket' => env('S3_BUCKET'),
                         'Key'    => 'files/images/'.$name,
-                        'Body'   => fopen('files/images/'.$name,'r'),
+                        'Body'   => fopen('http://ec2-54-88-190-71.compute-1.amazonaws.com/files/images/'.$name,'r'),
                         'ACL'    => 'public-read'
                     ]);
                     //unlink('files/images/'.$name);
