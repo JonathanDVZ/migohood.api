@@ -1587,14 +1587,14 @@ class ControllerService extends Controller
             if(count($service)>0){
                 try{
                     // Se definen las credenciales del cliente s3 de amazon
-                    /*$s3 = new S3Client([
+                    $s3 = new S3Client([
                         'version'     => env('S3_VERSION'),
                         'region'      => env('S3_REGION'),
                         'credentials' => [
                             'key'    => env('S3_KEY'),
                             'secret' => env('S3_SECRET')
                         ]
-                    ]);*/
+                    ]);
                     $image_link = 'https://s3.'.env('S3_REGION').'.amazonaws.com/'.env('S3_BUCKET').'/files/images/';
                     // Obtenemos el campo file definido en el formulario
                     #$file = $request->input('ext');            
@@ -1605,12 +1605,12 @@ class ControllerService extends Controller
                     
                     $newruta = new Image();
                     //$old_image = str_replace($image_link,'',$newruta->ruta); 
-                    /*$s3->putObject([
+                    $s3->putObject([
                         'Bucket' => env('S3_BUCKET'),
                         'Key'    => 'files/images/'.$name,
                         'Body'   => fopen('files/images/'.$name,'r'),
                         'ACL'    => 'public-read'
-                    ]); */
+                    ]);
                     //unlink('files/images/'.$name);
                     $newruta->service_id = $service->id;
                     $newruta->ruta = $image_link . $name;
