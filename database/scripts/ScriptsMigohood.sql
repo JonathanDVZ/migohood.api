@@ -170,7 +170,7 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `Migohood`.`image` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `ruta` VARCHAR(45) NOT NULL,
+  `ruta` VARCHAR(255) NOT NULL,
   `service_id` INT NOT NULL,
   `description` VARCHAR(300) NULL,
   PRIMARY KEY (`id`),
@@ -480,9 +480,11 @@ CREATE TABLE IF NOT EXISTS `Migohood`.`price_history` (
   `endDate` DATETIME NULL,
   `price` FLOAT NOT NULL,
   `currency_id` INT NOT NULL,
+  `image_id` INT NULL,
   PRIMARY KEY (`starDate`, `service_id`),
   INDEX `fk_price_history_service1_idx` (`service_id` ASC),
   INDEX `fk_price_history_currency1_idx` (`currency_id` ASC),
+  INDEX `fk_price_history_image1_idx` (`image_id` ASC),
   CONSTRAINT `fk_price_history_service1`
     FOREIGN KEY (`service_id`)
     REFERENCES `Migohood`.`service` (`id`)
@@ -491,6 +493,11 @@ CREATE TABLE IF NOT EXISTS `Migohood`.`price_history` (
   CONSTRAINT `fk_price_history_currency1`
     FOREIGN KEY (`currency_id`)
     REFERENCES `Migohood`.`currency` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_price_history_image1`
+    FOREIGN KEY (`image_id`)
+    REFERENCES `Migohood`.`image` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -923,28 +930,6 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `Migohood`.`service_has_service`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `Migohood`.`service_has_service` (
-  `service_id` INT NOT NULL,
-  `service_id1` INT NOT NULL,
-  PRIMARY KEY (`service_id`, `service_id1`),
-  INDEX `fk_service_has_service_service2_idx` (`service_id1` ASC),
-  INDEX `fk_service_has_service_service1_idx` (`service_id` ASC),
-  CONSTRAINT `fk_service_has_service_service1`
-    FOREIGN KEY (`service_id`)
-    REFERENCES `Migohood`.`service` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_service_has_service_service2`
-    FOREIGN KEY (`service_id1`)
-    REFERENCES `Migohood`.`service` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
 -- Table `Migohood`.`service_languaje`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `Migohood`.`service_languaje` (
@@ -1033,6 +1018,57 @@ CREATE TABLE IF NOT EXISTS `Migohood`.`service_emergency` (
   CONSTRAINT `fk_service_has_note_emergency_note_emergency1`
     FOREIGN KEY (`emergency_id`)
     REFERENCES `Migohood`.`note_emergency` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Migohood`.`image_duration`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Migohood`.`image_duration` (
+  `image_id` INT NOT NULL,
+  `duration_id` INT NOT NULL,
+  PRIMARY KEY (`image_id`, `duration_id`),
+  INDEX `fk_image_has_duration_duration1_idx` (`duration_id` ASC),
+  INDEX `fk_image_has_duration_image1_idx` (`image_id` ASC),
+  CONSTRAINT `fk_image_has_duration_image1`
+    FOREIGN KEY (`image_id`)
+    REFERENCES `Migohood`.`image` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_image_has_duration_duration1`
+    FOREIGN KEY (`duration_id`)
+    REFERENCES `Migohood`.`duration` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Migohood`.`co_host`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Migohood`.`co_host` (
+  `user_id` INT NOT NULL,
+  `service_id` INT NOT NULL,
+  `user_id1` INT NOT NULL,
+  `date` DATE NOT NULL,
+  INDEX `fk_service_id` (`service_id` ASC),
+  INDEX `fk_user_id` (`user_id` ASC),
+  INDEX `fk_co_host_user1_idx` (`user_id1` ASC),
+  CONSTRAINT `fk_user1`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `Migohood`.`user` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_service1`
+    FOREIGN KEY (`service_id`)
+    REFERENCES `Migohood`.`service` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_co_host_user1`
+    FOREIGN KEY (`user_id1`)
+    REFERENCES `Migohood`.`user` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
