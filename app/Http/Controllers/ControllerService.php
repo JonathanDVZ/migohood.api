@@ -1623,6 +1623,7 @@ class ControllerService extends Controller
                     'description'=>$request->input("description")]);*/
 
                     return json_encode('completed!', true);
+                    return response()->json('Update completed!', true);
                 }
                 catch (\Exception $e){
                     return response()->json($e->getMessage());
