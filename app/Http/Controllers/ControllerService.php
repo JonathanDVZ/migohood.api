@@ -1621,7 +1621,7 @@ class ControllerService extends Controller
                     /*DB::table('imagen')->where('service_id', $service->id )->update(['ruta' => $image_link.$name,
                     'description'=>$request->input("description")]);*/
 
-                    return json_encode('Update completed!', true);
+                    return response()->json('Update completed!', true);
                 }
                 catch (\Exception $e){
                     return response()->json($e->getMessage());
