@@ -1577,15 +1577,15 @@ class ControllerService extends Controller
    public function AddNewSpaceStep9(Request $request){
         $rule=[
            'service_id' => 'required|numeric|min:1',
-           //'imagen' => 'required|image',
-        ];
-        $validator=Validator::make($request->all(),$rule);
-        if ($validator->fails()) {
-            return response()->json($validator->errors()->all());
-        } else {
+           'image'=>'required|image'
+           ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+        return response()->json($validator->errors()->all());
+        }else{
             $service=Service::where('id',$request->input("service_id"))->first();
             if(count($service)>0){
-                try{
+                 try{
                     // Se definen las credenciales del cliente s3 de amazon
                     $s3 = new S3Client([
                         'version'     => env('S3_VERSION'),
@@ -1597,24 +1597,23 @@ class ControllerService extends Controller
                     ]);
                     $image_link = 'https://s3.'.env('S3_REGION').'.amazonaws.com/'.env('S3_BUCKET').'/files/images/';
                     // Obtenemos el campo file definido en el formulario
-                    #$file = $request->input('ext');            
+                    $file = $request->file('image');            
                     // Creamos un nombre para nuestro imagen
-                    $name = $request->input('name');#'imagen'.str_random(20).'_service_'.$service->id.'.'.$file/*$file->getClientOriginalExtension();         
+                    $name = 'image'.str_random(20).'_service_'.$service->id.'.'.$file->getClientOriginalExtension();         
                     // Movemos el archivo a la caperta temporal
-                    #$file->move('files/images/',$name);
-                    
-                    $newruta = new Image();
-                    //$old_image = str_replace($image_link,'',$newruta->ruta); 
+                    $file->move('files/images/',$name);
+                    $newruta=new Image();
+                    $old_image = str_replace($image_link,'',$newruta->ruta); 
                     $s3->putObject([
-                        'Bucket' => env('S3_BUCKET'),
-                        'Key'    => 'files/images/'.$name,
-                        'Body'   => fopen('http://ec2-54-88-190-71.compute-1.amazonaws.com/files/images/'.$name,'r'),
-                        'ACL'    => 'public-read'
-                    ]);
-                    //unlink('files/images/'.$name);
-                    $newruta->service_id = $service->id;
-                    $newruta->ruta = $image_link . $name;
-                    $newruta->description = $request->input("description");
+                    'Bucket' => env('S3_BUCKET'),
+                    'Key'    => 'files/images/'.$name,
+                    'Body'   => fopen('files/images/'.$name,'r'),
+                    'ACL'    => 'public-read'
+                    ]); 
+                     unlink('files/images/'.$name);
+                    $newruta->service_id=$service->id;
+                    $newruta->ruta=$image_link.$name;
+                    $newruta->description=$request->input("description");
                     $newruta->save();
                     // Borramos el arrchivo de la carpeta temporal
                    
