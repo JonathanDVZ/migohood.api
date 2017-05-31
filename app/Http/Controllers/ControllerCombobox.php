@@ -572,26 +572,26 @@ class ControllerCombobox extends Controller
     
     public function ReturnStep11(Request $request)
     {
-          $rule=[
-           'service_id' => 'required|numeric',
-           'languaje'=>'required'
-        ];
-      $validator=Validator::make($request->all(),$rule);
+      $rule=[
+        'service_id' => 'required|numeric',
+        'languaje'=>'required'
+      ];
+      $validator = Validator::make($request->all(),$rule);
       if ($validator->fails()) {
             return response()->json($validator->errors()->all());
       }else{
-             $getstep11=DB::table('service')
-                          ->join('service_emergency','service_emergency.service_id','=','service.id')
-                          ->join('note_emergency','note_emergency.id','=','service_emergency.emergency_id')
-                          ->where('service.id','=',$request->input("service_id"))
-                          ->where('note_emergency.languaje','=',$request->input("languaje"))
-                          ->select('service_emergency.content','service_emergency.check','note_emergency.type','service_emergency.emergency_id')
-                          ->get();
-          if(count($getstep11)>0){
-                  return response()->json($getstep11); 
-          }else{
-                return response()->json("Not Found"); 
-          }  
+        $getstep11=DB::table('service')
+                      ->join('service_emergency','service_emergency.service_id','=','service.id')
+                      ->join('note_emergency','note_emergency.id','=','service_emergency.emergency_id')
+                      ->where('service.id','=',$request->input("service_id"))
+                      ->where('note_emergency.languaje','=',$request->input("languaje"))
+                      ->select('service_emergency.content','service_emergency.check','note_emergency.type','service_emergency.emergency_id')
+                      ->get();
+        if(count($getstep11)>0){
+            return response()->json($getstep11); 
+        }else{
+            return response()->json("Not Found"); 
+        }  
       }
 
           

@@ -1634,274 +1634,275 @@ class ControllerService extends Controller
     }
 
     public function AddNewSpaceStep11(Request $request)
-    {$rule=[
-        'service_id'=>'required|numeric',
-        'bool_smoke'=>'boolean',
-        'bool_carbon'=>'boolean',
-        'bool_first'=>'boolean',
-        'bool_safety'=>'boolean',
-        'bool_fire'=>'boolean'
-    ];
-    $validator=Validator::make($request->all(),$rule);
-    if ($validator->fails()) {
+    {
+        $rule=[
+            'service_id'=>'required|numeric',
+            'bool_smoke'=>'boolean',
+            'bool_carbon'=>'boolean',
+            'bool_first'=>'boolean',
+            'bool_safety'=>'boolean',
+            'bool_fire'=>'boolean'
+        ];
+        $validator=Validator::make($request->all(),$rule);
+        if ($validator->fails()) {
             return response()->json($validator->errors()->all());
-    }else{
-        $service=Service::where('id',$request->input("service_id"))->first();
-        if(count($service)>0){
-          $val=Service_Emergency::where("service_id",$service->id)->first();
-          if(count($val)==0){           
-           
-           $newnote1=new Service_Emergency;
-           $newnote1->service_id=$service->id;
-           $newnote1->emergency_id=1;
-           $newnote1->content=$request->input("desc_anything");
-           $newnote1->save();
-           
-           $newnote10=new Service_Emergency;
-           $newnote10->service_id=$service->id;
-           $newnote10->emergency_id=11;
-           $newnote10->content=$request->input("desc_anything");
-           $newnote10->save();
-
-           $newnote2=new Service_Emergency;
-           $newnote2->service_id=$service->id;
-           $newnote2->emergency_id=2;
-           $newnote2->check=$request->input("bool_smoke");
-           $newnote2->save();
-
-           $newnote2=new Service_Emergency;
-           $newnote2->service_id=$service->id;
-           $newnote2->emergency_id=12;
-           $newnote2->check=$request->input("bool_smoke");
-           $newnote2->save();
-
-           $newnote3=new Service_Emergency;
-           $newnote3->service_id=$service->id;
-           $newnote3->emergency_id=3;
-           $newnote3->check=$request->input("bool_carbon");
-           $newnote3->save();
-
-           $newnote3=new Service_Emergency;
-           $newnote3->service_id=$service->id;
-           $newnote3->emergency_id=13;
-           $newnote3->check=$request->input("bool_carbon");
-           $newnote3->save();
-
-           $newnote4=new Service_Emergency;
-           $newnote4->service_id=$service->id;
-           $newnote4->emergency_id=4;
-           $newnote4->check=$request->input("bool_first");
-           $newnote4->save();
-
-           $newnote4=new Service_Emergency;
-           $newnote4->service_id=$service->id;
-           $newnote4->emergency_id=14;
-           $newnote4->check=$request->input("bool_first");
-           $newnote4->save();
-
-           $newnote5=new Service_Emergency;
-           $newnote5->service_id=$service->id;
-           $newnote5->emergency_id=5;
-           $newnote5->check=$request->input("bool_safety");
-           $newnote5->save();
-
-           $newnote5=new Service_Emergency;
-           $newnote5->service_id=$service->id;
-           $newnote5->emergency_id=15;
-           $newnote5->check=$request->input("bool_safety");
-           $newnote5->save();
-
-           $newnote6=new Service_Emergency;
-           $newnote6->service_id=$service->id;
-           $newnote6->emergency_id=6;
-           $newnote6->check=$request->input("bool_fire");
-           $newnote6->save();
-
-           $newnote6=new Service_Emergency;
-           $newnote6->service_id=$service->id;
-           $newnote6->emergency_id=16;
-           $newnote6->check=$request->input("bool_fire");
-           $newnote6->save();
-
-           $newnote7=new Service_Emergency;
-           $newnote7->service_id=$service->id;
-           $newnote7->emergency_id=7;
-           $newnote7->content=$request->input("desc_fire");
-           $newnote7->save();
-
-           $newnote7=new Service_Emergency;
-           $newnote7->service_id=$service->id;
-           $newnote7->emergency_id=17;
-           $newnote7->content=$request->input("desc_fire");
-           $newnote7->save();
-
-           $newnote8=new Service_Emergency;
-           $newnote8->service_id=$service->id;
-           $newnote8->emergency_id=8;
-           $newnote8->content=$request->input("desc_alarm");
-           $newnote8->save();
-
-           $newnote8=new Service_Emergency;
-           $newnote8->service_id=$service->id;
-           $newnote8->emergency_id=18;
-           $newnote8->content=$request->input("desc_alarm");
-           $newnote8->save();
-
-           $newnote9=new Service_Emergency;
-           $newnote9->service_id=$service->id;
-           $newnote9->emergency_id=9;
-           $newnote9->content=$request->input("desc_gas");
-           $newnote9->save();
-
-           $newnote9=new Service_Emergency;
-           $newnote9->service_id=$service->id;
-           $newnote9->emergency_id=19;
-           $newnote9->content=$request->input("desc_gas");
-           $newnote9->save();
-
-           $newnote10=new Service_Emergency;
-           $newnote10->service_id=$service->id;
-           $newnote10->emergency_id=10;
-           $newnote10->content=$request->input("desc_exit");
-           $newnote10->save();
-
-           $newnote10=new Service_Emergency;
-           $newnote10->service_id=$service->id;
-           $newnote10->emergency_id=20;
-           $newnote10->content=$request->input("desc_exit");
-           $newnote10->save();
-            
-           return response()->json('Add Note emergency');  
-         }else{
-                $val=DB::table('service_emergency')->where('service_id',$service->id)->delete();
-
-                $newnote1=new Service_Emergency;
-           $newnote1->service_id=$service->id;
-           $newnote1->emergency_id=1;
-           $newnote1->content=$request->input("desc_anything");
-           $newnote1->save();
-           
-           $newnote10=new Service_Emergency;
-           $newnote10->service_id=$service->id;
-           $newnote10->emergency_id=11;
-           $newnote10->content=$request->input("desc_anything");
-           $newnote10->save();
-
-           $newnote2=new Service_Emergency;
-           $newnote2->service_id=$service->id;
-           $newnote2->emergency_id=2;
-           $newnote2->check=$request->input("bool_smoke");
-           $newnote2->save();
-
-           $newnote2=new Service_Emergency;
-           $newnote2->service_id=$service->id;
-           $newnote2->emergency_id=12;
-           $newnote2->check=$request->input("bool_smoke");
-           $newnote2->save();
-
-           $newnote3=new Service_Emergency;
-           $newnote3->service_id=$service->id;
-           $newnote3->emergency_id=3;
-           $newnote3->check=$request->input("bool_carbon");
-           $newnote3->save();
-
-           $newnote3=new Service_Emergency;
-           $newnote3->service_id=$service->id;
-           $newnote3->emergency_id=13;
-           $newnote3->check=$request->input("bool_carbon");
-           $newnote3->save();
-
-           $newnote4=new Service_Emergency;
-           $newnote4->service_id=$service->id;
-           $newnote4->emergency_id=4;
-           $newnote4->check=$request->input("bool_first");
-           $newnote4->save();
-
-           $newnote4=new Service_Emergency;
-           $newnote4->service_id=$service->id;
-           $newnote4->emergency_id=14;
-           $newnote4->check=$request->input("bool_first");
-           $newnote4->save();
-
-           $newnote5=new Service_Emergency;
-           $newnote5->service_id=$service->id;
-           $newnote5->emergency_id=5;
-           $newnote5->check=$request->input("bool_safety");
-           $newnote5->save();
-
-           $newnote5=new Service_Emergency;
-           $newnote5->service_id=$service->id;
-           $newnote5->emergency_id=15;
-           $newnote5->check=$request->input("bool_safety");
-           $newnote5->save();
-
-           $newnote6=new Service_Emergency;
-           $newnote6->service_id=$service->id;
-           $newnote6->emergency_id=6;
-           $newnote6->check=$request->input("bool_fire");
-           $newnote6->save();
-
-           $newnote6=new Service_Emergency;
-           $newnote6->service_id=$service->id;
-           $newnote6->emergency_id=16;
-           $newnote6->check=$request->input("bool_fire");
-           $newnote6->save();
-
-           $newnote7=new Service_Emergency;
-           $newnote7->service_id=$service->id;
-           $newnote7->emergency_id=7;
-           $newnote7->content=$request->input("desc_fire");
-           $newnote7->save();
-
-           $newnote7=new Service_Emergency;
-           $newnote7->service_id=$service->id;
-           $newnote7->emergency_id=17;
-           $newnote7->content=$request->input("desc_fire");
-           $newnote7->save();
-
-           $newnote8=new Service_Emergency;
-           $newnote8->service_id=$service->id;
-           $newnote8->emergency_id=8;
-           $newnote8->content=$request->input("desc_alarm");
-           $newnote8->save();
-
-           $newnote8=new Service_Emergency;
-           $newnote8->service_id=$service->id;
-           $newnote8->emergency_id=18;
-           $newnote8->content=$request->input("desc_alarm");
-           $newnote8->save();
-
-           $newnote9=new Service_Emergency;
-           $newnote9->service_id=$service->id;
-           $newnote9->emergency_id=9;
-           $newnote9->content=$request->input("desc_gas");
-           $newnote9->save();
-
-           $newnote9=new Service_Emergency;
-           $newnote9->service_id=$service->id;
-           $newnote9->emergency_id=19;
-           $newnote9->content=$request->input("desc_gas");
-           $newnote9->save();
-
-           $newnote10=new Service_Emergency;
-           $newnote10->service_id=$service->id;
-           $newnote10->emergency_id=10;
-           $newnote10->content=$request->input("desc_exit");
-           $newnote10->save();
-
-           $newnote10=new Service_Emergency;
-           $newnote10->service_id=$service->id;
-           $newnote10->emergency_id=20;
-           $newnote10->content=$request->input("desc_exit");
-           $newnote10->save();
-
-            return response()->json('Update Note emergency');  
-        } 
-              
         }else{
-            return response()->json('Service not found');   
+            $service=Service::where('id',$request->input("service_id"))->first();
+            if(count($service)>0){
+                $val=Service_Emergency::where("service_id",$service->id)->first();
+
+                if(count($val)==0){           
+                    //return response()->json('Add Note emergency');
+                   $newnote1=new Service_Emergency;
+                   $newnote1->service_id=$service->id;
+                   $newnote1->emergency_id=1;
+                   $newnote1->content=$request->input("desc_anything");
+                   $newnote1->save();
+                   
+                   $newnote10=new Service_Emergency;
+                   $newnote10->service_id=$service->id;
+                   $newnote10->emergency_id=11;
+                   $newnote10->content=$request->input("desc_anything");
+                   $newnote10->save();
+
+                   $newnote2=new Service_Emergency;
+                   $newnote2->service_id=$service->id;
+                   $newnote2->emergency_id=2;
+                   $newnote2->check=$request->input("bool_smoke");
+                   $newnote2->save();
+
+                   $newnote2=new Service_Emergency;
+                   $newnote2->service_id=$service->id;
+                   $newnote2->emergency_id=12;
+                   $newnote2->check=$request->input("bool_smoke");
+                   $newnote2->save();
+
+                   $newnote3=new Service_Emergency;
+                   $newnote3->service_id=$service->id;
+                   $newnote3->emergency_id=3;
+                   $newnote3->check=$request->input("bool_carbon");
+                   $newnote3->save();
+
+                   $newnote3=new Service_Emergency;
+                   $newnote3->service_id=$service->id;
+                   $newnote3->emergency_id=13;
+                   $newnote3->check=$request->input("bool_carbon");
+                   $newnote3->save();
+
+                   $newnote4=new Service_Emergency;
+                   $newnote4->service_id=$service->id;
+                   $newnote4->emergency_id=4;
+                   $newnote4->check=$request->input("bool_first");
+                   $newnote4->save();
+
+                   $newnote4=new Service_Emergency;
+                   $newnote4->service_id=$service->id;
+                   $newnote4->emergency_id=14;
+                   $newnote4->check=$request->input("bool_first");
+                   $newnote4->save();
+
+                   $newnote5=new Service_Emergency;
+                   $newnote5->service_id=$service->id;
+                   $newnote5->emergency_id=5;
+                   $newnote5->check=$request->input("bool_safety");
+                   $newnote5->save();
+
+                   $newnote5=new Service_Emergency;
+                   $newnote5->service_id=$service->id;
+                   $newnote5->emergency_id=15;
+                   $newnote5->check=$request->input("bool_safety");
+                   $newnote5->save();
+
+                   $newnote6=new Service_Emergency;
+                   $newnote6->service_id=$service->id;
+                   $newnote6->emergency_id=6;
+                   $newnote6->check=$request->input("bool_fire");
+                   $newnote6->save();
+
+                   $newnote6=new Service_Emergency;
+                   $newnote6->service_id=$service->id;
+                   $newnote6->emergency_id=16;
+                   $newnote6->check=$request->input("bool_fire");
+                   $newnote6->save();
+
+                   $newnote7=new Service_Emergency;
+                   $newnote7->service_id=$service->id;
+                   $newnote7->emergency_id=7;
+                   $newnote7->content=$request->input("desc_fire");
+                   $newnote7->save();
+
+                   $newnote7=new Service_Emergency;
+                   $newnote7->service_id=$service->id;
+                   $newnote7->emergency_id=17;
+                   $newnote7->content=$request->input("desc_fire");
+                   $newnote7->save();
+
+                   $newnote8=new Service_Emergency;
+                   $newnote8->service_id=$service->id;
+                   $newnote8->emergency_id=8;
+                   $newnote8->content=$request->input("desc_alarm");
+                   $newnote8->save();
+
+                   $newnote8=new Service_Emergency;
+                   $newnote8->service_id=$service->id;
+                   $newnote8->emergency_id=18;
+                   $newnote8->content=$request->input("desc_alarm");
+                   $newnote8->save();
+
+                   $newnote9=new Service_Emergency;
+                   $newnote9->service_id=$service->id;
+                   $newnote9->emergency_id=9;
+                   $newnote9->content=$request->input("desc_gas");
+                   $newnote9->save();
+
+                   $newnote9=new Service_Emergency;
+                   $newnote9->service_id=$service->id;
+                   $newnote9->emergency_id=19;
+                   $newnote9->content=$request->input("desc_gas");
+                   $newnote9->save();
+
+                   $newnote10=new Service_Emergency;
+                   $newnote10->service_id=$service->id;
+                   $newnote10->emergency_id=10;
+                   $newnote10->content=$request->input("desc_exit");
+                   $newnote10->save();
+
+                   $newnote10=new Service_Emergency;
+                   $newnote10->service_id=$service->id;
+                   $newnote10->emergency_id=20;
+                   $newnote10->content=$request->input("desc_exit");
+                   $newnote10->save();
+                    
+                   return response()->json('Add Note emergency');  
+                }else{
+                    $val=DB::table('service_emergency')->where('service_id',$service->id)->delete();
+
+                    $newnote1=new Service_Emergency;
+                   $newnote1->service_id=$service->id;
+                   $newnote1->emergency_id=1;
+                   $newnote1->content=$request->input("desc_anything");
+                   $newnote1->save();
+                   
+                   $newnote10=new Service_Emergency;
+                   $newnote10->service_id=$service->id;
+                   $newnote10->emergency_id=11;
+                   $newnote10->content=$request->input("desc_anything");
+                   $newnote10->save();
+
+                   $newnote2=new Service_Emergency;
+                   $newnote2->service_id=$service->id;
+                   $newnote2->emergency_id=2;
+                   $newnote2->check=$request->input("bool_smoke");
+                   $newnote2->save();
+
+                   $newnote2=new Service_Emergency;
+                   $newnote2->service_id=$service->id;
+                   $newnote2->emergency_id=12;
+                   $newnote2->check=$request->input("bool_smoke");
+                   $newnote2->save();
+
+                   $newnote3=new Service_Emergency;
+                   $newnote3->service_id=$service->id;
+                   $newnote3->emergency_id=3;
+                   $newnote3->check=$request->input("bool_carbon");
+                   $newnote3->save();
+
+                   $newnote3=new Service_Emergency;
+                   $newnote3->service_id=$service->id;
+                   $newnote3->emergency_id=13;
+                   $newnote3->check=$request->input("bool_carbon");
+                   $newnote3->save();
+
+                   $newnote4=new Service_Emergency;
+                   $newnote4->service_id=$service->id;
+                   $newnote4->emergency_id=4;
+                   $newnote4->check=$request->input("bool_first");
+                   $newnote4->save();
+
+                   $newnote4=new Service_Emergency;
+                   $newnote4->service_id=$service->id;
+                   $newnote4->emergency_id=14;
+                   $newnote4->check=$request->input("bool_first");
+                   $newnote4->save();
+
+                   $newnote5=new Service_Emergency;
+                   $newnote5->service_id=$service->id;
+                   $newnote5->emergency_id=5;
+                   $newnote5->check=$request->input("bool_safety");
+                   $newnote5->save();
+
+                   $newnote5=new Service_Emergency;
+                   $newnote5->service_id=$service->id;
+                   $newnote5->emergency_id=15;
+                   $newnote5->check=$request->input("bool_safety");
+                   $newnote5->save();
+
+                   $newnote6=new Service_Emergency;
+                   $newnote6->service_id=$service->id;
+                   $newnote6->emergency_id=6;
+                   $newnote6->check=$request->input("bool_fire");
+                   $newnote6->save();
+
+                   $newnote6=new Service_Emergency;
+                   $newnote6->service_id=$service->id;
+                   $newnote6->emergency_id=16;
+                   $newnote6->check=$request->input("bool_fire");
+                   $newnote6->save();
+
+                   $newnote7=new Service_Emergency;
+                   $newnote7->service_id=$service->id;
+                   $newnote7->emergency_id=7;
+                   $newnote7->content=$request->input("desc_fire");
+                   $newnote7->save();
+
+                   $newnote7=new Service_Emergency;
+                   $newnote7->service_id=$service->id;
+                   $newnote7->emergency_id=17;
+                   $newnote7->content=$request->input("desc_fire");
+                   $newnote7->save();
+
+                   $newnote8=new Service_Emergency;
+                   $newnote8->service_id=$service->id;
+                   $newnote8->emergency_id=8;
+                   $newnote8->content=$request->input("desc_alarm");
+                   $newnote8->save();
+
+                   $newnote8=new Service_Emergency;
+                   $newnote8->service_id=$service->id;
+                   $newnote8->emergency_id=18;
+                   $newnote8->content=$request->input("desc_alarm");
+                   $newnote8->save();
+
+                   $newnote9=new Service_Emergency;
+                   $newnote9->service_id=$service->id;
+                   $newnote9->emergency_id=9;
+                   $newnote9->content=$request->input("desc_gas");
+                   $newnote9->save();
+
+                   $newnote9=new Service_Emergency;
+                   $newnote9->service_id=$service->id;
+                   $newnote9->emergency_id=19;
+                   $newnote9->content=$request->input("desc_gas");
+                   $newnote9->save();
+
+                   $newnote10=new Service_Emergency;
+                   $newnote10->service_id=$service->id;
+                   $newnote10->emergency_id=10;
+                   $newnote10->content=$request->input("desc_exit");
+                   $newnote10->save();
+
+                    $newnote10=new Service_Emergency;
+                    $newnote10->service_id=$service->id;
+                    $newnote10->emergency_id=20;
+                    $newnote10->content=$request->input("desc_exit");
+                    $newnote10->save();
+
+                    return response()->json('Update Note emergency');  
+                }       
+            }else{
+                return response()->json('Service not found');   
+            }
         }
-    }
     }
     
     public function AddDate(Request $request){
