@@ -586,7 +586,7 @@ class ControllerCombobox extends Controller
         ->join('currency','currency.id','=','price_history.currency_id')
         ->where('service.id','=',$request->input("service_id"))
         ->where('duration.languaje','=',$request->input("languaje"))
-        ->select('image.ruta','image.description','price_history.price','currency.money','currency.symbol','duration.type')
+        ->select('image.ruta','image.description','price_history.price','currency.currency_iso','currency.symbol','duration.type')
         ->orderby('price_history.image_id','DESC')->take(1)->get();
            if(count($getstep10)>0){
                   return response()->json($getstep10); 

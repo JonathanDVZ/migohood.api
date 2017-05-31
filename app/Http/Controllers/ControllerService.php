@@ -1622,8 +1622,8 @@ class ControllerService extends Controller
                     /*DB::table('imagen')->where('service_id', $service->id )->update(['ruta' => $image_link.$name,
                     'description'=>$request->input("description")]);*/
 
-                    return json_encode('completed!', true);
-                    return response()->json('Update completed!', true);
+                    //return json_encode('completed!');
+                    return response()->json('Update completed!');
                 }
                 catch (\Exception $e){
                     return response()->json($e->getMessage());
@@ -1694,7 +1694,7 @@ class ControllerService extends Controller
                          $imageduration->duration_id=$durations->id;
                          $imageduration->save();
                      }
-                     return response()->json('Add Service-Images');
+                    return response()->json('Add Service-Images');
                    }else{
                           return response()->json('Duration not found');  
                     }
