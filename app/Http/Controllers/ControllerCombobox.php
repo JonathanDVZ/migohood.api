@@ -569,6 +569,32 @@ class ControllerCombobox extends Controller
           }  
       }
     }
+
+    public function ReturnStep10(Request $request)
+    { $rule=[
+           'service_id' => 'required|numeric',
+        ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+      }else{
+              $getstep10=DB::table('service')
+        ->join('price_history','price_history.service_id','=','service.id')
+        ->join('image','image.service_id','=','service.id')
+        ->join('image_duration','image_duration.image_id','=','image.id')
+        ->join('duration','duration.id','=','image_duration.duration_id')
+        ->join('currency','currency.id','=','price_history.currency_id')
+        ->where('service.id','=',$request->input("service_id"))
+        ->where('duration.languaje','=',$request->input("languaje"))
+        ->select('image.ruta','image.description','price_history.price','currency.money','currency.symbol','duration.type')
+        ->orderby('price_history.image_id','DESC')->take(1)->get();
+           if(count($getstep10)>0){
+                  return response()->json($getstep10); 
+          }else{
+                return response()->json("Not Found"); 
+          } 
+      }
+    }
     
     public function ReturnStep11(Request $request)
     {

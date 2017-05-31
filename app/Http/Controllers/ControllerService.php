@@ -34,6 +34,7 @@ use App\Models\Availability;
 use App\Models\Price_History;
 use App\Models\Emergency_Number;
 use App\Models\Service_Emergency;
+use App\Models\Image_Duration;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Contracts\Encryption\DecryptException;
@@ -1621,6 +1622,7 @@ class ControllerService extends Controller
                     /*DB::table('imagen')->where('service_id', $service->id )->update(['ruta' => $image_link.$name,
                     'description'=>$request->input("description")]);*/
 
+                    return json_encode('completed!', true);
                     return response()->json('Update completed!', true);
                 }
                 catch (\Exception $e){
@@ -1630,6 +1632,75 @@ class ControllerService extends Controller
               return response()->json('Service not found'); 
             }
 
+        }
+    }
+    
+    public function AddNewSpaceStep10(Request $request)
+    {$rule=[
+           'service_id' => 'required|numeric|min:1',
+           'image'=>'required|image',
+           'duration_code'=>'required|numeric|min:1',
+           'price'=>'required|numeric|min:1',
+           'currency_id'=>'required|numeric|min:1'
+           ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+        return response()->json($validator->errors()->all());
+        }else{
+            $service=Service::where('id',$request->input("service_id"))->first();
+            if(count($service)>0){
+            // Se definen las credenciales del cliente s3 de amazon
+                    $s3 = new S3Client([
+                        'version'     => env('S3_VERSION'),
+                        'region'      => env('S3_REGION'),
+                        'credentials' => [
+                            'key'    => env('S3_KEY'),
+                            'secret' => env('S3_SECRET')
+                        ]
+                    ]);
+                    $image_link = 'https://s3.'.env('S3_REGION').'.amazonaws.com/'.env('S3_BUCKET').'/files/service_images/';
+                    // Obtenemos el campo file definido en el formulario
+                    $file = $request->file('image');            
+                    // Creamos un nombre para nuestro imagen
+                    $name = 'image'.str_random(20).'_service-image_'.$service->id.'.'.$file->getClientOriginalExtension();         
+                    // Movemos el archivo a la caperta temporal
+                    $file->move('files/service_images/',$name);
+                    $newruta=new Image();
+                    $old_image = str_replace($image_link,'',$newruta->ruta); 
+                    $s3->putObject([
+                    'Bucket' => env('S3_BUCKET'),
+                    'Key'    => 'files/service_images/'.$name,
+                    'Body'   => fopen('files/service_images/'.$name,'r'),
+                    'ACL'    => 'public-read'
+                    ]); 
+                     unlink('files/service_images/'.$name);
+                    $newruta->service_id=$service->id;
+                    $newruta->ruta=$image_link.$name;
+                    $newruta->description=$request->input("description");
+                    $newruta->save();
+                    $duration=Duration::select('id')->where('code',$request->input("duration_code"))->get();
+                    if(count($duration)>0){
+                     $dt = new DateTime();
+                    $newhistory=new Price_History;
+                    $newhistory->starDate=$dt->format('Y-m-d (H:i:s)');
+                     $newhistory->service_id=$service->id;
+                     $newhistory->image_id=$newruta->id;
+                     $newhistory->price=$request->input("price");
+                     $newhistory->currency_id=$request->input("currency_id");
+                     $newhistory->save(); 
+                     foreach($duration as $durations){
+                         $imageduration=new Image_Duration;
+                         $imageduration->image_id=$newruta->id;
+                         $imageduration->duration_id=$durations->id;
+                         $imageduration->save();
+                     }
+                     return response()->json('Add Service-Images');
+                   }else{
+                          return response()->json('Duration not found');  
+                    }
+                  }else{
+                        return response()->json('Service not found');  
+              }    
         }
     }
 

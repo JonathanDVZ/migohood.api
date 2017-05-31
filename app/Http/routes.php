@@ -122,6 +122,8 @@ $app->post('/service/space/description/add-languaje','ControllerService@AddLangu
 $app->post('/service/space/step-8/rules','ControllerService@AddNewSpaceStep8Rules');
 //Agregar imagen (space-step9)
 $app->post('/service/space/step-9/image','ControllerService@AddNewSpaceStep9');
+//Agregar nuevo servicio (space-step10)
+$app->post('/service/space/step-10/service','ControllerService@AddNewSpaceStep10');
 //Agregar Notas de Emergencia (space-step11)
 $app->post('/service/space/step-11','ControllerService@AddNewSpaceStep11');
 //Agrega fecha en el calendario->16/5/2017
@@ -315,31 +317,30 @@ $app->get('/space/get-number-emergency','ControllerCombobox@GetNumberEmergency')
 //next and back
 $app->get('/service/space/step/create','ControllerCombobox@ReturnStep');
 
-$app->get('/service/space/step-1/create','ControllerCombobox@ReturnStep1');
+$app->get('/service/space/step-1/get-create','ControllerCombobox@ReturnStep1');
 //Retorna un servicio (space-step2-bedroom)
-$app->get('/service/space/step-2/bedrooms','ControllerCombobox@ReturnStep2');
+$app->get('/service/space/step-2/get-bedrooms','ControllerCombobox@ReturnStep2');
 //Retorna un servicio (space-step2-beds)
+$app->get('/service/space/step-2/beds/get-details','ControllerCombobox@ReturnStep2Beds');
 $app->get('/service/space/step-2/beds/details','ControllerCombobox@ReturnStep2Beds');
 //Retorn un servicio (space-step3-bathroom)
-$app->get('/service/space/step-3/bathroom','ControllerCombobox@ReturnStep3');
+$app->get('/service/space/step-3/get-bathroom','ControllerCombobox@ReturnStep3');
 //Retorna un servicio (space-step4)
-$app->get('/service/space/step-4/location','ControllerCombobox@ReturnStep4Location');
+$app->get('/service/space/step-4/get-location','ControllerCombobox@ReturnStep4Location');
 //Retorna un Amenities (space-step5)
-$app->get('/service/space/step-5/amenities','ControllerCombobox@ReturnStep5');
+$app->get('/service/space/step-5/get-amenities','ControllerCombobox@ReturnStep5');
 //Retorna un cancellation policy (space-step6)
-$app->get('/service/space/step-6/hosting','ControllerCombobox@ReturnStep6');
+$app->get('/service/space/step-6/get-hosting','ControllerCombobox@ReturnStep6');
 //Retorna description service (space-step7)
-$app->get('/service/space/step-7/description','ControllerCombobox@ReturnStep7Description');
+$app->get('/service/space/step-7/get-description','ControllerCombobox@ReturnStep7Description');
 //Retorna description (space-step8)
-$app->get('/service/space/step-8/rules','ControllerCombobox@ReturnStep8Rules');
+$app->get('/service/space/step-8/get-rules','ControllerCombobox@ReturnStep8Rules');
 //Retorna image (space-step9)
 $app->get('/service/space/step-9/get-image','ControllerCombobox@ReturnStep9');
+//Retorn nuevo-servicio (space-step10)
+$app->get('/service/space/step-10/get-service','ControllerCombobox@ReturnStep10');
 //Retorna (space-step11)
 $app->get('/service/space/step-11/number-emergency','ControllerCombobox@ReturnStep11');
-
-
-
-
 $app->get('/make_token',function(){
     return str_random(32);
 });
