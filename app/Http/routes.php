@@ -93,6 +93,8 @@ $app->post('service/space/check-in-and-check-out','ControllerService@AddNewCheck
 $app->post('service/space/reservation-preference','ControllerService@AddNewReservationPrerence');
 //Agrega Imagen and description
 $app->post('/service/space/add-image','ControllerService@AddNewSpaceStep9');
+//Agrega space
+$app->post('/service/space-create','ControllerService@CreateSpace');//Todas las rutas unidas
 
 
 
@@ -343,6 +345,10 @@ $app->get('/service/space/step-10/get-service','ControllerCombobox@ReturnStep10'
 $app->get('/service/space/step-11/number-emergency','ControllerCombobox@ReturnStep11');
 $app->get('/make_token',function(){
     return str_random(32);
+});
+
+$app->get('/', function () use ($app) {
+    $app->get('mail','mailcontroller@mail');
 });
 
 
