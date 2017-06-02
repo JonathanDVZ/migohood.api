@@ -140,6 +140,26 @@ $app->get('/service/space/description/languaje','ControllerCombobox@GetLanguaje'
 $app->post('/service/space/step-11/emergency-add','ControllerService@AddNewEmergency');
 //Elimina numero de emergencia
 $app->delete('/service/space/step-11/emergency-delete','ControllerService@DeleteNewEmergency');
+//Preview
+$app->get('/service/space/preview-overviews','ControllerCombobox@GetOverviews');
+//Preview-beds
+$app->get('/service/space/preview-beds','ControllerCombobox@GetOverviewsBeds');//en prceso
+//preview-rules
+$app->get('/service/space/preview-rules','ControllerCombobox@GetOverviewsRules');
+//preview-amenities
+$app->get('/service/space/preview-amenities','ControllerCombobox@GetOverviewsAmenities');
+//preview number-emergency
+$app->get('/service/space/preview-emergency','ControllerCombobox@GetOverviewsEmergency');
+//preview note-emergency
+$app->get('/service/space/preview-note-emergency','ControllerCombobox@GetOverviewsEmergencyNote');
+//preview emergency exit
+$app->get('/service/space/preview-exit-emergency','ControllerCombobox@GetOverviewsEmergencyExit');
+//map neighborhood latitude
+$app->get('/service/space/preview-map-neighborhood','ControllerCombobox@GetLocationMap');
+//map neighborhood longitude
+$app->get('/service/space/preview-map-neighborhood-longitude','ControllerCombobox@GetLocationMapLongitude');
+//map neighborhood latitude
+$app->get('/service/space/preview-map-neighborhood-latitude','ControllerCombobox@GetLocationMapLatitude');
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //Agrgar Accommodation
