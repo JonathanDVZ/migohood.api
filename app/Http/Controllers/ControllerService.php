@@ -875,30 +875,30 @@ class ControllerService extends Controller
             $servicespace=Service::select()->where('id',$request->input("service_id"))->first();
             // Habia un error, la variable se llama servicespace, no service
             if(count($servicespace)>0){        
-                    $servicespace->num_guest=$request->input("num_guest");
-                    $servicespace->save();
-                    $val=Bedroom::where('service_id',$servicespace->id)->first();
-                    if(count($val)==0){
+                $servicespace->num_guest=$request->input("num_guest");
+                $servicespace->save();
+                $val=Bedroom::where('service_id',$servicespace->id)->first();
+                if(count($val)==0){
                     for($i=1;$i<=$request->input("num_bedroom");$i++){
                         $bedroom=new Bedroom;
                         // Habia un error, la variable se llama servicespace, no service
                         $bedroom->service_id=$servicespace->id; 
                         $bedroom->save();
                     }
-                    }else{
-                      DB::table('bedroom')->where('service_id',$servicespace->id)->delete();
-                         for($i=1;$i<=$request->input("num_bedroom");$i++){
+                }else{
+                    DB::table('bedroom')->where('service_id',$servicespace->id)->delete();
+                    for($i=1;$i<=$request->input("num_bedroom");$i++){
                         $bedroom=new Bedroom;
                         // Habia un error, la variable se llama servicespace, no service
                         $bedroom->service_id=$servicespace->id; 
                         $bedroom->save();
                     }
-                    }
-                    /** 
-                    *   Envio como respuesta el servicio junto con el numero de habitaciones,
-                    *   ya que para la vista siguiente son necesarios dichos datos
-                    */
-                    return response()->json("Add Space Bedroom"); 
+                }
+                /** 
+                *   Envio como respuesta el servicio junto con el numero de habitaciones,
+                *   ya que para la vista siguiente son necesarios dichos datos
+                */
+                return response()->json("Add Space Bedroom"); 
  
             } else {
                 return response()->json('Service not found'); 
