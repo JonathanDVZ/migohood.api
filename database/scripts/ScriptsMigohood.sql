@@ -355,6 +355,7 @@ CREATE TABLE IF NOT EXISTS `Migohood`.`rent` (
   `service_cod` INT NOT NULL,
   `end_date` DATETIME NOT NULL,
   `initial_date` DATETIME NOT NULL,
+  `num_guest` INT NULL,
   INDEX `fk_USER_has_SERVICE_SERVICE1_idx` (`service_cod` ASC),
   INDEX `fk_USER_has_SERVICE_USER1_idx` (`user_id` ASC),
   PRIMARY KEY (`id`),
@@ -569,35 +570,23 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `Migohood`.`notification` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `user_id` INT NOT NULL,
-  `bill_number` INT NULL,
-  `comment_id` INT NULL,
-  `message_id` INT NULL,
+  `receptor` VARCHAR(45) NULL,
+  `request` TINYINT(1) NULL,
+  `emisor_id` INT NOT NULL,
+  `service_id` INT NOT NULL,
   PRIMARY KEY (`id`),
-  INDEX `fk_NOTIFICATION_USER1_idx` (`user_id` ASC),
-  INDEX `fk_NOTIFICATION_BILL1_idx` (`bill_number` ASC),
-  INDEX `fk_NOTIFICATION_COMMENT1_idx` (`comment_id` ASC),
-  INDEX `fk_NOTIFICATION_MESSAGE1_idx` (`message_id` ASC),
-  CONSTRAINT `fk_NOTIFICATION_USER1`
-    FOREIGN KEY (`user_id`)
+  INDEX `fk_notification_user1_idx` (`emisor_id` ASC),
+  INDEX `fk_notification_service2_idx` (`service_id` ASC),
+  CONSTRAINT `fk_notification_user1`
+    FOREIGN KEY (`emisor_id`)
     REFERENCES `Migohood`.`user` (`id`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE,
-  CONSTRAINT `fk_NOTIFICATION_BILL1`
-    FOREIGN KEY (`bill_number`)
-    REFERENCES `Migohood`.`bill` (`id`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE,
-  CONSTRAINT `fk_NOTIFICATION_COMMENT1`
-    FOREIGN KEY (`comment_id`)
-    REFERENCES `Migohood`.`comment` (`id`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE,
-  CONSTRAINT `fk_NOTIFICATION_MESSAGE1`
-    FOREIGN KEY (`message_id`)
-    REFERENCES `Migohood`.`message` (`id`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_notification_service2`
+    FOREIGN KEY (`service_id`)
+    REFERENCES `Migohood`.`service` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
@@ -1051,11 +1040,11 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `Migohood`.`co_host` (
   `user_id` INT NOT NULL,
   `service_id` INT NOT NULL,
-  `user_id1` INT NOT NULL,
+  `host` INT NOT NULL,
   `date` DATE NOT NULL,
   INDEX `fk_service_id` (`service_id` ASC),
   INDEX `fk_user_id` (`user_id` ASC),
-  INDEX `fk_co_host_user1_idx` (`user_id1` ASC),
+  INDEX `fk_co_host_user1_idx` (`host` ASC),
   CONSTRAINT `fk_user1`
     FOREIGN KEY (`user_id`)
     REFERENCES `Migohood`.`user` (`id`)
@@ -1067,8 +1056,33 @@ CREATE TABLE IF NOT EXISTS `Migohood`.`co_host` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_co_host_user1`
-    FOREIGN KEY (`user_id1`)
+    FOREIGN KEY (`host`)
     REFERENCES `Migohood`.`user` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Migohood`.`notification`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Migohood`.`notification` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `receptor` VARCHAR(45) NULL,
+  `request` TINYINT(1) NULL,
+  `emisor_id` INT NOT NULL,
+  `service_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_notification_user1_idx` (`emisor_id` ASC),
+  INDEX `fk_notification_service2_idx` (`service_id` ASC),
+  CONSTRAINT `fk_notification_user1`
+    FOREIGN KEY (`emisor_id`)
+    REFERENCES `Migohood`.`user` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_notification_service2`
+    FOREIGN KEY (`service_id`)
+    REFERENCES `Migohood`.`service` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;

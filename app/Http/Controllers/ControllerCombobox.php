@@ -17,6 +17,8 @@ use App\Models\Currency;
 use App\Models\Service;
 use App\Models\Image;
 use App\Models\Payment;
+use App\Models\Bedroom_Bed;
+use App\Models\Bedroom;
 use DB;
 
 class ControllerCombobox extends Controller
@@ -586,7 +588,7 @@ class ControllerCombobox extends Controller
         ->join('currency','currency.id','=','price_history.currency_id')
         ->where('service.id','=',$request->input("service_id"))
         ->where('duration.languaje','=',$request->input("languaje"))
-        ->select('image.ruta','image.description','price_history.price','currency.currency_iso','currency.symbol','duration.type')
+        ->select('image.ruta','image.description','price_history.price','currency.money','currency.symbol','duration.type')
         ->orderby('price_history.image_id','DESC')->take(1)->get();
            if(count($getstep10)>0){
                   return response()->json($getstep10); 
@@ -598,29 +600,284 @@ class ControllerCombobox extends Controller
     
     public function ReturnStep11(Request $request)
     {
-      $rule=[
-        'service_id' => 'required|numeric',
-        'languaje'=>'required'
-      ];
-      $validator = Validator::make($request->all(),$rule);
+          $rule=[
+           'service_id' => 'required|numeric',
+           'languaje'=>'required'
+        ];
+      $validator=Validator::make($request->all(),$rule);
       if ($validator->fails()) {
             return response()->json($validator->errors()->all());
       }else{
-        $getstep11=DB::table('service')
-                      ->join('service_emergency','service_emergency.service_id','=','service.id')
-                      ->join('note_emergency','note_emergency.id','=','service_emergency.emergency_id')
-                      ->where('service.id','=',$request->input("service_id"))
-                      ->where('note_emergency.languaje','=',$request->input("languaje"))
-                      ->select('service_emergency.content','service_emergency.check','note_emergency.type','service_emergency.emergency_id')
-                      ->get();
-        if(count($getstep11)>0){
-            return response()->json($getstep11); 
-        }else{
-            return response()->json("Not Found"); 
-        }  
+             $getstep11=DB::table('service')
+                          ->join('service_emergency','service_emergency.service_id','=','service.id')
+                          ->join('note_emergency','note_emergency.id','=','service_emergency.emergency_id')
+                          ->where('service.id','=',$request->input("service_id"))
+                          ->where('note_emergency.languaje','=',$request->input("languaje"))
+                          ->select('service_emergency.content','service_emergency.check','note_emergency.type','service_emergency.emergency_id')
+                          ->get();
+          if(count($getstep11)>0){
+                  return response()->json($getstep11); 
+          }else{
+                return response()->json("Not Found"); 
+          }  
       }
+    }
 
+    public function GetOverviews(Request $request)
+    {$rule=[
+           'service_id' => 'required|numeric',
+           'languaje'=>'required'
+        ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+      }else{
+             $previews=DB::table('service')
+             ->join('user','user.id','=','service.user_id')
+             ->join('city','service.city_id','=','city.id')
+             ->join('state','city.state_id','=','state.id')
+             ->join('country','country.id','=','state.country_id')
+              ->join('service_accommodation','service_accommodation.service_id','=','service.id')
+             ->join('accommodation','accommodation.code','=','service_accommodation.accommodation_id')
+             ->join('service_description','service_description.service_id','=','service.id')
+             ->join('description','description.id','=','service_description.description_id')
+             ->join('check_in','check_in.service_id','=','service.id')
+             ->join('service_category','service_category.service_id','=','service.id')
+             ->join('category','category.code','=','service_category.category_id')
+             ->join('bedroom','bedroom.service_id','=','service.id')
+             ->join('service_type','service_type.service_id','=','service.id')
+             ->join('type','type.code','=','service_type.type_id')
+             ->join('service_payment','service_payment.service_id','=','service.id')
+             ->join('payment','payment.code','=','service_payment.payment_id')
+             ->where('service.id','=',$request->input("service_id"))
+             ->where('category.languaje','=',$request->input("languaje"))
+             ->where('accommodation.languaje','=',$request->input("languaje"))
+             ->where('type.languaje','=',$request->input("languaje"))
+             ->where('payment.languaje','=',$request->input("languaje"))
+             ->where('description.id','=',1)
+             ->select('user.avatar','country.name as country','payment.type as prices','state.name as state','type.name as type','service_description.content as title','accommodation.name as accommodation','service.num_guest as guest','service.num_bathroom as bathrooms','check_in.time_entry as check_in','category.name as category')
+             ->first();
+               if(count($previews)>0){
+                  return response()->json($previews); 
+          }else{
+                return response()->json("Not Found"); 
+          } 
+      
+      }
           
+    }
+
+    public function GetOverviewsBeds(Request $request)
+    {  $rule=[
+           'service_id' => 'required|numeric',
+           'languaje'=>'required'
+        ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+      }else{
+             $num=0;
+             $bedroom=Bedroom::where('service_id','=',$request->input("service_id"))->get();
+             foreach($bedroom as $bedrooms){
+                $previews=DB::table('service')
+                ->join('bedroom','bedroom.service_id','=','service.id')
+                ->join('bedroom_bed','bedroom_bed.bedroom_id','=','bedroom.id')
+                ->join('bed','bedroom_bed.bed_id','=','bed.code')
+                ->where('service.id',"=",$request->input("service_id"))
+                ->where('bed.languaje','=',$request->input("languaje"))
+               ->where('bedroom.id','=',$bedrooms->id)               
+                ->select(DB::raw('sum(bedroom_bed.quantity)'))
+                ->get();
+                $num=$num+$previews;
+              }
+                 if(count($previews)>0){
+                  return response()->json($num); 
+          }else{
+                return response()->json("Not Found"); 
+          }  
+
+      }
+          
+    }
+
+    public function GetOverviewsRules(Request $request)
+    {
+      $rule=[
+           'service_id' => 'required|numeric',
+        ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+      }else{
+              $previews=DB::table('service')
+                ->join('service_rules','service_rules.service_id','=','service.id')
+                ->join('house_rules','house_rules.id','=','service_rules.rules_id')
+                ->where('service.id','=',$request->input("service_id"))
+                ->select('house_rules.type','service_rules.description','service_rules.check')
+                ->get();
+                if(count($previews)>0){
+                  return response()->json($previews); 
+          }else{
+                return response()->json("Not Found"); 
+          }  
+
+
+      }
+    }
+
+    public function GetOverviewsAmenities(Request $request)
+    {
+          $rule=[
+           'service_id' => 'required|numeric',
+           'languaje'=>'required'
+        ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+      }else{
+
+              $previews=DB::table('service')
+                ->join('service_amenites','service_amenites.service_id','=','service.id')
+                ->join('amenities','amenities.code','=','service_amenites.amenite_id')
+                ->where('service.id','=',$request->input("service_id"))
+                ->where('amenities.languaje','=',$request->input("languaje"))
+                ->select('amenities.name as amenities')
+                ->get();
+                  if(count($previews)>0){
+                  return response()->json($previews); 
+          }else{
+                return response()->json("Not Found"); 
+          }  
+
+      }
+        
+    }
+
+    public function GetOverviewsEmergency(Request $request)
+    {
+      $rule=[
+           'service_id' => 'required|numeric',
+        ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+      }else{
+         
+              $previews=DB::table('service')
+                ->join('number_emergency','number_emergency.service_id','=','service.id')
+                ->where('service.id','=',$request->input("service_id"))
+                ->select('number_emergency.name','number_emergency.number')
+                ->get();
+                      if(count($previews)>0){
+                  return response()->json($previews); 
+          }else{
+                return response()->json("Not Found"); 
+          }  
+      }
+    }
+
+    public function GetOverviewsEmergencyNote(Request $request)
+    { $rule=[
+           'service_id' => 'required|numeric',
+           //'languaje'=>'required'
+        ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+      }else{
+              $previews=DB::table('service')
+                ->join('service_emergency','service_emergency.service_id','=','service.id')
+                ->join('note_emergency','note_emergency.code','=','service_emergency.emergency_id')
+                ->where('service_emergency.check','=',1)
+                    ->where('service.id','=',$request->input("service_id"))
+                    ->where('note_emergency.languaje','=',$request->input("languaje"))
+                ->select('note_emergency.type')
+                ->get();
+                            if(count($previews)>0){
+                  return response()->json($previews); 
+          }else{
+                return response()->json("Not Found"); 
+          } 
+
+      }
+    }
+
+    public function GetOverviewsEmergencyExit(Request $request)
+    {$rule=[
+           'service_id' => 'required|numeric',
+           'languaje'=>'required'
+        ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+      }else{
+              $previews=DB::table('service')
+                ->join('service_emergency','service_emergency.service_id','=','service.id')
+                ->join('note_emergency','note_emergency.code','=','service_emergency.emergency_id')
+                    ->where('service.id','=',$request->input("service_id"))
+                    ->where('note_emergency.languaje','=',$request->input("languaje"))
+                    ->where('note_emergency.code','=',10)
+                ->select('note_emergency.type','service_emergency.content')
+                ->get();
+        if(count($previews)>0){
+                  return response()->json($previews); 
+          }else{
+                return response()->json("Not Found"); 
+          } 
+
+      }
+    }
+
+    public function GetLocationMapLongitude(Request $request)
+    {$rule=[
+           'service_id' => 'required|numeric',
+        ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+      }else{
+
+              $previews=DB::table('service')
+                ->join('service_description','service_description.service_id','=','service.id')
+                 ->join('description','description.id','=','service_description.description_id')
+                 ->where('service.id','=',$request->input("service_id"))
+                  ->where('description.id','=',6)
+                  //->where('description.id','=',10)
+                   ->select('service_description.content')
+                   ->get();
+                     if(count($previews)>0){
+                  return response()->json($previews); 
+          }else{
+                return response()->json("Not Found"); 
+          }  
+
+      }
+    }
+
+    public function GetLocationMapLatitude(Request $request)
+    {$rule=[
+           'service_id' => 'required|numeric',
+        ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+      }else{
+
+              $previews=DB::table('service')
+                ->join('service_description','service_description.service_id','=','service.id')
+                 ->join('description','description.id','=','service_description.description_id')
+                 ->where('service.id','=',$request->input("service_id"))
+                  ->where('description.id','=',7)
+                  //->where('description.id','=',10)
+                   ->select('service_description.content')
+                   ->get();
+                     if(count($previews)>0){
+                  return response()->json($previews); 
+          }else{
+                return response()->json("Not Found"); 
+          }  
+
+      }
     }
   
 }
