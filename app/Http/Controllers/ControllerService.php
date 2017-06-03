@@ -910,7 +910,17 @@ class ControllerService extends Controller
                                     $newreservation->save();
                                     $newreservation=new Service_Reservation;
                                     $newreservation->service_id=$service->id;
+                                    $newreservation->preference_id=8;
+                                    $newreservation->check=$request->input("compliant_guests");
+                                    $newreservation->save();
+                                    $newreservation=new Service_Reservation;
+                                    $newreservation->service_id=$service->id;
                                     $newreservation->preference_id=2;
+                                    $newreservation->check=$request->input("send_request");
+                                    $newreservation->save();
+                                     $newreservation=new Service_Reservation;
+                                    $newreservation->service_id=$service->id;
+                                    $newreservation->preference_id=9;
                                     $newreservation->check=$request->input("send_request");
                                     $newreservation->save();
                                     $newreservation=new Service_Reservation;
@@ -920,12 +930,27 @@ class ControllerService extends Controller
                                     $newreservation->save();
                                     $newreservation=new Service_Reservation;
                                     $newreservation->service_id=$service->id;
+                                    $newreservation->preference_id=10;
+                                    $newreservation->check=$request->input("phone_and_email");
+                                    $newreservation->save();
+                                    $newreservation=new Service_Reservation;
+                                    $newreservation->service_id=$service->id;
                                     $newreservation->preference_id=4;
+                                    $newreservation->check=$request->input("thumbnail");
+                                    $newreservation->save(); 
+                                      $newreservation=new Service_Reservation;
+                                    $newreservation->service_id=$service->id;
+                                    $newreservation->preference_id=11;
                                     $newreservation->check=$request->input("thumbnail");
                                     $newreservation->save(); 
                                     $newreservation=new Service_Reservation;
                                     $newreservation->service_id=$service->id;
                                     $newreservation->preference_id=5;
+                                    $newreservation->check=$request->input("data_payment");
+                                    $newreservation->save();
+                                     $newreservation=new Service_Reservation;
+                                    $newreservation->service_id=$service->id;
+                                    $newreservation->preference_id=12;
                                     $newreservation->check=$request->input("data_payment");
                                     $newreservation->save();
                                     $newreservation=new Service_Reservation;
@@ -935,9 +960,21 @@ class ControllerService extends Controller
                                     $newreservation->save();
                                     $newreservation=new Service_Reservation;
                                     $newreservation->service_id=$service->id;
+                                    $newreservation->preference_id=13;
+                                    $newreservation->check=$request->input("id");
+                                    $newreservation->save();
+                                    $newreservation=new Service_Reservation;
+                                    $newreservation->service_id=$service->id;
                                     $newreservation->preference_id=7;
                                     $newreservation->check=$request->input("positive_valuation");
                                     $newreservation->save();  
+                                    $newreservation=new Service_Reservation;
+                                    $newreservation->service_id=$service->id;
+                                    $newreservation->preference_id=14;
+                                    $newreservation->check=$request->input("positive_valuation");
+                                    $newreservation->save();  
+                                    
+                                       return  response()->json("Space Create Complete!");
                                }else{
                                          return  response()->json("Accommodation Not Found");
                                }
