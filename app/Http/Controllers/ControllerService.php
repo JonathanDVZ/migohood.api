@@ -1127,10 +1127,14 @@ class ControllerService extends Controller
             return response()->json($validator->errors()->all());
         } else {
             $servicespace=Service::select()->where('id',$request->input("service_id"))->first();
+            /* Buscas si existen habitaciones previamente y cuantas habitaciones hay y sus respectivos id, si el numero que se esta pasando es mayor entonces agregas el restante, si es menor debes eliminar las sobrantes */
             // Habia un error, la variable se llama servicespace, no service
             if(count($servicespace)>0){        
                 $servicespace->num_guest=$request->input("num_guest");
-                $servicespace->save();
+                //$servicespace->save();
+                DB::table('service')->where('id',$servicespace->id)->update(
+                            ['num_guest'=> $request->input("num_guest"),
+                            ]);
                 $val=Bedroom::where('service_id',$servicespace->id)->first();
                 if(count($val)==0){
                     for($i=1;$i<=$request->input("num_bedroom");$i++){

@@ -637,8 +637,8 @@ CREATE TABLE IF NOT EXISTS `Migohood`.`bedroom` (
   CONSTRAINT `fk_bedroom_service1`
     FOREIGN KEY (`service_id`)
     REFERENCES `Migohood`.`service` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 
