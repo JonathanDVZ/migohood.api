@@ -2297,7 +2297,7 @@ class ControllerService extends Controller
     if ($validator->fails()) {
             return response()->json($validator->errors()->all());
     }else{
-       $service=DB::table('availability')->where('id',$request->input("service_id"))->get();
+       $service=DB::table('availability')->where('service_id','=',$request->input("service_id"))->where('lock','=',1)->get();
        if(count($service)>0){
             return response()->json($service); 
         }else{
