@@ -2289,6 +2289,23 @@ class ControllerService extends Controller
     }
    }
 
+   public function GetDate(Request $request){
+    $rule=[
+        'service_id'=>'required|numeric',
+    ];
+    $validator=Validator::make($request->all(),$rule);
+    if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+    }else{
+       $service=DB::table('availability')->where('id',$request->input("service_id"))->get();
+       if(count($service)>0){
+            return response()->json($service); 
+        }else{
+            return response()->json('Nothing found'); 
+        }
+    }
+   }
+
    public function DeleteLanguaje(Request $request){
         $rule=[
         'service_id'=>'required|numeric',
