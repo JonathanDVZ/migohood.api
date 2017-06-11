@@ -2254,7 +2254,12 @@ class ControllerService extends Controller
              $newdate->save();
              return response()->json($newdate);
            }else{
-             return response()->json('Is already selected');
+             $valid=DB::table('availability')->where('service_id',$service->id)->where('day',$request->input("date"))->update(
+                             ['lock'=>$request->input("lock"),
+                             ]);
+            $val=Availability::where('service_id',$service->id)->where('day',$request->input("date"))->first();
+             return response()->json($val);
+
            }
         }else{
             return response()->json('Service not found');
@@ -2297,7 +2302,8 @@ class ControllerService extends Controller
     if ($validator->fails()) {
             return response()->json($validator->errors()->all());
     }else{
-       $service=DB::table('availability')->where('service_id',$request->input("service_id"))->where('lock',1)->get();
+
+       $service=DB::table('availability')->where('service_id','=',$request->input("service_id"))->where('lock','=',1)->get();
        if(count($service)>0){
             return response()->json($service);
         }else{
