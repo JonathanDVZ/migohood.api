@@ -84,15 +84,7 @@
                 "s3",
                 "sdk"
             ],
-<<<<<<< HEAD
-<<<<<<< HEAD
             "time": "2017-03-08T23:57:18+00:00"
-=======
-            "time": "2017-03-10T21:09:41+00:00"
->>>>>>> ad1aa621a19dfb52312b71f619c3df20e2b83e3c
-=======
-            "time": "2017-04-04T20:52:10+00:00"
->>>>>>> 806d04e6e772f6ac04b94245c4246ab3c3de4a3b
         },
         {
             "name": "doctrine/inflector",
@@ -2078,15 +2070,7 @@
         },
         {
             "name": "symfony/event-dispatcher",
-<<<<<<< HEAD
-<<<<<<< HEAD
-            "version": "v3.2.5",
-=======
-            "version": "v3.2.6",
->>>>>>> ad1aa621a19dfb52312b71f619c3df20e2b83e3c
-=======
             "version": "v3.2.7",
->>>>>>> 806d04e6e772f6ac04b94245c4246ab3c3de4a3b
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/event-dispatcher.git",
@@ -3721,15 +3705,7 @@
         },
         {
             "name": "symfony/yaml",
-<<<<<<< HEAD
-<<<<<<< HEAD
-            "version": "v3.2.5",
-=======
-            "version": "v3.2.6",
->>>>>>> ad1aa621a19dfb52312b71f619c3df20e2b83e3c
-=======
             "version": "v3.2.7",
->>>>>>> 806d04e6e772f6ac04b94245c4246ab3c3de4a3b
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
