@@ -633,7 +633,7 @@ class ControllerCombobox extends Controller
             return response()->json($validator->errors()->all());
       }else{
 
-        
+
              $previews=DB::table('service')
              ->join('user','user.id','=','service.user_id')
              ->join('city','service.city_id','=','city.id')
@@ -657,7 +657,7 @@ class ControllerCombobox extends Controller
              ->where('type.languaje','=',$request->input("languaje"))
              ->where('payment.languaje','=',$request->input("languaje"))
              ->where('description.id','=',1)
-             ->select('user.avatar','country.name as country','payment.type as prices','state.name as state','type.name as type','service_description.content as title','accommodation.name as accommodation','service.num_guest as guest','service.num_bathroom as bathrooms','check_in.time_entry as check_in','category.name as category')
+             ->select('user.avatar','user.name','country.name as country','payment.type as prices','state.name as state','type.name as type','service_description.content as title','accommodation.name as accommodation','service.num_guest as guest','service.num_bathroom as bathrooms','check_in.time_entry as check_in','category.name as category')
              ->first();
                if(count($previews)>0){
                   return response()->json($previews);
@@ -781,7 +781,7 @@ class ControllerCombobox extends Controller
     public function GetOverviewsEmergencyNote(Request $request)
     { $rule=[
            'service_id' => 'required|numeric',
-           //'languaje'=>'required'
+           'languaje'=>'required'
         ];
       $validator=Validator::make($request->all(),$rule);
       if ($validator->fails()) {

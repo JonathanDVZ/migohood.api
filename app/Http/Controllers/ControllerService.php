@@ -1130,10 +1130,7 @@ class ControllerService extends Controller
             /* Buscas si existen habitaciones previamente y cuantas habitaciones hay y sus respectivos id, si el numero que se esta pasando es mayor entonces agregas el restante, si es menor debes eliminar las sobrantes */
             // Habia un error, la variable se llama servicespace, no service
             if(count($servicespace)>0){
-                    $servicespace->num_guest=$request->input("num_guest");
-                    $servicespace->save();
-                    $val=Bedroom::where('service_id',$servicespace->id)->first();
-                    if(count($val)==0){
+
                 $servicespace->num_guest=$request->input("num_guest");
                 //$servicespace->save();
                 DB::table('service')->where('id',$servicespace->id)->update(
@@ -1147,10 +1144,6 @@ class ControllerService extends Controller
                         $bedroom->service_id=$servicespace->id;
                         $bedroom->save();
                     }
-                     return response()->json("Add Space Bedroom");
-                    }else{
-                      DB::table('bedroom')->where('service_id',$servicespace->id)->delete();
-                         for($i=1;$i<=$request->input("num_bedroom");$i++){
                 }else{
                     DB::table('bedroom')->where('service_id',$servicespace->id)->delete();
                     for($i=1;$i<=$request->input("num_bedroom");$i++){
@@ -1159,13 +1152,6 @@ class ControllerService extends Controller
                         $bedroom->service_id=$servicespace->id;
                         $bedroom->save();
                     }
-                      return response()->json("Update Space Bedroom");
-                    }
-                    /**
-                    *   Envio como respuesta el servicio junto con el numero de habitaciones,
-                    *   ya que para la vista siguiente son necesarios dichos datos
-                    */
-
                 }
                 /**
                 *   Envio como respuesta el servicio junto con el numero de habitaciones,
