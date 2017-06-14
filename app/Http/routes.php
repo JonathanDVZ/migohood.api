@@ -132,6 +132,8 @@ $app->post('/service/space/step-11','ControllerService@AddNewSpaceStep11');
 $app->post('/service/day','ControllerService@AddDate');
 //Bloquear o desbloquear fecha
 $app->put('/service/update-day','ControllerService@UpdateDate');
+// Buscar fechas bloqueadas
+$app->get('/service/get-day','ControllerService@GetDate');
 //Borrar lenguaje
 $app->delete('/service/space/delete-languaje','ControllerService@DeleteLanguaje');
 //Muestra todos los lenguajes uqe tiene un servicio

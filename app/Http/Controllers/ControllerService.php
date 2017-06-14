@@ -1127,12 +1127,20 @@ class ControllerService extends Controller
             return response()->json($validator->errors()->all());
         } else {
             $servicespace=Service::select()->where('id',$request->input("service_id"))->first();
+            /* Buscas si existen habitaciones previamente y cuantas habitaciones hay y sus respectivos id, si el numero que se esta pasando es mayor entonces agregas el restante, si es menor debes eliminar las sobrantes */
             // Habia un error, la variable se llama servicespace, no service
             if(count($servicespace)>0){
                     $servicespace->num_guest=$request->input("num_guest");
                     $servicespace->save();
                     $val=Bedroom::where('service_id',$servicespace->id)->first();
                     if(count($val)==0){
+                $servicespace->num_guest=$request->input("num_guest");
+                //$servicespace->save();
+                DB::table('service')->where('id',$servicespace->id)->update(
+                            ['num_guest'=> $request->input("num_guest"),
+                            ]);
+                $val=Bedroom::where('service_id',$servicespace->id)->first();
+                if(count($val)==0){
                     for($i=1;$i<=$request->input("num_bedroom");$i++){
                         $bedroom=new Bedroom;
                         // Habia un error, la variable se llama servicespace, no service
@@ -1143,6 +1151,9 @@ class ControllerService extends Controller
                     }else{
                       DB::table('bedroom')->where('service_id',$servicespace->id)->delete();
                          for($i=1;$i<=$request->input("num_bedroom");$i++){
+                }else{
+                    DB::table('bedroom')->where('service_id',$servicespace->id)->delete();
+                    for($i=1;$i<=$request->input("num_bedroom");$i++){
                         $bedroom=new Bedroom;
                         // Habia un error, la variable se llama servicespace, no service
                         $bedroom->service_id=$servicespace->id;
@@ -1155,6 +1166,12 @@ class ControllerService extends Controller
                     *   ya que para la vista siguiente son necesarios dichos datos
                     */
 
+                }
+                /**
+                *   Envio como respuesta el servicio junto con el numero de habitaciones,
+                *   ya que para la vista siguiente son necesarios dichos datos
+                */
+                return response()->json("Add Space Bedroom");
 
             } else {
                 return response()->json('Service not found');
@@ -2253,7 +2270,11 @@ class ControllerService extends Controller
              $newdate->save();
              return response()->json($newdate);
            }else{
-             return response()->json('Is already selected');
+             $valid=DB::table('availability')->where('service_id',$service->id)->where('day',$request->input("date"))->update(
+                             ['lock'=>$request->input("lock"),
+                             ]);
+            $val=Availability::where('service_id',$service->id)->where('day',$request->input("date"))->first();
+             return response()->json($val);
            }
         }else{
             return response()->json('Service not found');
@@ -2288,6 +2309,24 @@ class ControllerService extends Controller
       }else{
         return response()->json('Service not found');
       }
+    }
+   }
+
+   public function GetDate(Request $request){
+    $rule=[
+        'service_id'=>'required|numeric',
+    ];
+    $validator=Validator::make($request->all(),$rule);
+    if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+    }else{
+
+       $service=DB::table('availability')->where('service_id','=',$request->input("service_id"))->where('lock','=',1)->get();
+       if(count($service)>0){
+            return response()->json($service);
+        }else{
+            return response()->json('Nothing found');
+        }
     }
    }
 

@@ -3705,7 +3705,11 @@
         },
         {
             "name": "symfony/yaml",
+<<<<<<< HEAD
             "version": "v3.2.7",
+=======
+            "version": "v3.2.5",
+>>>>>>> 71ea5a247a8c07214a73315aafebacb8a0cc3c70
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
