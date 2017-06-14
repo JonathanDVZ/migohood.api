@@ -30,12 +30,12 @@ class ControllerCombobox extends Controller
       $validator=Validator::make($request->all(),$rule);
       if ($validator->fails()) {
         return response()->json($validator->errors()->all());
-        }else{   
+        }else{
                $category=Category::select('id','name','code')->where('languaje','=',$request->input("languaje"))->get();
             if(count($category)>0){
                   return response()->json($category);
             }else{
-                  return response()->json("Category not found"); 
+                  return response()->json("Category not found");
             }
     }
 }
@@ -51,21 +51,21 @@ class ControllerCombobox extends Controller
       $validator=Validator::make($request->all(),$rule);
       if ($validator->fails()) {
         return response()->json($validator->errors()->all());
-        }else{   
+        }else{
                $accommodation=Accommodation::select('id','name','code')->where('languaje','=',$request->input("languaje"))->get();
             if(count($accommodation)>0){
                   return response()->json($accommodation);
             }else{
-                  return response()->json("Accommodation not found"); 
-            } 
-       }   
+                  return response()->json("Accommodation not found");
+            }
+       }
     }
-    
-    
+
+
     public function GetCalendar(){
-          return Calendar::all();        
+          return Calendar::all();
     }
-    
+
 
     public function GetDuration(Request $request){
           $rule=[
@@ -80,9 +80,9 @@ class ControllerCombobox extends Controller
                 if(count($type)>0){
                       return response()->json($type);
                 }else{
-                      return response()->json("Duration not found"); 
+                      return response()->json("Duration not found");
                 }
-          }     
+          }
     }
 
     public function GetCurrency(Request $request){
@@ -98,9 +98,9 @@ class ControllerCombobox extends Controller
             if(count($currency)>0){
                 return response()->json($currency);
             }else{
-                return response()->json("Currency not found"); 
+                return response()->json("Currency not found");
             }
-        }     
+        }
     }
 
     public function GetPayment(Request $request){
@@ -116,9 +116,9 @@ class ControllerCombobox extends Controller
             if(count($payment)>0){
                 return response()->json($payment);
             }else{
-                return response()->json("Payment not found"); 
+                return response()->json("Payment not found");
             }
-        }     
+        }
     }
 
     public function TypeGet(Request $request){
@@ -133,7 +133,7 @@ class ControllerCombobox extends Controller
                 if(count($type)>0){
                       return response()->json($type);
                 }else{
-                      return response()->json("Type not found"); 
+                      return response()->json("Type not found");
                 }
           }
     }
@@ -147,7 +147,7 @@ class ControllerCombobox extends Controller
         if ($validator->fails()) {
             return response()->json($validator->errors()->all());
         } else {
-        
+
             $newbedbedroom=DB::table('bedroom')
                           //->leftjoin('bedroom_bed','bedroom_bed.bedroom_id','=','bedroom.id')
                           //->leftjoin('bed','bed.id','=','bedroom_bed.bed_id')
@@ -158,9 +158,9 @@ class ControllerCombobox extends Controller
             if(count($newbedbedroom)>0){
                 return response()->json($newbedbedroom);
             }else{
-                return response()->json('GetBedroom Not found'); 
+                return response()->json('GetBedroom Not found');
             }
-            
+
         }
     }
 
@@ -184,8 +184,8 @@ class ControllerCombobox extends Controller
             //if(count($newbedbedroom)>0){
                 return response()->json($newbedbedroom);
             /*}else{
-                return response()->json('GetBedroom Not found'); 
-                
+                return response()->json('GetBedroom Not found');
+
             }*/
         }
     }
@@ -203,7 +203,7 @@ class ControllerCombobox extends Controller
         $exist=DB::table('service')
                   ->join('bedroom','bedroom.service_id','=','service.id')
                   ->where('service.user_id','=',$request->input("user_id"))
-                  ->where('bedroom.id','=',$request->input("bedroom_id"))  
+                  ->where('bedroom.id','=',$request->input("bedroom_id"))
                   ->select('bedroom.id')
                   ->get();
         if(count($exist)>0){
@@ -213,18 +213,18 @@ class ControllerCombobox extends Controller
                               ->leftjoin('bed','bed.id','=','bedroom_bed.bed_id')
                               ->where('service.user_id','=',$request->input("user_id"))
                               ->where('bedroom.id','=',$request->input("bedroom_id"))
-                              ->where('bed.languaje','=',$request->input("languaje"))  
+                              ->where('bed.languaje','=',$request->input("languaje"))
                               ->select('bedroom_bed.*', 'bed.type as type')
                               ->get();
           //if(count($newbedbedroomdata)>0){
           return response()->json($newbedbedroomdata);
-          /*}else{ 
+          /*}else{
             return response()->json("The user does not have a room or user not found");
-              
+
           }*/
-        }else{ 
+        }else{
           return response()->json("The user does not have a room or user not found");
-              
+
         }
 
       }
@@ -232,11 +232,11 @@ class ControllerCombobox extends Controller
   }
 
   public function GetCountry(){
-         
+
       $country = DB::table('country')->select('id','name')->get();
       if(count($country)>0){
             return response()->json($country);
-      }else{ 
+      }else{
             return response()->json("Country not found");
       }
   }
@@ -252,7 +252,7 @@ class ControllerCombobox extends Controller
               $getrent = DB::table('city')->join('state','city.state_id','=','state.id')
               ->where('state.id','=',$request->input("state_id"))
               ->select('city.id as id','city.name as city')
-             ->get(); 
+             ->get();
              if(count($getrent)>0){
                return response()->json($getrent);
              }else{
@@ -272,7 +272,7 @@ class ControllerCombobox extends Controller
               $getrent = DB::table('country')->join('state','state.country_id','=','country.id')
               ->where('country.id','=',$request->input("country_id"))
               ->select('state.id as id','state.name as state')
-             ->get(); 
+             ->get();
              if(count($getrent)>0){
                return response()->json($getrent);
              }else{
@@ -280,7 +280,7 @@ class ControllerCombobox extends Controller
              }
         }
     }
-    
+
     public function GetSpaceAmenities(Request $request){
       $rule=[
            'languaje' => 'required'
@@ -292,7 +292,7 @@ class ControllerCombobox extends Controller
             $amenitie = DB::table('amenities')->select('code','name','type_amenities_id')->where('languaje','=',$request->input("languaje"))->where('category_id','=',1)->get();
             if(count($amenitie)>0){
                   return response()->json($amenitie);
-            }else{ 
+            }else{
                   return response()->json("Amenities not found");
             }
       }
@@ -343,7 +343,7 @@ class ControllerCombobox extends Controller
               }
       }
 
-    } 
+    }
 
     public function ReturnStep2(Request $request){
              $rule=[
@@ -362,7 +362,7 @@ class ControllerCombobox extends Controller
             if(count($getstep2)>0){
                   return response()->json($getstep2);
             }else{
-                  return response()->json('Not Found'); 
+                  return response()->json('Not Found');
             }
       }
     }
@@ -379,7 +379,7 @@ class ControllerCombobox extends Controller
         if(count($getstep3)>0){
              return response()->json($getstep3);
         }else{
-             return response()->json('Not Found');  
+             return response()->json('Not Found');
         }
       }
 
@@ -403,10 +403,10 @@ class ControllerCombobox extends Controller
             ->select('service.id','service.zipcode','city.name as city','state.name as state','state.id as state_id','country.name as country','country.id as country_id','description.type','service_description.content')
             ->get();
             if(count($getstep4)>0){
-                 return response()->json($getstep4);  
+                 return response()->json($getstep4);
             }else{
 
-             return response()->json('Not Found'); 
+             return response()->json('Not Found');
             }
       }
     }
@@ -426,12 +426,12 @@ class ControllerCombobox extends Controller
                 ->select("languaje.name")
                 ->get();
                 if(count($languaje)>0){
-                        return response()->json($languaje); 
+                        return response()->json($languaje);
                 }else{
-                    return response()->json("Not Found");   
+                    return response()->json("Not Found");
                 }
-      } 
-          
+      }
+
     }
 
     public function ReturnStep5(Request $request){
@@ -450,9 +450,9 @@ class ControllerCombobox extends Controller
         ->select('service.id','amenities.name', 'amenities.type_amenities_id', 'amenities.code')
         ->get();
         if(count($getstep5)>0){
-                return response()->json($getstep5); 
+                return response()->json($getstep5);
         }else{
-                return response()->json("Not Found"); 
+                return response()->json("Not Found");
         }
       }
     }
@@ -483,9 +483,9 @@ class ControllerCombobox extends Controller
         ,'check_out.departure_time as Departure-Time')
         ->get();
          if(count($getstep6)>0){
-                return response()->json($getstep6); 
+                return response()->json($getstep6);
         }else{
-                return response()->json("Not Found"); 
+                return response()->json("Not Found");
         }
       }
     }
@@ -505,12 +505,12 @@ class ControllerCombobox extends Controller
         ->select('service_description.content','service_description.check','service_description.description_id')
         ->get();
           if(count($getstep7)>0){
-                return response()->json($getstep7); 
+                return response()->json($getstep7);
         }else{
-                return response()->json("Not Found"); 
+                return response()->json("Not Found");
         }
 
-      }   
+      }
     }
 
     public function ReturnStep8Rules(Request $request){
@@ -528,9 +528,9 @@ class ControllerCombobox extends Controller
         ->select('service_rules.description as Description','service_rules.check as Check','service_rules.rules_id')
         ->get();
         if(count($getstep8)>0){
-                return response()->json($getstep8); 
+                return response()->json($getstep8);
         }else{
-                return response()->json("Not Found"); 
+                return response()->json("Not Found");
         }
       }
     }
@@ -545,16 +545,16 @@ class ControllerCombobox extends Controller
       }else{
           $number=DB::table('number_emergency')->where('service_id',$request->input("service_id"))->get();
           if(count($number)>0){
-                  return response()->json($number); 
+                  return response()->json($number);
           }else{
-                return response()->json("Not Found"); 
+                return response()->json("Not Found");
           }
       }
     }
 
     public function ReturnStep9(Request $request)
     {
-          
+
        $rule=[
           'service_id' => 'required|numeric',
           //'image_id'=>'required'
@@ -565,10 +565,10 @@ class ControllerCombobox extends Controller
       }else{
           $image=DB::table('image')->where('service_id',$request->input("service_id"))/*->where('id',$request->input("image_id"))*/->get();
             if(count($image)>0){
-                  return response()->json($image); 
+                  return response()->json($image);
           }else{
-                return response()->json("Not Found"); 
-          }  
+                return response()->json("Not Found");
+          }
       }
     }
 
@@ -591,13 +591,13 @@ class ControllerCombobox extends Controller
         ->select('image.ruta','image.description','price_history.price','currency.money','currency.symbol','duration.type')
         ->orderby('price_history.image_id','DESC')->take(1)->get();
            if(count($getstep10)>0){
-                  return response()->json($getstep10); 
+                  return response()->json($getstep10);
           }else{
-                return response()->json("Not Found"); 
-          } 
+                return response()->json("Not Found");
+          }
       }
     }
-    
+
     public function ReturnStep11(Request $request)
     {
           $rule=[
@@ -616,10 +616,10 @@ class ControllerCombobox extends Controller
                           ->select('service_emergency.content','service_emergency.check','note_emergency.type','service_emergency.emergency_id')
                           ->get();
           if(count($getstep11)>0){
-                  return response()->json($getstep11); 
+                  return response()->json($getstep11);
           }else{
-                return response()->json("Not Found"); 
-          }  
+                return response()->json("Not Found");
+          }
       }
     }
 
@@ -632,6 +632,8 @@ class ControllerCombobox extends Controller
       if ($validator->fails()) {
             return response()->json($validator->errors()->all());
       }else{
+
+        
              $previews=DB::table('service')
              ->join('user','user.id','=','service.user_id')
              ->join('city','service.city_id','=','city.id')
@@ -658,13 +660,13 @@ class ControllerCombobox extends Controller
              ->select('user.avatar','country.name as country','payment.type as prices','state.name as state','type.name as type','service_description.content as title','accommodation.name as accommodation','service.num_guest as guest','service.num_bathroom as bathrooms','check_in.time_entry as check_in','category.name as category')
              ->first();
                if(count($previews)>0){
-                  return response()->json($previews); 
+                  return response()->json($previews);
           }else{
-                return response()->json("Not Found"); 
-          } 
-      
+                return response()->json("Not Found");
+          }
+
       }
-          
+
     }
 
     public function GetOverviewsBeds(Request $request)
@@ -685,19 +687,19 @@ class ControllerCombobox extends Controller
                 ->join('bed','bedroom_bed.bed_id','=','bed.code')
                 ->where('service.id',"=",$request->input("service_id"))
                 ->where('bed.languaje','=',$request->input("languaje"))
-               ->where('bedroom.id','=',$bedrooms->id)               
+               ->where('bedroom.id','=',$bedrooms->id)
                 ->select(DB::raw('sum(bedroom_bed.quantity)'))
                 ->get();
                 $num=$num+$previews;
               }
                  if(count($previews)>0){
-                  return response()->json($num); 
+                  return response()->json($num);
           }else{
-                return response()->json("Not Found"); 
-          }  
+                return response()->json("Not Found");
+          }
 
       }
-          
+
     }
 
     public function GetOverviewsRules(Request $request)
@@ -716,10 +718,10 @@ class ControllerCombobox extends Controller
                 ->select('house_rules.type','service_rules.description','service_rules.check')
                 ->get();
                 if(count($previews)>0){
-                  return response()->json($previews); 
+                  return response()->json($previews);
           }else{
-                return response()->json("Not Found"); 
-          }  
+                return response()->json("Not Found");
+          }
 
 
       }
@@ -744,13 +746,13 @@ class ControllerCombobox extends Controller
                 ->select('amenities.name as amenities')
                 ->get();
                   if(count($previews)>0){
-                  return response()->json($previews); 
+                  return response()->json($previews);
           }else{
-                return response()->json("Not Found"); 
-          }  
+                return response()->json("Not Found");
+          }
 
       }
-        
+
     }
 
     public function GetOverviewsEmergency(Request $request)
@@ -762,17 +764,17 @@ class ControllerCombobox extends Controller
       if ($validator->fails()) {
             return response()->json($validator->errors()->all());
       }else{
-         
+
               $previews=DB::table('service')
                 ->join('number_emergency','number_emergency.service_id','=','service.id')
                 ->where('service.id','=',$request->input("service_id"))
                 ->select('number_emergency.name','number_emergency.number')
                 ->get();
                       if(count($previews)>0){
-                  return response()->json($previews); 
+                  return response()->json($previews);
           }else{
-                return response()->json("Not Found"); 
-          }  
+                return response()->json("Not Found");
+          }
       }
     }
 
@@ -794,10 +796,10 @@ class ControllerCombobox extends Controller
                 ->select('note_emergency.type')
                 ->get();
                             if(count($previews)>0){
-                  return response()->json($previews); 
+                  return response()->json($previews);
           }else{
-                return response()->json("Not Found"); 
-          } 
+                return response()->json("Not Found");
+          }
 
       }
     }
@@ -820,10 +822,10 @@ class ControllerCombobox extends Controller
                 ->select('note_emergency.type','service_emergency.content')
                 ->get();
         if(count($previews)>0){
-                  return response()->json($previews); 
+                  return response()->json($previews);
           }else{
-                return response()->json("Not Found"); 
-          } 
+                return response()->json("Not Found");
+          }
 
       }
     }
@@ -846,10 +848,10 @@ class ControllerCombobox extends Controller
                    ->select('service_description.content')
                    ->get();
                      if(count($previews)>0){
-                  return response()->json($previews); 
+                  return response()->json($previews);
           }else{
-                return response()->json("Not Found"); 
-          }  
+                return response()->json("Not Found");
+          }
 
       }
     }
@@ -872,14 +874,12 @@ class ControllerCombobox extends Controller
                    ->select('service_description.content')
                    ->get();
                      if(count($previews)>0){
-                  return response()->json($previews); 
+                  return response()->json($previews);
           }else{
-                return response()->json("Not Found"); 
-          }  
+                return response()->json("Not Found");
+          }
 
       }
     }
-  
+
 }
-    
-    
