@@ -365,6 +365,12 @@ $app->get('/service/space/step-9/get-image','ControllerCombobox@ReturnStep9');
 $app->get('/service/space/step-10/get-service','ControllerCombobox@ReturnStep10');
 //Retorna (space-step11)
 $app->get('/service/space/step-11/number-emergency','ControllerCombobox@ReturnStep11');
+
+//Retorna (Descripcion)
+$app->get('/service/space/getDescription', 'ControllerCombobox@getDescription');
+//Retorna (Tambien deberias)
+$app->get('/service/space/getTooKnow', 'ControllerCombobox@getTooKnow');
+
 $app->get('/make_token',function(){
     return str_random(32);
 });

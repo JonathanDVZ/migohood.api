@@ -790,7 +790,7 @@ class ControllerCombobox extends Controller
               $previews=DB::table('service')
                 ->join('service_emergency','service_emergency.service_id','=','service.id')
                 ->join('note_emergency','note_emergency.code','=','service_emergency.emergency_id')
-                ->where('service_emergency.check','=',1)
+                ->where('service_emergency.check','=',0)
                     ->where('service.id','=',$request->input("service_id"))
                     ->where('note_emergency.languaje','=',$request->input("languaje"))
                 ->select('note_emergency.type')
@@ -818,7 +818,7 @@ class ControllerCombobox extends Controller
                 ->join('note_emergency','note_emergency.code','=','service_emergency.emergency_id')
                     ->where('service.id','=',$request->input("service_id"))
                     ->where('note_emergency.languaje','=',$request->input("languaje"))
-                    ->where('note_emergency.code','=',10)
+                    ->where('note_emergency.code','=',1)
                 ->select('note_emergency.type','service_emergency.content')
                 ->get();
         if(count($previews)>0){
@@ -878,6 +878,54 @@ class ControllerCombobox extends Controller
           }else{
                 return response()->json("Not Found");
           }
+
+      }
+    }
+
+    public function getDescription(Request $request){
+           $rule=[
+           'service_id' => 'required|numeric'
+      ];
+    $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+      }else{
+        $des=DB::table('service')
+        ->join('service_description','service_description.service_id','=','service.id')
+        ->join('description','description.id','=','service_description.description_id')
+        ->where('service_id','=',$request->input("service_id"))
+        ->where('service_description.description_id', '=', 8)
+        ->select('service_description.content','service_description.check','service_description.description_id')
+        ->first();
+          if(count($des)>0){
+                return response()->json($des);
+        }else{
+                return response()->json("Not Found");
+        }
+
+      }
+    }
+
+    public function getTooKnow(Request $request){
+           $rule=[
+           'service_id' => 'required|numeric'
+      ];
+    $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+      }else{
+        $des=DB::table('service')
+        ->join('service_description','service_description.service_id','=','service.id')
+        ->join('description','description.id','=','service_description.description_id')
+        ->where('service_id','=',$request->input("service_id"))
+        ->where('service_description.description_id', '=', 14)
+        ->select('service_description.content','service_description.check','service_description.description_id')
+        ->first();
+          if(count($des)>0){
+                return response()->json($des);
+        }else{
+                return response()->json("Not Found");
+        }
 
       }
     }
