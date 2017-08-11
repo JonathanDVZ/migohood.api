@@ -1347,7 +1347,15 @@ class ControllerService extends Controller
                                 $des_latitude->save();
                                 return response()->json('Add Location');
                             }else{
-                                   DB::table('service_description')->where('service_id',$servicespace->id)->delete();
+                              $serv_desloc = Service_Description::all();
+                                  foreach ($serv_desloc as $sdl) {
+                                    if($sdl->description_id >= 2 ){
+                                      if($sdl->description_id <= 7){
+                                        DB::table('service_description')->where('service_id',$servicespace->id)->where('description_id',$sdl->description_id)->delete();
+                                      }
+                                    }
+                                  }
+                                  // DB::table('service_description')->where('service_id',$servicespace->id)->delete();
                                      DB::table('service')->where('id',$servicespace->id)->update(
                                     ['city_id'=>$request->input("city_id"),
                                ]);
@@ -1567,7 +1575,14 @@ class ControllerService extends Controller
                     return response()->json($e);
                }
             }else{
-               DB::table('service_description')->where('service_id',$service->id)->delete();
+              $serv_des= Service_Description::get();
+              DB::table('service_description')->where('service_id',$service->id)->where('description_id','1')->delete();
+              foreach ($serv_des as $sd) {
+                if($sd->description_id >= 8){
+                  DB::table('service_description')->where('service_id',$service->id)->where('description_id',$sd->description_id)->delete();
+                }
+              }
+              
                   $des_title=new Service_Description;
                   $des_title->service_id=$service->id;
                   $des_title->description_id=1;
@@ -1668,7 +1683,7 @@ class ControllerService extends Controller
                  $newrules=new Service_Rules;
                  $newrules->service_id=$service->id;
                  $newrules->rules_id=6;
-                 $newrules->description=$request->input("Desc_Otro_Evento ");
+                 $newrules->description=$request->input("Desc_Otro_Evento");
                  $newrules->save();
                  $newrequirement=new Service_Rules;
                  $newrequirement->service_id=$service->id;
@@ -1749,7 +1764,7 @@ class ControllerService extends Controller
                  $newrules=new Service_Rules;
                  $newrules->service_id=$service->id;
                  $newrules->rules_id=6;
-                 $newrules->description=$request->input("Desc_Otro_Evento ");
+                 $newrules->description=$request->input("Desc_Otro_Evento");
                  $newrules->save();
                  $newrequirement=new Service_Rules;
                  $newrequirement->service_id=$service->id;

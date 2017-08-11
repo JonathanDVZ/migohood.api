@@ -146,6 +146,8 @@ $app->delete('/service/space/step-11/emergency-delete','ControllerService@Delete
 $app->get('/service/space/preview-overviews','ControllerCombobox@GetOverviews');
 //Preview-beds
 $app->get('/service/space/preview-beds','ControllerCombobox@GetOverviewsBeds');//en prceso
+//Preview-bedrooms
+$app->get('/service/space/preview-bedrooms','ControllerCombobox@GetOverviewsBedrooms');
 //preview-rules
 $app->get('/service/space/preview-rules','ControllerCombobox@GetOverviewsRules');
 //preview-amenities
@@ -156,12 +158,14 @@ $app->get('/service/space/preview-emergency','ControllerCombobox@GetOverviewsEme
 $app->get('/service/space/preview-note-emergency','ControllerCombobox@GetOverviewsEmergencyNote');
 //preview emergency exit
 $app->get('/service/space/preview-exit-emergency','ControllerCombobox@GetOverviewsEmergencyExit');
-//map neighborhood latitude
+//map neighborhood
 $app->get('/service/space/preview-map-neighborhood','ControllerCombobox@GetLocationMap');
 //map neighborhood longitude
 $app->get('/service/space/preview-map-neighborhood-longitude','ControllerCombobox@GetLocationMapLongitude');
 //map neighborhood latitude
 $app->get('/service/space/preview-map-neighborhood-latitude','ControllerCombobox@GetLocationMapLatitude');
+//Preview-price
+$app->get('/service/space/preview-price','ControllerCombobox@getPreviewPrice');
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //Agrgar Accommodation

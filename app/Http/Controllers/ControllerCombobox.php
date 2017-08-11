@@ -657,7 +657,7 @@ class ControllerCombobox extends Controller
              ->where('type.languaje','=',$request->input("languaje"))
              ->where('payment.languaje','=',$request->input("languaje"))
              ->where('description.id','=',1)
-             ->select('user.avatar','user.name','country.name as country','payment.type as prices','state.name as state','type.name as type','service_description.content as title','accommodation.name as accommodation','service.num_guest as guest','service.num_bathroom as bathrooms','check_in.time_entry as check_in','category.name as category')
+             ->select('service.user_id as servid', 'user.id as userid','user.avatar','user.name','country.name as country','payment.type as prices','state.name as state','type.name as type','service_description.content as title','accommodation.name as accommodation','service.num_guest as guest','service.num_bathroom as bathrooms','check_in.time_entry as check_in','category.name as category','user.lastname')
              ->first();
                if(count($previews)>0){
                   return response()->json($previews);
@@ -667,6 +667,28 @@ class ControllerCombobox extends Controller
 
       }
 
+    }
+
+    public function GetOverviewsBedrooms(Request $request){
+             $rule=[
+           'service_id' => 'required|numeric'
+      ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+      }else{
+            $previews = DB::table('service')->join('bedroom','service.id','=','bedroom.service_id')
+            ->where('service.id','=',$request->input("service_id"))
+            ->select('service.id','service.num_guest', DB::raw('count(*) as num_bedrooms')/*'bedroom.id as num_bedroom'*/)
+            ->orderBy('bedroom.id','desc')
+            //->take(1)
+            ->get();
+            if(count($previews)>0){
+                  return response()->json($previews);
+            }else{
+                  return response()->json('Not Found');
+            }
+      }
     }
 
     public function GetOverviewsBeds(Request $request)
@@ -688,7 +710,7 @@ class ControllerCombobox extends Controller
                 ->where('service.id',"=",$request->input("service_id"))
                 ->where('bed.languaje','=',$request->input("languaje"))
                ->where('bedroom.id','=',$bedrooms->id)
-                ->select(DB::raw('sum(bedroom_bed.quantity)'))
+                ->select(DB::raw('sum(bedroom_bed.quantity) as num_bed'))
                 ->get();
                 $num=$num+$previews;
               }
@@ -830,6 +852,32 @@ class ControllerCombobox extends Controller
       }
     }
 
+    public function GetLocationMap(Request $request)
+    {$rule=[
+           'service_id' => 'required|numeric',
+        ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+      }else{
+
+              $previews=DB::table('service')
+              ->join('service_description','service_description.service_id','=','service.id')
+                ->join('city','service.city_id','=','city.id')
+                ->join('state','city.state_id','=','state.id')
+                ->join('country','country.id','=','state.country_id')
+                 ->where('service.id','=',$request->input("service_id"))
+                   ->select('service_description.id','country.name as country','state.name as state','city.name as city')
+                   ->first();
+                     if(count($previews)>0){
+                  return response()->json($previews);
+          }else{
+                return response()->json("Not Found");
+          }
+
+      }
+    }
+
     public function GetLocationMapLongitude(Request $request)
     {$rule=[
            'service_id' => 'required|numeric',
@@ -846,7 +894,7 @@ class ControllerCombobox extends Controller
                   ->where('description.id','=',6)
                   //->where('description.id','=',10)
                    ->select('service_description.content')
-                   ->get();
+                   ->first();
                      if(count($previews)>0){
                   return response()->json($previews);
           }else{
@@ -872,7 +920,7 @@ class ControllerCombobox extends Controller
                   ->where('description.id','=',7)
                   //->where('description.id','=',10)
                    ->select('service_description.content')
-                   ->get();
+                   ->first();
                      if(count($previews)>0){
                   return response()->json($previews);
           }else{
