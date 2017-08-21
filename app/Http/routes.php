@@ -94,7 +94,7 @@ $app->post('service/space/reservation-preference','ControllerService@AddNewReser
 //Agrega Imagen and description
 $app->post('/service/space/add-image','ControllerService@AddNewSpaceStep9');
 //Agrega space
-$app->post('/service/space-create','ControllerService@CreateSpace');//Todas las rutas unidas
+//$app->post('/service/space-create','ControllerService@CreateSpace');//Todas las rutas unidas
 
 
 
@@ -374,6 +374,27 @@ $app->get('/service/space/step-11/number-emergency','ControllerCombobox@ReturnSt
 $app->get('/service/space/getDescription', 'ControllerCombobox@getDescription');
 //Retorna (Tambien deberias)
 $app->get('/service/space/getTooKnow', 'ControllerCombobox@getTooKnow');
+
+/*CRUD SERVICE Movil*//////////////////////////////////////////////////////////////
+/*Create*/
+//Agregar un servicio (space-step)
+$app->post('/service/services/create','ServiceController@AddNewServiceStep');
+
+
+/*Crud Service Web */////////////////////////////////////////////////////////////////->en proces0
+//Agregar un servicio (service-step)
+$app->post('/service/services/step/create','ServiceController@AddNewServiceStep');
+//Agregar un servicio (service-step1)
+$app->post('/service/services/step-1/create','ServiceController@AddNewServiceStep1');
+
+
+////////////////////////////////////////////////////////////////////////////////////////
+//next and back
+$app->get('/service/services/step/create','ServiceController@ReturnStep');
+
+$app->get('/service/services/step-1/get-create','ServiceController@ReturnStep1');
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 $app->get('/make_token',function(){
     return str_random(32);
