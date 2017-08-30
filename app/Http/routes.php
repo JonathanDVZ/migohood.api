@@ -377,7 +377,7 @@ $app->get('/service/space/getTooKnow', 'ControllerCombobox@getTooKnow');
 
 /*CRUD SERVICE Movil*//////////////////////////////////////////////////////////////
 /*Create*/
-//Agregar un servicio (space-step)
+//Agregar un servicio (service-step)
 $app->post('/service/services/create','ServiceController@AddNewServiceStep');
 
 
@@ -386,13 +386,33 @@ $app->post('/service/services/create','ServiceController@AddNewServiceStep');
 $app->post('/service/services/step/create','ServiceController@AddNewServiceStep');
 //Agregar un servicio (service-step1)
 $app->post('/service/services/step-1/create','ServiceController@AddNewServiceStep1');
+//Agregar un cancellation policy (service-step2)
+$app->post('/service/services/step-2/hosting','ServiceController@AddNewServiceStep2');
+//Agregar un rules description (service-step3)
+$app->post('/service/services/step-3/basics','ServiceController@AddNewServiceStep3');
+//Agregar un photos (service-step4)
+$app->post('/service/services/step-4/image','ServiceController@AddNewServiceStep4');
+//Agregar un location (service-step5)
+$app->post('/service/services/step-5/location','ServiceController@AddNewSpaceStep5');
+//Agregar un notes (service-step6)
+$app->post('/service/services/step-6/notes','ServiceController@AddNewSpaceStep6');
 
 
 ////////////////////////////////////////////////////////////////////////////////////////
 //next and back
 $app->get('/service/services/step/create','ServiceController@ReturnStep');
-
+//Retorna un category (service-step1)
 $app->get('/service/services/step-1/get-create','ServiceController@ReturnStep1');
+//Retorna un hosting (service-step2)
+$app->get('/service/services/step-2/get-hosting','ServiceController@ReturnStep2');
+//Retorna un basics (service-step3)
+$app->get('/service/services/step-3/get-basics','ServiceController@ReturnStep3');
+//Retorna un photos (service-step5)
+$app->get('/service/services/step-4/get-image','ServiceController@ReturnStep4');
+//Retorna un location (service-step5)
+$app->get('/service/services/step-5/get-location','ServiceController@ReturnStep5');
+//Retorna un notes (service-step6)
+$app->get('/service/services/step-5/get-notes','ServiceController@ReturnStep6');
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateServiceTypeCategoryTable extends Migration
+class CreateGuestsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,13 +12,16 @@ class CreateServiceTypeCategoryTable extends Migration
      */
     public function up()
     {
-        Schema::create('service_type_category', function (Blueprint $table) {
+        Schema::create('guests', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('service_id');
+            $table->integer('service_id')->unsigned();
             $table->foreign('service_id')->references('id')->on('service');
-            $table->integer('type_categories_id');
-            $table->foreign('type_categories_id')->references('id')->on('type_categories');
-            $table->boolean('check');
+            $table->integer('num_guest_service');
+            $table->integer('num_guest_day');
+            $table->time('entry');
+            $table->time('until');
+            $table->integer('time_service');
+            $table->string('duration');
         });
     }
 
@@ -29,6 +32,6 @@ class CreateServiceTypeCategoryTable extends Migration
      */
     public function down()
     {
-        Schema::drop('service_type_category');
+        Schema::drop('guests');
     }
 }

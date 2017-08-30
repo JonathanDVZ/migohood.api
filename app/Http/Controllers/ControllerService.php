@@ -1468,7 +1468,7 @@ class ControllerService extends Controller
                 $service=Service::where('id',$request->input("service_id"))->first();
                 $payment=Payment::select('id')->where('code',$request->input("politic_payment_code"))->get();
                 $duration=Duration::select('id')->where('code',$request->input("duration_code"))->get();
-                if(count($service)>0 && count($payment)>0 && count($duration)>0){
+                if(count($service)>0 && count($payment)==0 && count($duration)==0){
                 try{
                       $newhistory=new Price_History;
                       $dt = new DateTime();
@@ -1510,8 +1510,43 @@ class ControllerService extends Controller
                        return response()->json($e);
                     }
                 }else{
-                    return response()->json('Service not found');
+                      DB::table('price_history')->where('service_id',$service->id)->delete();
+                      $newhistory=new Price_History;
+                      $dt = new DateTime();
+                      $newhistory->starDate=$dt->format('Y-m-d (H:i:s)');
+                      $newhistory->service_id=$service->id;
+                      $newhistory->price=$request->input("price");
+                      $newhistory->currency_id=$request->input("currency_id");
+                      $newhistory->save();
+                      DB::table('check_in')->where('service_id',$service->id)->delete();
+                      $newcheck_in=new Check_in;
+                      $newcheck_in->time_entry=$request->input("time_entry");
+                      $newcheck_in->until=$request->input("until");
+                      $newcheck_in->service_id=$service->id;
+                      $newcheck_in->save();
+                      DB::table('check_out')->where('service_id',$service->id)->delete();
+                      $newcheck_out=new Check_out;
+                      $newcheck_out->departure_time=$request->input("departure_time");
+                      $newcheck_out->service_id=$service->id;
+                      $newcheck_out->save();
+                      DB::table('service_payment')->where('service_id',$service->id)->delete();
+                     foreach($payment as $payments){
+                         $newpayment=new Service_Payment;
+                         $newpayment->service_id=$service->id;
+                         $newpayment->payment_id=$payments->id;
+                         $newpayment->save();
+                       }
+                       DB::table('price_history_has_duration')->where('price_history_service_id',$service->id)->delete();
+                        foreach($duration as $durations){
+                         $newpriceduration=new Price_history_has_duration;
+                         $newpriceduration->price_history_starDate=$newhistory->starDate;
+                         $newpriceduration->price_history_service_id=$newhistory->service_id;
+                         $newpriceduration->duration_id=$durations->id;
+                         $newpriceduration->save();
+                       }
+                    return response()->json('Update Step 6');
                 }
+                return response()->json('Service not found');
             }
     }
 
@@ -2120,17 +2155,17 @@ class ControllerService extends Controller
          }else{
                 $val=DB::table('service_emergency')->where('service_id',$service->id)->delete();
 
-                $newnote1=new Service_Emergency;
+           $newnote1=new Service_Emergency;
            $newnote1->service_id=$service->id;
            $newnote1->emergency_id=1;
            $newnote1->content=$request->input("desc_anything");
            $newnote1->save();
 
-           $newnote10=new Service_Emergency;
-           $newnote10->service_id=$service->id;
-           $newnote10->emergency_id=11;
-           $newnote10->content=$request->input("desc_anything");
-           $newnote10->save();
+           $newnote1=new Service_Emergency;
+           $newnote1->service_id=$service->id;
+           $newnote1->emergency_id=11;
+           $newnote1->content=$request->input("desc_anything");
+           $newnote1->save();
 
            $newnote2=new Service_Emergency;
            $newnote2->service_id=$service->id;
