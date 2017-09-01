@@ -413,6 +413,16 @@ $app->get('/service/services/step-4/get-image','ServiceController@ReturnStep4');
 $app->get('/service/services/step-5/get-location','ServiceController@ReturnStep5');
 //Retorna un notes (service-step6)
 $app->get('/service/services/step-5/get-notes','ServiceController@ReturnStep6');
+//Preview
+$app->get('/service/services/preview-overviews','ServiceController@GetOverviews');
+
+//Preview 4 service
+//map neighborhood
+$app->get('/service/services/preview-map-neighborhood','ServiceController@GetLocationMap');
+//map neighborhood longitude
+$app->get('/service/services/preview-map-neighborhood-longitude','ServiceController@GetLocationMapLongitude');
+//map neighborhood latitude
+$app->get('/service/services/preview-map-neighborhood-latitude','ServiceController@GetLocationMapLatitude');
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

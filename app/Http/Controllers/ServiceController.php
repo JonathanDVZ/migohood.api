@@ -28,10 +28,7 @@
 	use App\Models\Service_Payment;
 	use App\Models\Price_History;
 	use App\Models\Amenite;
-	use App\Models\Accommodation;
-	use App\Models\Bedroom;
 	use App\Models\State;
-	use App\Models\Bedroom_Bed;
 	use App\Models\Check_out;
 	use App\Models\City;
 	use App\Models\Country;
@@ -275,7 +272,7 @@
 	                $service=Service::where('id',$request->input("service_id"))->first();
 	                $payment=Payment::select('id')->where('code',$request->input("politic_payment_code"))->get();
 	                $duration=Duration::select('id')->where('code',$request->input("duration_code"))->get();
-	                if(count($service)>0 && count($payment)>0 && count($duration)>0){
+	                if(count($service)>0 && count($payment)==0 && count($duration)==0){
 	                try{
 	                      $newhistory=new Price_History;
 	                      $dt = new DateTime();
@@ -289,6 +286,11 @@
 	                      $newcheck_in->until=$request->input("until");
 	                      $newcheck_in->service_id=$service->id;
 	                      $newcheck_in->save();
+                      DB::table('check_out')->where('service_id',$service->id)->delete();
+                      $newcheck_out=new Check_out;
+                      $newcheck_out->departure_time=$request->input("until");
+                      $newcheck_out->service_id=$service->id;
+                      $newcheck_out->save();
 	                     foreach($payment as $payments){
 	                         $newpayment=new Service_Payment;
 	                         $newpayment->service_id=$service->id;
@@ -327,11 +329,11 @@
 	                      $newcheck_in->until=$request->input("until");
 	                      $newcheck_in->service_id=$service->id;
 	                      $newcheck_in->save();
-	                      DB::table('check_out')->where('service_id',$service->id)->delete();
-	                      $newcheck_out=new Check_out;
-	                      $newcheck_out->departure_time=$request->input("departure_time");
-	                      $newcheck_out->service_id=$service->id;
-	                      $newcheck_out->save();
+                      DB::table('check_out')->where('service_id',$service->id)->delete();
+                      $newcheck_out=new Check_out;
+                      $newcheck_out->departure_time=$request->input("until");
+                      $newcheck_out->service_id=$service->id;
+                      $newcheck_out->save();
 	                      DB::table('service_payment')->where('service_id',$service->id)->delete();
 	                     foreach($payment as $payments){
 	                         $newpayment=new Service_Payment;
@@ -370,8 +372,9 @@
 	        ->join('price_history_has_duration','price_history_has_duration.price_history_service_id','=','price_history.service_id')
 	        ->join('duration','duration.code','=','price_history_has_duration.duration_id')
 	        ->join('check_in','check_in.service_id','=','service.id')
+        	->join('check_out','check_out.service_id','=','service.id')
 	        ->join('currency','currency.id','=','price_history.currency_id')
-	        ->where('service.id','=',$request->input("service_id"))
+	        ->where('service.id','=',$request->input('service_id'))
 	        ->where('payment.languaje','=',$request->input("languaje"))
 	        ->where('duration.languaje','=',$request->input("languaje"))
 	        ->select('payment.type as Type-Payment','duration.type as Type-Duration'
@@ -1091,6 +1094,124 @@
 		          }else{
 		                return response()->json("Not Found");
 		          }
+		      }
+		    }
+
+
+		    public function GetOverviews(Request $request)
+		    {$rule=[
+		           'service_id' => 'required|numeric',
+		           'languaje'=>'required'
+		        ];
+		      $validator=Validator::make($request->all(),$rule);
+		      if ($validator->fails()) {
+		            return response()->json($validator->errors()->all());
+		      }else{
+
+		             $previews=DB::table('service')
+		             ->join('user','user.id','=','service.user_id')
+		             ->join('city','service.city_id','=','city.id')
+		             ->join('state','city.state_id','=','state.id')
+		             ->join('country','country.id','=','state.country_id')
+		             ->join('service_description','service_description.service_id','=','service.id')
+		             ->join('description','description.id','=','service_description.description_id')
+		             ->join('check_in','check_in.service_id','=','service.id')
+		             ->join('service_category','service_category.service_id','=','service.id')
+		             ->join('category','category.code','=','service_category.category_id')
+		             ->join('service_payment','service_payment.service_id','=','service.id')
+		             ->join('payment','payment.code','=','service_payment.payment_id')
+		             ->where('service.id','=',$request->input("service_id"))
+		             ->where('category.languaje','=',$request->input("languaje"))
+		             ->where('payment.languaje','=',$request->input("languaje"))
+		             ->where('description.id','=',1)
+		             ->select('service.user_id as servid', 'user.id as userid','user.avatar','user.name','country.name as country','payment.type as prices','state.name as state','service_description.content as title','check_in.time_entry as check_in','category.name as category','user.lastname')
+		             ->first();
+		               if(count($previews)>0){
+		                  return response()->json($previews);
+		          }else{
+		                return response()->json("Not Found");
+		          }
+
+		      }
+
+		    }
+
+
+		    public function GetLocationMap(Request $request)
+		    {$rule=[
+		           'service_id' => 'required|numeric',
+		        ];
+		      $validator=Validator::make($request->all(),$rule);
+		      if ($validator->fails()) {
+		            return response()->json($validator->errors()->all());
+		      }else{
+
+		              $previews=DB::table('service')
+		              ->join('service_description','service_description.service_id','=','service.id')
+		                ->join('city','service.city_id','=','city.id')
+		                ->join('state','city.state_id','=','state.id')
+		                ->join('country','country.id','=','state.country_id')
+		                 ->where('service.id','=',$request->input("service_id"))
+		                   ->select('service_description.id','country.name as country','state.name as state','city.name as city')
+		                   ->first();
+		                     if(count($previews)>0){
+		                  return response()->json($previews);
+		          }else{
+		                return response()->json("Not Found");
+		          }
+
+		      }
+		    }
+
+		    public function GetLocationMapLongitude(Request $request)
+		    {$rule=[
+		           'service_id' => 'required|numeric',
+		        ];
+		      $validator=Validator::make($request->all(),$rule);
+		      if ($validator->fails()) {
+		            return response()->json($validator->errors()->all());
+		      }else{
+
+		              $previews=DB::table('service')
+		                ->join('service_description','service_description.service_id','=','service.id')
+		                 ->join('description','description.id','=','service_description.description_id')
+		                 ->where('service.id','=',$request->input("service_id"))
+		                  ->where('description.id','=',6)
+		                  //->where('description.id','=',10)
+		                   ->select('service_description.content')
+		                   ->first();
+		                     if(count($previews)>0){
+		                  return response()->json($previews);
+		          }else{
+		                return response()->json("Not Found");
+		          }
+
+		      }
+		    }
+
+		    public function GetLocationMapLatitude(Request $request)
+		    {$rule=[
+		           'service_id' => 'required|numeric',
+		        ];
+		      $validator=Validator::make($request->all(),$rule);
+		      if ($validator->fails()) {
+		            return response()->json($validator->errors()->all());
+		      }else{
+
+		              $previews=DB::table('service')
+		                ->join('service_description','service_description.service_id','=','service.id')
+		                 ->join('description','description.id','=','service_description.description_id')
+		                 ->where('service.id','=',$request->input("service_id"))
+		                  ->where('description.id','=',7)
+		                  //->where('description.id','=',10)
+		                   ->select('service_description.content')
+		                   ->first();
+		                     if(count($previews)>0){
+		                  return response()->json($previews);
+		          }else{
+		                return response()->json("Not Found");
+		          }
+
 		      }
 		    }
 

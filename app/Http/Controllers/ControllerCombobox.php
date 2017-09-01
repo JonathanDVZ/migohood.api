@@ -639,7 +639,7 @@ class ControllerCombobox extends Controller
              ->join('city','service.city_id','=','city.id')
              ->join('state','city.state_id','=','state.id')
              ->join('country','country.id','=','state.country_id')
-              ->join('service_accommodation','service_accommodation.service_id','=','service.id')
+             ->join('service_accommodation','service_accommodation.service_id','=','service.id')
              ->join('accommodation','accommodation.code','=','service_accommodation.accommodation_id')
              ->join('service_description','service_description.service_id','=','service.id')
              ->join('description','description.id','=','service_description.description_id')
