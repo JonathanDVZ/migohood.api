@@ -470,7 +470,7 @@ class ControllerCombobox extends Controller
         ->join('payment','payment.code','=','service_payment.payment_id')
         ->join('price_history','price_history.service_id','=','service.id')
         ->join('price_history_has_duration','price_history_has_duration.price_history_service_id','=','price_history.service_id')
-        ->join('duration','duration.code','=','price_history_has_duration.duration_id')
+        ->join('duration','duration.id','=','price_history_has_duration.duration_id')
         ->join('check_in','check_in.service_id','=','service.id')
         ->join('check_out','check_out.service_id','=','service.id')
         ->join('currency','currency.id','=','price_history.currency_id')
