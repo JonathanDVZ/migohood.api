@@ -594,7 +594,7 @@
 	        ->join('service_description','service_description.service_id','=','service.id')
         	->join('description','description.id','=','service_description.description_id')
 	        ->where('service.id','=',$request->input("service_id"))
-	        ->select('service_rules.description as Description','service_rules.check as Check','service_rules.rules_id','service_description.content')
+	        ->select('service_rules.description as Description','service_rules.check as Check','service_rules.rules_id','service_description.content','service_description.description_id')
 	        ->get();
 	        if(count($getstep3)>0){
 	                return response()->json($getstep3);
@@ -618,50 +618,11 @@
 	                 try{
 	                    // Se definen las credenciales del cliente s3 de amazon
 	                    $s3 = new S3Client([
-	                        'version'     => env('S3_VERSION'),
+	                    	'version' 	  =>env('S3_VERSION'),
 	                        'region'      => env('S3_REGION'),
-	                        'credentials' => [
-	                            'key'    => env('S3_KEY'),
-	                            'secret' => env('S3_SECRET')
-	                        ]
-	                    ]);
-	                    $image_link = 'https://s3.'.env('S3_REGION').'.amazonaws.com/'.env('S3_BUCKET').'/files/images/';
-	                    // Obtenemos el campo file definido en el formulario
-	                    $file = $request->file('image');
-	                    // Creamos un nombre para nuestro imagen
-	                    $name = 'image'.str_random(20).'_service_'.$service->id.'.'.$file->getClientOriginalExtension();
-	                    // Movemos el archivo a la caperta temporal
-	                    $file->move('/files/images/',$name);
-	                    $newruta=new Image;
-	                    $old_image = str_replace($image_link,'',$newruta->ruta);
-	                    $s3->putObject([
-	                    'Bucket' => env('S3_BUCKET'),
-	                    'Key'    => '/files/images/'.$name,
-	                    'Body'   => fopen('/files/images/'.$name,'r'),
-	                    'ACL'    => 'public-read'
-	                    ]);
-	                     unlink('/files/images/'.$name);
-	                    $newruta->service_id=$service->id;
-	                    $newruta->ruta=$image_link.$name;
-	                    $newruta->description=$request->input("description");
-	                    $newruta->save();
-	                    // Borramos el arrchivo de la carpeta temporal
-
-	                    // Actualizamos la fila thumbnail del usuario respectivo
-	                    /*DB::table('imagen')->where('service_id', $service->id )->update(['ruta' => $image_link.$name,
-	                    'description'=>$request->input("description")]);*/
-
-	                    return json_encode('completed!', true);
-	                    return response()->json('Update completed!', true);
-	                }
-	                catch (\Exception $e){
-	                    return response()->json($e->getMessage());
-	                }
-	            }else{
-	             // Se definen las credenciales del cliente s3 de amazon
-	                    $s3 = new S3Client([
-	                        'version'     => env('S3_VERSION'),
-	                        'region'      => env('S3_REGION'),
+	                        'http'    => [
+						        'verify' => false
+						    ],
 	                        'credentials' => [
 	                            'key'    => env('S3_KEY'),
 	                            'secret' => env('S3_SECRET')
@@ -693,9 +654,16 @@
 	                    /*DB::table('imagen')->where('service_id', $service->id )->update(['ruta' => $image_link.$name,
 	                    'description'=>$request->input("description")]);*/
 
-	                    return json_encode('completed!', true);
-	            }
+	                    return json_encode('Update completed!', true);
+	                    return response()->json('Update completed!', true);
+	                }
+	                catch (\Exception $e){
+	                    return response()->json($e->getMessage());
+	                }
+	            }else{
+	             
 	              return response()->json('Service not found');
+	            }
 
 	        }
 	    }
@@ -974,7 +942,7 @@
 
 		           return response()->json('Add Note emergency');
 		         }else{
-		                $val=DB::table('service_emergency')->where('service_id',$service->id)->delete();
+		                DB::table('service_emergency')->where('service_id',$service->id)->delete();
 
 		           $newnote1=new Service_Emergency;
 		           $newnote1->service_id=$service->id;
@@ -1100,7 +1068,7 @@
 		    public function GetOverviews(Request $request)
 		    {$rule=[
 		           'service_id' => 'required|numeric',
-		           'languaje'=>'required'
+		           'languaje'=>'required',
 		        ];
 		      $validator=Validator::make($request->all(),$rule);
 		      if ($validator->fails()) {
@@ -1116,9 +1084,9 @@
 		             ->join('description','description.id','=','service_description.description_id')
 		             ->join('check_in','check_in.service_id','=','service.id')
 		             ->join('service_category','service_category.service_id','=','service.id')
-		             ->join('category','category.code','=','service_category.category_id')
+		             ->join('category','category.id','=','service_category.category_id')
 		             ->join('service_payment','service_payment.service_id','=','service.id')
-		             ->join('payment','payment.code','=','service_payment.payment_id')
+		             ->join('payment','payment.id','=','service_payment.payment_id')
 		             ->where('service.id','=',$request->input("service_id"))
 		             ->where('category.languaje','=',$request->input("languaje"))
 		             ->where('payment.languaje','=',$request->input("languaje"))

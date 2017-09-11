@@ -381,7 +381,7 @@ $app->get('/service/space/getTooKnow', 'ControllerCombobox@getTooKnow');
 $app->post('/service/services/create','ServiceController@AddNewServiceStep');
 
 
-/*Crud Service Web */////////////////////////////////////////////////////////////////->en proces0
+/*Crud Service Web */////////////////////////////////////////////////////////////////
 //Agregar un servicio (service-step)
 $app->post('/service/services/step/create','ServiceController@AddNewServiceStep');
 //Agregar un servicio (service-step1)
@@ -413,7 +413,7 @@ $app->get('/service/services/step-4/get-image','ServiceController@ReturnStep4');
 $app->get('/service/services/step-5/get-location','ServiceController@ReturnStep5');
 //Retorna un notes (service-step6)
 $app->get('/service/services/step-5/get-notes','ServiceController@ReturnStep6');
-//Preview
+//Preview 1 service
 $app->get('/service/services/preview-overviews','ServiceController@GetOverviews');
 
 //Preview 4 service
@@ -425,6 +425,18 @@ $app->get('/service/services/preview-map-neighborhood-longitude','ServiceControl
 $app->get('/service/services/preview-map-neighborhood-latitude','ServiceController@GetLocationMapLatitude');
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+/*Crud Service Web */////////////////////////////////////////////////////////////////
+//Agregar un servicio (service-step)
+$app->post('/service/parking/step/create','ParkingController@AddNewServiceStep');
+
+////////////////////////////////////////////////////////////////////////////////////////
+//next and back
+$app->get('/service/parking/step/create','ParkingController@ReturnStep');
+//Muestra todas las type de categoria parking->para step1
+$app->get('/category/parking/get-type','ParkingController@TypeGet');
 
 $app->get('/make_token',function(){
     return str_random(32);

@@ -1911,16 +1911,16 @@ class ControllerService extends Controller
                     // Creamos un nombre para nuestro imagen
                     $name = 'image'.str_random(20).'_service_'.$service->id.'.'.$file->getClientOriginalExtension();
                     // Movemos el archivo a la caperta temporal
-                    $file->move('files/images/',$name);
+                    $file->move('/files/images/',$name);
                     $newruta=new Image();
                     $old_image = str_replace($image_link,'',$newruta->ruta);
                     $s3->putObject([
                     'Bucket' => env('S3_BUCKET'),
-                    'Key'    => 'files/images/'.$name,
-                    'Body'   => fopen('files/images/'.$name,'r'),
+                    'Key'    => '/files/images/'.$name,
+                    'Body'   => fopen('/files/images/'.$name,'r'),
                     'ACL'    => 'public-read'
                     ]);
-                     unlink('files/images/'.$name);
+                     unlink('/files/images/'.$name);
                     $newruta->service_id=$service->id;
                     $newruta->ruta=$image_link.$name;
                     $newruta->description=$request->input("description");
@@ -1973,16 +1973,16 @@ class ControllerService extends Controller
                     // Creamos un nombre para nuestro imagen
                     $name = 'image'.str_random(20).'_service-image_'.$service->id.'.'.$file->getClientOriginalExtension();
                     // Movemos el archivo a la caperta temporal
-                    $file->move('files/service_images/',$name);
+                    $file->move('/files/service_images/',$name);
                     $newruta=new Image();
                     $old_image = str_replace($image_link,'',$newruta->ruta);
                     $s3->putObject([
                     'Bucket' => env('S3_BUCKET'),
-                    'Key'    => 'files/service_images/'.$name,
-                    'Body'   => fopen('files/service_images/'.$name,'r'),
+                    'Key'    => '/files/service_images/'.$name,
+                    'Body'   => fopen('/files/service_images/'.$name,'r'),
                     'ACL'    => 'public-read'
                     ]);
-                     unlink('files/service_images/'.$name);
+                     unlink('/files/service_images/'.$name);
                     $newruta->service_id=$service->id;
                     $newruta->ruta=$image_link.$name;
                     $newruta->description=$request->input("description");
