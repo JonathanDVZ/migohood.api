@@ -710,9 +710,9 @@ class ControllerCombobox extends Controller
                 ->where('service.id',"=",$request->input("service_id"))
                 ->where('bed.languaje','=',$request->input("languaje"))
                ->where('bedroom.id','=',$bedrooms->id)
-                ->select(DB::raw('sum(bedroom_bed.quantity) as num_bed'))
+                ->select(DB::raw('count(bedroom_bed.quantity) as num_bed'))
                 ->get();
-                $num=$num+$previews;
+                $num=$previews;
               }
                  if(count($previews)>0){
                   return response()->json($num);
@@ -976,6 +976,47 @@ class ControllerCombobox extends Controller
         }
 
       }
+    }
+
+    public function ReturnStep2Beds(Request $request){
+            $rule=[
+          'user_id'=>'required|min:1',
+          'bedroom_id'=>'required|min:1',
+          'languaje' => 'required'
+      ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+        return response()->json($validator->errors()->all());
+      }else{
+        $exist=DB::table('service')
+                  ->join('bedroom','bedroom.service_id','=','service.id')
+                  ->where('service.user_id','=',$request->input("user_id"))
+                  ->where('bedroom.id','=',$request->input("bedroom_id"))
+                  ->select('bedroom.id')
+                  ->get();
+        if(count($exist)>0){
+          $newbedbedroomdata=DB::table('service')
+                              ->join('bedroom','bedroom.service_id','=','service.id')
+                              ->leftjoin('bedroom_bed','bedroom_bed.bedroom_id','=','bedroom.id')
+                              ->leftjoin('bed','bed.id','=','bedroom_bed.bed_id')
+                              ->where('service.user_id','=',$request->input("user_id"))
+                              ->where('bedroom.id','=',$request->input("bedroom_id"))
+                              ->where('bed.languaje','=',$request->input("languaje"))
+                              ->select('bedroom_bed.*', 'bed.type as type')
+                              ->get();
+          //if(count($newbedbedroomdata)>0){
+          return response()->json($newbedbedroomdata);
+          /*}else{
+            return response()->json("The user does not have a room or user not found");
+
+          }*/
+        }else{
+          return response()->json("The user does not have a room or user not found");
+
+        }
+
+      }
+
     }
 
 }

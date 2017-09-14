@@ -429,14 +429,70 @@ $app->get('/service/services/preview-map-neighborhood-latitude','ServiceControll
 
 
 /*Crud Service Web */////////////////////////////////////////////////////////////////
-//Agregar un servicio (service-step)
-$app->post('/service/parking/step/create','ParkingController@AddNewServiceStep');
+//Agregar un parking (parking-step)
+$app->post('/service/parking/step/create','ParkingController@AddNewParkingStep');
+//Agregar un tipo de lugar (parking-step1)
+$app->post('/service/parking/step-1/create','ParkingController@AddNewParkingStep1');
+
+//Agregar un Bedroom (parking-step2-bedroom)
+$app->post('/service/parking/step-2/bedrooms','ParkingController@AddNewSpaceStep2');
+//Agregar un Bed (parking-step2-beds)
+$app->post('/service/parking/step-2/beds/details','ParkingController@AddNewSpaceStep2Beds');
+//Agregar un Bathroom (parking-step3-bathroom)
+$app->put('/service/parking/step-3/bathroom','ParkingController@AddNewStep3');
+//Agregar un Location (parking-step4)
+$app->put('/service/parking/step-4/location','ParkingController@AddNewSpaceStep4Location');
+//Agregar un Amenities (parking-step5)
+$app->post('/service/parking/step-5/amenities','ParkingController@AddNewStep5');
+//Agregar un cancellation policy (parking-step6)
+$app->post('/service/parking/step-6/hosting','ParkingController@AddNewSpaceStep6');
+//Agregar un description service (parking-step7)
+$app->post('/service/parking/step-7/description','ParkingController@AddNewSpaceStep7Description');
+//Agregar lenguaje
+$app->post('/service/parking/description/add-languaje','ParkingController@AddLanguaje');
+//Agregar un rules description (parking-step8)
+$app->post('/service/parking/step-8/rules','ParkingController@AddNewSpaceStep8Rules');
+//Agregar imagen (parking-step9)
+$app->post('/service/parking/step-9/image','ParkingController@AddNewSpaceStep9');
+//Agregar nuevo servicio (parking-step10)
+$app->post('/service/parking/step-10/service','ParkingController@AddNewSpaceStep10');
+//Agregar Notas de Emergencia (parking-step11)
+$app->post('/service/parking/step-11','ParkingController@AddNewSpaceStep11');
 
 ////////////////////////////////////////////////////////////////////////////////////////
+
+
+
 //next and back
 $app->get('/service/parking/step/create','ParkingController@ReturnStep');
 //Muestra todas las type de categoria parking->para step1
 $app->get('/category/parking/get-type','ParkingController@TypeGet');
+//Retorna un placetype (parking-step1)
+$app->get('/service/parking/step-1/get-create','ParkingController@ReturnStep1');
+
+//Retorna un parking (parking-step2-bedroom)
+$app->get('/service/parking/step-2/get-bedrooms','ParkingController@ReturnStep2');
+//Retorna un parking (parking-step2-beds)
+$app->get('/service/parking/step-2/beds/get-details','ParkingController@ReturnStep2Beds');
+$app->get('/service/parking/step-2/beds/details','ParkingController@ReturnStep2Beds');
+//Retorn un parking (parking-step3-bathroom)
+$app->get('/service/parking/step-3/get-bathroom','ParkingController@ReturnStep3');
+//Retorna un parking (parking-step4)
+$app->get('/service/parking/step-4/get-location','ParkingController@ReturnStep4Location');
+//Retorna un parking (parking-step4)
+$app->get('/service/parking/step-5/get-aminites','ParkingController@ReturnStep5');
+
+//Muestra todos los GetAmenities
+$app->get('/amenities/get-parking-amenities','ParkingController@GetParkingAmenities');
+
+//Preview 4 service
+//map neighborhood
+$app->get('/service/parking/preview-map-neighborhood','ParkingController@GetLocationMap');
+//map neighborhood longitude
+$app->get('/service/parking/preview-map-neighborhood-longitude','ParkingController@GetLocationMapLongitude');
+//map neighborhood latitude
+$app->get('/service/parking/preview-map-neighborhood-latitude','ParkingController@GetLocationMapLatitude');
+
 
 $app->get('/make_token',function(){
     return str_random(32);
