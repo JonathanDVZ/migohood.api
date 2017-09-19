@@ -435,29 +435,29 @@ $app->post('/service/parking/step/create','ParkingController@AddNewParkingStep')
 $app->post('/service/parking/step-1/create','ParkingController@AddNewParkingStep1');
 
 //Agregar un Bedroom (parking-step2-bedroom)
-$app->post('/service/parking/step-2/bedrooms','ParkingController@AddNewSpaceStep2');
+$app->post('/service/parking/step-2/bedrooms','ParkingController@AddNewParkingStep2');
 //Agregar un Bed (parking-step2-beds)
-$app->post('/service/parking/step-2/beds/details','ParkingController@AddNewSpaceStep2Beds');
+$app->post('/service/parking/step-2/beds/details','ParkingController@AddNewParkingStep2Beds');
 //Agregar un Bathroom (parking-step3-bathroom)
 $app->put('/service/parking/step-3/bathroom','ParkingController@AddNewStep3');
 //Agregar un Location (parking-step4)
-$app->put('/service/parking/step-4/location','ParkingController@AddNewSpaceStep4Location');
+$app->put('/service/parking/step-4/location','ParkingController@AddNewParkingStep4Location');
 //Agregar un Amenities (parking-step5)
 $app->post('/service/parking/step-5/amenities','ParkingController@AddNewStep5');
 //Agregar un cancellation policy (parking-step6)
-$app->post('/service/parking/step-6/hosting','ParkingController@AddNewSpaceStep6');
+$app->post('/service/parking/step-6/hosting','ParkingController@AddNewParkingStep6');
 //Agregar un description service (parking-step7)
-$app->post('/service/parking/step-7/description','ParkingController@AddNewSpaceStep7Description');
+$app->post('/service/parking/step-7/basics','ParkingController@AddNewParkingStep7');
 //Agregar lenguaje
 $app->post('/service/parking/description/add-languaje','ParkingController@AddLanguaje');
 //Agregar un rules description (parking-step8)
-$app->post('/service/parking/step-8/rules','ParkingController@AddNewSpaceStep8Rules');
+$app->post('/service/parking/step-8/rules','ParkingController@AddNewParkingStep8');
 //Agregar imagen (parking-step9)
-$app->post('/service/parking/step-9/image','ParkingController@AddNewSpaceStep9');
+$app->post('/service/parking/step-9/image','ParkingController@AddNewParkingStep9');
 //Agregar nuevo servicio (parking-step10)
-$app->post('/service/parking/step-10/service','ParkingController@AddNewSpaceStep10');
+$app->post('/service/parking/step-10/service','ParkingController@AddNewParkingStep10');
 //Agregar Notas de Emergencia (parking-step11)
-$app->post('/service/parking/step-11','ParkingController@AddNewSpaceStep11');
+$app->post('/service/parking/step-11','ParkingController@AddNewParkingStep11');
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
@@ -479,11 +479,16 @@ $app->get('/service/parking/step-2/beds/details','ParkingController@ReturnStep2B
 $app->get('/service/parking/step-3/get-bathroom','ParkingController@ReturnStep3');
 //Retorna un parking (parking-step4)
 $app->get('/service/parking/step-4/get-location','ParkingController@ReturnStep4Location');
-//Retorna un parking (parking-step4)
+//Retorna un parking (parking-step5)
 $app->get('/service/parking/step-5/get-aminites','ParkingController@ReturnStep5');
+//Retorna un parking (parking-step6)
+$app->get('/service/parking/step-7/get-basics','ParkingController@ReturnStep7');
 
 //Muestra todos los GetAmenities
 $app->get('/amenities/get-parking-amenities','ParkingController@GetParkingAmenities');
+$app->post('/amenities/parking-amenities','ParkingController@AddNewAmenities');
+//Retorna un parking (parking-step7)
+$app->get('/service/parking/step-8/get-listing','ParkingController@ReturnStep8');
 
 //Preview 4 service
 //map neighborhood
