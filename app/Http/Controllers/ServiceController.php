@@ -1091,7 +1091,8 @@
 		             ->where('category.languaje','=',$request->input("languaje"))
 		             ->where('payment.languaje','=',$request->input("languaje"))
 		             ->where('description.id','=',1)
-		             ->select('service.user_id as servid', 'user.id as userid','user.avatar','user.name','country.name as country','payment.type as prices','state.name as state','service_description.content as title','check_in.time_entry as check_in','category.name as category','user.lastname')
+		             ->where('category.code','=',4)
+		             ->select('service.user_id', 'user.id as userid','user.avatar','user.name','country.name as country','payment.type as prices','state.name as state','service_description.content as title','check_in.time_entry as check_in','category.name as category','user.lastname','service.id')
 		             ->first();
 		               if(count($previews)>0){
 		                  return response()->json($previews);

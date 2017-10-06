@@ -463,6 +463,44 @@
 
     }
 
+    public function AddNewStep3(Request $request){
+         $rule=[ // 'service_id'=>'required|numeric|min:1',
+              //'num_bathroom'=>'required|numeric|min:1'
+            ];
+            $validator=Validator::make($request->all(),$rule);
+            if ($validator->fails()) {
+                return response()->json($validator->errors()->all());
+            }else{
+                $service=Service::where('id',$request->input("service_id"))->first();
+                if(count($service)>0){
+                    $service->num_bathroom=$request->input("num_bathroom");
+                    $service->save();
+                    return response()->json('Add Step 3');
+                }else{
+                    return response()->json('Service not found');
+                }
+            }
+    }
+
+
+    public function ReturnStep3(Request $request){
+           $rule=[
+           'service_id' => 'required|numeric'
+      ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+      }else{
+        $getstep3=Service::select('id','num_bathroom')->where('id','=',$request->input("service_id"))->first();
+        if(count($getstep3)>0){
+             return response()->json($getstep3);
+        }else{
+             return response()->json('Not Found');
+        }
+      }
+
+    }
+
 		public function AddNewParkingStep4(Request $request){
 		            $rule=[
 		           'service_id' => 'required|numeric|min:1',
@@ -669,10 +707,10 @@
 		                 $newamenites->amenite_id=52;
 		                 $newamenites->check=$request->input("other");
 		                 $newamenites->save();
-		                 DB::table('service_rules')->where('service_id',$service->id)->where('rule_id',13)->delete();
+		                 DB::table('service_rules')->where('service_id',$service->id)->where('rules_id',13)->delete();
 		                 $newrule=new Service_Rules;
-		                 $newrule->service_id=$service_id;
-		                 $newrule->rule_id=13;
+		                 $newrule->service_id=$service->id;
+		                 $newrule->rules_id=13;
 		                 $newrule->description=$request->input("instruction");
 		                 $newrule->save();
 		                  return response()->json('Update Step-5');
@@ -680,17 +718,17 @@
 	                       return response()->json($e);
 	                }
 	            	}else{
-	            		 $newamenites=new Service_Amenites;
+	            		 $newamenites=new Service_Amenite;
 		                 $newamenites->service_id=$service->id;
 		                 $newamenites->amenite_id=42;
 		                 $newamenites->check=$request->input("security");
 		                 $newamenites->save();
-		                 $newamenites=new Service_Amenites;
+		                 $newamenites=new Service_Amenite;
 		                 $newamenites->service_id=$service->id;
 		                 $newamenites->amenite_id=44;
 		                 $newamenites->check=$request->input("padlock");
 		                 $newamenites->save();
-		                 $newamenites=new Service_Amenites;
+		                 $newamenites=new Service_Amenite;
 		                 $newamenites->service_id=$service->id;
 		                 $newamenites->amenite_id=46;
 		                 $newamenites->check=$request->input("vigilant");
@@ -711,8 +749,8 @@
 		                 $newamenites->check=$request->input("other");
 		                 $newamenites->save();
 		                 $newrule=new Service_Rules;
-		                 $newrule->service_id=$service_id;
-		                 $newrule->rule_id=13;
+		                 $newrule->service_id=$service->id;
+		                 $newrule->rules_id=13;
 		                 $newrule->description=$request->input("instruction");
 		                 $newrule->save();
 	                    return response()->json('Add Step-5');

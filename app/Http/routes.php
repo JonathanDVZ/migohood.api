@@ -428,7 +428,7 @@ $app->get('/service/services/preview-map-neighborhood-latitude','ServiceControll
 
 
 
-/*Crud Service Web */////////////////////////////////////////////////////////////////
+/*Crud Parking Web */////////////////////////////////////////////////////////////////
 //Agregar un parking (parking-step)
 $app->post('/service/parking/step/create','ParkingController@AddNewParkingStep');
 //Agregar un tipo de lugar (parking-step1)
@@ -441,7 +441,7 @@ $app->post('/service/parking/step-2/beds/details','ParkingController@AddNewParki
 //Agregar un Bathroom (parking-step3-bathroom)
 $app->put('/service/parking/step-3/bathroom','ParkingController@AddNewStep3');
 //Agregar un Location (parking-step4)
-$app->put('/service/parking/step-4/location','ParkingController@AddNewParkingStep4Location');
+$app->put('/service/parking/step-4/location','ParkingController@AddNewParkingStep4');
 //Agregar un Amenities (parking-step5)
 $app->post('/service/parking/step-5/amenities','ParkingController@AddNewStep5');
 //Agregar un cancellation policy (parking-step6)
