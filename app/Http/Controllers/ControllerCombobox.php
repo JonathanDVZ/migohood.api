@@ -762,7 +762,7 @@ class ControllerCombobox extends Controller
 
               $previews=DB::table('service')
                 ->join('service_amenites','service_amenites.service_id','=','service.id')
-                ->join('amenities','amenities.code','=','service_amenites.amenite_id')
+                ->join('amenities','amenities.id','=','service_amenites.amenite_id')
                 ->where('service.id','=',$request->input("service_id"))
                 ->where('amenities.languaje','=',$request->input("languaje"))
                 ->select('amenities.name as amenities')
@@ -811,7 +811,7 @@ class ControllerCombobox extends Controller
       }else{
               $previews=DB::table('service')
                 ->join('service_emergency','service_emergency.service_id','=','service.id')
-                ->join('note_emergency','note_emergency.code','=','service_emergency.emergency_id')
+                ->join('note_emergency','note_emergency.id','=','service_emergency.emergency_id')
                 ->where('service_emergency.check','=',0)
                     ->where('service.id','=',$request->input("service_id"))
                     ->where('note_emergency.languaje','=',$request->input("languaje"))

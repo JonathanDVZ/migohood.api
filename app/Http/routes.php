@@ -354,7 +354,7 @@ $app->get('/service/space/step-2/beds/details','ControllerCombobox@ReturnStep2Be
 //Retorn un servicio (space-step3-bathroom)
 $app->get('/service/space/step-3/get-bathroom','ControllerCombobox@ReturnStep3');
 //Retorna un servicio (space-step4)
-$app->get('/service/space/step-4/get-location','ControllerCombobox@ReturnStep4Location');
+$app->get('/service/space/step-4/get-location','ControllerCombobox@ReturnStep4');
 //Retorna un Amenities (space-step5)
 $app->get('/service/space/step-5/get-amenities','ControllerCombobox@ReturnStep5');
 //Retorna un cancellation policy (space-step6)
@@ -380,6 +380,9 @@ $app->get('/service/space/getTooKnow', 'ControllerCombobox@getTooKnow');
 //Agregar un servicio (service-step)
 $app->post('/service/services/create','ServiceController@AddNewServiceStep');
 
+////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////
 
 /*Crud Service Web */////////////////////////////////////////////////////////////////
 //Agregar un servicio (service-step)
@@ -393,12 +396,15 @@ $app->post('/service/services/step-3/basics','ServiceController@AddNewServiceSte
 //Agregar un photos (service-step4)
 $app->post('/service/services/step-4/image','ServiceController@AddNewServiceStep4');
 //Agregar un location (service-step5)
-$app->post('/service/services/step-5/location','ServiceController@AddNewSpaceStep5');
+$app->post('/service/services/step-5/location','ServiceController@AddNewServiceStep5');
 //Agregar un notes (service-step6)
-$app->post('/service/services/step-6/notes','ServiceController@AddNewSpaceStep6');
+$app->post('/service/services/step-6/notes','ServiceController@AddNewServiceStep6');
 
 
 ////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////
+
 //next and back
 $app->get('/service/services/step/create','ServiceController@ReturnStep');
 //Retorna un category (service-step1)
@@ -415,7 +421,8 @@ $app->get('/service/services/step-5/get-location','ServiceController@ReturnStep5
 $app->get('/service/services/step-5/get-notes','ServiceController@ReturnStep6');
 //Preview 1 service
 $app->get('/service/services/preview-overviews','ServiceController@GetOverviews');
-
+$app->get('/service/services/getDescription','ServiceController@GetDescription');
+$app->get('/service/services/getType','ServiceController@GetType');
 //Preview 4 service
 //map neighborhood
 $app->get('/service/services/preview-map-neighborhood','ServiceController@GetLocationMap');
@@ -424,9 +431,9 @@ $app->get('/service/services/preview-map-neighborhood-longitude','ServiceControl
 //map neighborhood latitude
 $app->get('/service/services/preview-map-neighborhood-latitude','ServiceController@GetLocationMapLatitude');
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
+////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////
 
 /*Crud Parking Web */////////////////////////////////////////////////////////////////
 //Agregar un parking (parking-step)
@@ -441,15 +448,13 @@ $app->post('/service/parking/step-2/beds/details','ParkingController@AddNewParki
 //Agregar un Bathroom (parking-step3-bathroom)
 $app->put('/service/parking/step-3/bathroom','ParkingController@AddNewStep3');
 //Agregar un Location (parking-step4)
-$app->put('/service/parking/step-4/location','ParkingController@AddNewParkingStep4');
+$app->post('/service/parking/step-4/location','ParkingController@AddNewParkingStep4');
 //Agregar un Amenities (parking-step5)
 $app->post('/service/parking/step-5/amenities','ParkingController@AddNewStep5');
-//Agregar un cancellation policy (parking-step6)
+//Agregar un cancellation policy (parking-step6) en proceso
 $app->post('/service/parking/step-6/hosting','ParkingController@AddNewParkingStep6');
 //Agregar un description service (parking-step7)
 $app->post('/service/parking/step-7/basics','ParkingController@AddNewParkingStep7');
-//Agregar lenguaje
-$app->post('/service/parking/description/add-languaje','ParkingController@AddLanguaje');
 //Agregar un rules description (parking-step8)
 $app->post('/service/parking/step-8/rules','ParkingController@AddNewParkingStep8');
 //Agregar imagen (parking-step9)
@@ -458,10 +463,12 @@ $app->post('/service/parking/step-9/image','ParkingController@AddNewParkingStep9
 $app->post('/service/parking/step-10/service','ParkingController@AddNewParkingStep10');
 //Agregar Notas de Emergencia (parking-step11)
 $app->post('/service/parking/step-11','ParkingController@AddNewParkingStep11');
+//Agregar oCo-host(parking-step12)
+$app->post('/service/parking/step-12','ParkingController@AddNewParkingStep12');
 
 ////////////////////////////////////////////////////////////////////////////////////////
-
-
+////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////
 
 //next and back
 $app->get('/service/parking/step/create','ParkingController@ReturnStep');
@@ -478,11 +485,17 @@ $app->get('/service/parking/step-2/beds/details','ParkingController@ReturnStep2B
 //Retorn un parking (parking-step3-bathroom)
 $app->get('/service/parking/step-3/get-bathroom','ParkingController@ReturnStep3');
 //Retorna un parking (parking-step4)
-$app->get('/service/parking/step-4/get-location','ParkingController@ReturnStep4Location');
+$app->get('/service/parking/step-4/get-location','ParkingController@ReturnStep4');
 //Retorna un parking (parking-step5)
 $app->get('/service/parking/step-5/get-aminites','ParkingController@ReturnStep5');
-//Retorna un parking (parking-step6)
+//Retorna un parking (parking-step6) en proceso
+$app->get('/service/parking/step-6/get-hosting','ParkingController@ReturnStep6');
+//Retorna un parking (parking-step7)
 $app->get('/service/parking/step-7/get-basics','ParkingController@ReturnStep7');
+//Retorna un parking (parking-step8)
+$app->get('/service/parking/step-8/get-listing','ParkingController@ReturnStep8');
+//Retorna note (parking-step11)
+$app->get('/service/parking/step-11/get-emergency','ParkingController@ReturnStep11');
 
 //Muestra todos los GetAmenities
 $app->get('/amenities/get-parking-amenities','ParkingController@GetParkingAmenities');
@@ -498,6 +511,57 @@ $app->get('/service/parking/preview-map-neighborhood-longitude','ParkingControll
 //map neighborhood latitude
 $app->get('/service/parking/preview-map-neighborhood-latitude','ParkingController@GetLocationMapLatitude');
 
+////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////
+
+/*Crud Workspace Web */////////////////////////////////////////////////////////////////
+//Agregar un workspace (workspace-step)
+$app->post('/service/workspace/step/create','WorkspaceController@AddNewWorkspaceStep');
+//Agregar un tipo de lugar (workspace-step1)
+$app->post('/service/workspace/step-1/create','WorkspaceController@AddNewWorkspaceStep1');
+//Agregar un Bedroom (workspace-step2-bedroom)
+$app->post('/service/workspace/step-2/bedrooms','WorkspaceController@AddNewWorkspaceStep2');
+//Agregar un Bed (workspace-step2-beds)
+$app->post('/service/workspace/step-2/beds/details','WorkspaceController@AddNewWorkspaceStep2Beds');
+//Agregar un Bathroom (workspace-step3-bathroom)
+$app->put('/service/workspace/step-3/bathroom','WorkspaceController@AddNewStep3');
+//Agregar un Location (workspace-step4)
+$app->post('/service/workspace/step-4/location','WorkspaceController@AddNewWorkspaceStep4');
+
+//Agrega numero de emergencia
+$app->post('/service/workspace/step-11/emergency-add','WorkspaceController@AddNewEmergency');
+//Elimina numero de emergenia
+$app->delete('/service/workspace/step-11/emergency-delete','WorkspaceController@DeleteNewEmergency');
+
+////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////
+
+//next and back
+$app->get('/service/workspace/step/create','WorkspaceController@ReturnStep');
+//Muestra todas las type de categoria workspace->para step1
+$app->get('/category/workspace/get-type','WorkspaceController@TypeGet');
+//Retorna un placetype (workspace-step1)
+$app->get('/service/workspace/step-1/get-create','WorkspaceController@ReturnStep1');
+//Retorna un bedroom (workspace-step2-bedroom)
+$app->get('/service/workspace/step-2/get-bedrooms','WorkspaceController@ReturnStep2');
+//Retorna un bed (workspace-step2-beds)
+$app->get('/service/workspace/step-2/beds/get-details','WorkspaceController@ReturnStep2Beds');
+$app->get('/service/workspace/step-2/beds/details','WorkspaceController@ReturnStep2Beds');
+//Retorna un bathroom (workspace-step3-bathroom)
+$app->get('/service/workspace/step-3/get-bathroom','WorkspaceController@ReturnStep3');
+//Retorna un location (workspace-step4)
+$app->get('/service/workspace/step-4/get-location','WorkspaceController@ReturnStep4');
+
+//Retorna (space-step11)
+$app->get('/service/workspace/step-11/number-emergency','ControllerCombobox@ReturnStep11');
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////
 
 $app->get('/make_token',function(){
     return str_random(32);

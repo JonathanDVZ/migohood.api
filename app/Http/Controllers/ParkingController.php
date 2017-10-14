@@ -775,9 +775,11 @@
 		        $getstep5=DB::table('service')
 		        ->join('service_amenites','service_amenites.service_id','=','service.id')
 		        ->join('amenities','amenities.id','=','service_amenites.amenite_id')
+		        ->join('service_rules','service_rules.service_id','=','service.id')
 		        ->where('service.id','=',$request->input("service_id"))
 		        ->where('amenities.languaje','=',$request->input("languaje"))
-		        ->select('service.id','service_amenites.check as Check','service_amenites.amenite_id')
+		        ->where('service_rules.rules_id',13)
+		        ->select('service.id','service_amenites.check as Check','service_amenites.amenite_id','service_rules.description')
 		        ->get();
 		        if(count($getstep5)>0){
 		                return response()->json($getstep5);
@@ -795,7 +797,7 @@
 	      if ($validator->fails()) {
 	            return response()->json($validator->errors()->all());
 	      }else{
-	            $amenitie = DB::table('amenities')->select('code','name','type_amenities_id')->where('languaje','=',$request->input("languaje"))->where('category_id','=',3)->where('amenities.code','=',$request->input("service_id"))->get();
+	            $amenitie = DB::table('amenities')->select('code','name','type_amenities_id')->where('languaje','=',$request->input("languaje"))->where('category_id','=',3)->get();
 	            if(count($amenitie)>0){
 	                  return response()->json($amenitie);
 	            }else{
@@ -1037,14 +1039,9 @@
 	    }
 
 
-   public function AddNewSpaceStep8Rules(Request $request){
+   public function AddNewParkingStep8(Request $request){
           $rule=[
            'service_id' => 'required|numeric|min:1',
-           'AptoDe2a12'=>'boolean',
-           'AptoDe0a2'=>'boolean',
-           'SeadmitenMascotas'=>'boolean',
-           'PermitidoFumar'=>'boolean',
-           'Eventos'=>'boolean',
            'guest_phone'=>'boolean',
            'guest_email'=>'boolean',
            'guest_profile'=>'boolean',
@@ -1063,31 +1060,6 @@
                 try{
                  $newrules=new Service_Rules;
                  $newrules->service_id=$service->id;
-                 $newrules->rules_id=1;
-                 $newrules->check=$request->input("AptoDe2a12");
-                 $newrules->save();
-                 $newrules=new Service_Rules;
-                 $newrules->service_id=$service->id;
-                 $newrules->rules_id=2;
-                 $newrules->check=$request->input("AptoDe0a2");
-                 $newrules->save();
-                 $newrules=new Service_Rules;
-                 $newrules->service_id=$service->id;
-                 $newrules->rules_id=3;
-                 $newrules->check=$request->input("SeadmitenMascotas");
-                 $newrules->save();
-                 $newrules=new Service_Rules;
-                 $newrules->service_id=$service->id;
-                 $newrules->rules_id=4;
-                 $newrules->check=$request->input("PermitidoFumar");
-                 $newrules->save();
-                 $newrules=new Service_Rules;
-                 $newrules->service_id=$service->id;
-                 $newrules->rules_id=5;
-                 $newrules->check=$request->input("Eventos");
-                 $newrules->save();
-                 $newrules=new Service_Rules;
-                 $newrules->service_id=$service->id;
                  $newrules->rules_id=6;
                  $newrules->description=$request->input("Desc_Otro_Evento");
                  $newrules->save();
@@ -1125,16 +1097,6 @@
                  $newrules->service_id=$service->id;
                  $newrules->rules_id=13;
                  $newrules->description=$request->input("Desc_Instructions");
-                 $newrules->save();
-                 $newrules=new Service_Rules;
-                 $newrules->service_id=$service->id;
-                 $newrules->rules_id=14;
-                 $newrules->description=$request->input("Desc_Name_Network");
-                 $newrules->save();
-                 $newrules=new Service_Rules;
-                 $newrules->service_id=$service->id;
-                 $newrules->rules_id=15;
-                 $newrules->description=Crypt::encrypt($request->input("Password_Wifi"));
                  $newrules->save();
                  return response()->json('Add Step-8');
                 }catch(Exception $e){
@@ -1142,31 +1104,7 @@
                 }
             }else{
                 DB::table('service_rules')->where('service_id',$service->id)->delete();
-                  $newrules=new Service_Rules;
-                 $newrules->service_id=$service->id;
-                 $newrules->rules_id=1;
-                 $newrules->check=$request->input("AptoDe2a12");
-                 $newrules->save();
-                 $newrules=new Service_Rules;
-                 $newrules->service_id=$service->id;
-                 $newrules->rules_id=2;
-                 $newrules->check=$request->input("AptoDe0a2");
-                 $newrules->save();
-                 $newrules=new Service_Rules;
-                 $newrules->service_id=$service->id;
-                 $newrules->rules_id=3;
-                 $newrules->check=$request->input("SeadmitenMascotas");
-                 $newrules->save();
-                 $newrules=new Service_Rules;
-                 $newrules->service_id=$service->id;
-                 $newrules->rules_id=4;
-                 $newrules->check=$request->input("PermitidoFumar");
-                 $newrules->save();
-                 $newrules=new Service_Rules;
-                 $newrules->service_id=$service->id;
-                 $newrules->rules_id=5;
-                 $newrules->check=$request->input("Eventos");
-                 $newrules->save();
+                  
                  $newrules=new Service_Rules;
                  $newrules->service_id=$service->id;
                  $newrules->rules_id=6;
@@ -1206,16 +1144,6 @@
                  $newrules->service_id=$service->id;
                  $newrules->rules_id=13;
                  $newrules->description=$request->input("Desc_Instructions");
-                 $newrules->save();
-                 $newrules=new Service_Rules;
-                 $newrules->service_id=$service->id;
-                 $newrules->rules_id=14;
-                 $newrules->description=$request->input("Desc_Name_Network");
-                 $newrules->save();
-                 $newrules=new Service_Rules;
-                 $newrules->service_id=$service->id;
-                 $newrules->rules_id=15;
-                 $newrules->description=Crypt::encrypt($request->input("Password_Wifi"));
                  $newrules->save();
                  return response()->json('Update Step-8');
 
@@ -1249,6 +1177,81 @@
     }
 
 
+ public function AddNewParkingStep11(Request $request){
+        $rule=[
+        'service_id'=>'required|numeric'
+    ];
+    $validator=Validator::make($request->all(),$rule);
+    if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+    }else{
+        $service=Service::where('id',$request->input("service_id"))->first();
+        if(count($service)>0){
+          $val=Service_Emergency::where("service_id",$service->id)->first();
+          if(count($val)==0){
+
+           $newnote1=new Service_Emergency;
+           $newnote1->service_id=$service->id;
+           $newnote1->emergency_id=1;
+           $newnote1->content=$request->input("desc_anything");
+           $newnote1->save();
+
+           $newnote10=new Service_Emergency;
+           $newnote10->service_id=$service->id;
+           $newnote10->emergency_id=11;
+           $newnote10->content=$request->input("desc_anything");
+           $newnote10->save();
+
+
+           return response()->json('Add Note emergency');
+         }else{
+                $val=DB::table('service_emergency')->where('service_id',$service->id)->delete();
+
+           $newnote1=new Service_Emergency;
+           $newnote1->service_id=$service->id;
+           $newnote1->emergency_id=1;
+           $newnote1->content=$request->input("desc_anything");
+           $newnote1->save();
+
+           $newnote1=new Service_Emergency;
+           $newnote1->service_id=$service->id;
+           $newnote1->emergency_id=11;
+           $newnote1->content=$request->input("desc_anything");
+           $newnote1->save();
+
+            return response()->json('Update Note emergency');
+        }
+
+        }else{
+            return response()->json('Service not found');
+        }
+    }
+    }
+
+    public function ReturnStep11(Request $request)
+    {
+          $rule=[
+           'service_id' => 'required|numeric',
+           'languaje'=>'required'
+        ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+      }else{
+             $getstep11=DB::table('service')
+                          ->join('service_emergency','service_emergency.service_id','=','service.id')
+                          ->join('note_emergency','note_emergency.id','=','service_emergency.emergency_id')
+                          ->where('service.id','=',$request->input("service_id"))
+                          ->where('note_emergency.languaje','=',$request->input("languaje"))
+                          ->select('service_emergency.content','service_emergency.emergency_id')
+                          ->get();
+          if(count($getstep11)>0){
+                  return response()->json($getstep11);
+          }else{
+                return response()->json("Not Found");
+          }
+      }
+    }
 
 
 	}

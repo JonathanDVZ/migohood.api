@@ -689,7 +689,7 @@
 	    }
 
 		    
-	     public function AddNewSpaceStep5(Request $request){
+	     public function AddNewServiceStep5(Request $request){
 	            $rule=[
 	           'service_id' => 'required|numeric|min:1',
 	          // 'country_id'=>'numeric|min:1',
@@ -842,7 +842,7 @@
 	      }
 	    }
 
-		public function AddNewSpaceStep6(Request $request){
+		public function AddNewServiceStep6(Request $request){
 		        $rule=[
 		        'service_id'=>'required|numeric',
 		    ];
@@ -1065,8 +1065,11 @@
 		    }
 
 
+
+		     /*--------------PREVIEW 1-----------------*/
 		    public function GetOverviews(Request $request)
-		    {$rule=[
+		    {
+		    	$rule=[
 		           'service_id' => 'required|numeric',
 		           'languaje'=>'required',
 		        ];
@@ -1092,7 +1095,7 @@
 		             ->where('payment.languaje','=',$request->input("languaje"))
 		             ->where('description.id','=',1)
 		             ->where('category.code','=',4)
-		             ->select('service.user_id', 'user.id as userid','user.avatar','user.name','country.name as country','payment.type as prices','state.name as state','service_description.content as title','check_in.time_entry as check_in','category.name as category','user.lastname','service.id')
+		             ->select('service.user_id', 'user.id as userid','user.avatar','user.name','country.name as country','payment.type as prices','state.name as state','service_description.content as title','check_in.time_entry as check_in','category.name as category','user.lastname','service.id','city.name as city')
 		             ->first();
 		               if(count($previews)>0){
 		                  return response()->json($previews);
@@ -1104,7 +1107,63 @@
 
 		    }
 
+		    public function GetDescription(Request $request){
+		    	$rule=[
+		           'service_id' => 'required|numeric',
+		           'languaje'=>'required',
+		        ];
+		      $validator=Validator::make($request->all(),$rule);
+		      if ($validator->fails()) {
+		            return response()->json($validator->errors()->all());
+		      }else{
 
+		             $previews=DB::table('service')
+		             ->join('user','user.id','=','service.user_id')
+		             ->join('service_description','service_description.service_id','=','service.id')
+		             ->join('description','description.id','=','service_description.description_id')
+		             ->join('service_category','service_category.service_id','=','service.id')
+		             ->join('category','category.id','=','service_category.category_id')
+		             ->where('service.id','=',$request->input("service_id"))
+		             ->where('category.languaje','=',$request->input("languaje"))
+		             ->where('category.code','=',4)
+		             ->select('description.type','service_description.content')
+		             ->get();
+		               if(count($previews)>0){
+		                  return response()->json($previews);
+		          }else{
+		                return response()->json("Not Found");
+		          }
+
+		      }
+		    }
+
+
+		public function getType(Request $request){
+		            $rule=[
+		           'service_id' => 'required|numeric|min:1',
+		      ];
+		      $validator=Validator::make($request->all(),$rule);
+		      if ($validator->fails()) {
+		            return response()->json($validator->errors()->all());
+		      }else{
+		      	$previews = DB::table('service')
+		      	->join('service_type_category','service.id','=','service_type_category.service_id')
+		      	->join('type_categories','type_categories.id','=','service_type_category.type_categories_id')
+		      	->join('guests','service.id','=','guests.service_id')
+		      	->where('service.id','=',$request->input("service_id"))
+		      	->select('service.id','service_type_category.type_categories_id','service_type_category.check as Check','guests.entry as Entry','guests.until as Until','guests.num_guest_day as num_guest_day','guests.num_guest_service as num_guest_service','guests.time_service as time_service','guests.duration as duration','type_categories.name')
+              	->get() ;
+	              if(count($previews)>0){
+	                    return response()->json($previews);
+	              }else{
+	                    return response()->json('Return Not Found');
+	              }
+
+		      }
+		}
+
+
+		    /*--------------PREVIEW 4-----------------*/
 		    public function GetLocationMap(Request $request)
 		    {$rule=[
 		           'service_id' => 'required|numeric',
