@@ -354,7 +354,7 @@ $app->get('/service/space/step-2/beds/details','ControllerCombobox@ReturnStep2Be
 //Retorn un servicio (space-step3-bathroom)
 $app->get('/service/space/step-3/get-bathroom','ControllerCombobox@ReturnStep3');
 //Retorna un servicio (space-step4)
-$app->get('/service/space/step-4/get-location','ControllerCombobox@ReturnStep4');
+$app->get('/service/space/step-4/get-location','ControllerCombobox@ReturnStep4Location');
 //Retorna un Amenities (space-step5)
 $app->get('/service/space/step-5/get-amenities','ControllerCombobox@ReturnStep5');
 //Retorna un cancellation policy (space-step6)
@@ -413,16 +413,19 @@ $app->get('/service/services/step-1/get-create','ServiceController@ReturnStep1')
 $app->get('/service/services/step-2/get-hosting','ServiceController@ReturnStep2');
 //Retorna un basics (service-step3)
 $app->get('/service/services/step-3/get-basics','ServiceController@ReturnStep3');
+$app->get('/service/services/step-3a/get-basics','ServiceController@ReturnStep3a');
 //Retorna un photos (service-step5)
 $app->get('/service/services/step-4/get-image','ServiceController@ReturnStep4');
 //Retorna un location (service-step5)
 $app->get('/service/services/step-5/get-location','ServiceController@ReturnStep5');
 //Retorna un notes (service-step6)
-$app->get('/service/services/step-5/get-notes','ServiceController@ReturnStep6');
+$app->get('/service/services/step-6/get-notes','ServiceController@ReturnStep6');
 //Preview 1 service
 $app->get('/service/services/preview-overviews','ServiceController@GetOverviews');
 $app->get('/service/services/getDescription','ServiceController@GetDescription');
 $app->get('/service/services/getType','ServiceController@GetType');
+$app->get('/service/services/getNotes','ServiceController@GetNotes');
+$app->get('/service/services/getRules','ServiceController@GetRules');
 //Preview 4 service
 //map neighborhood
 $app->get('/service/services/preview-map-neighborhood','ServiceController@GetLocationMap');
@@ -500,8 +503,23 @@ $app->get('/service/parking/step-11/get-emergency','ParkingController@ReturnStep
 //Muestra todos los GetAmenities
 $app->get('/amenities/get-parking-amenities','ParkingController@GetParkingAmenities');
 $app->post('/amenities/parking-amenities','ParkingController@AddNewAmenities');
-//Retorna un parking (parking-step7)
-$app->get('/service/parking/step-8/get-listing','ParkingController@ReturnStep8');
+
+//Preview 1 service
+$app->get('/service/parking/preview-overviews','ParkingController@GetOverviews');
+//Preview-beds
+$app->get('/service/parking/preview-beds','ParkingController@GetOverviewsBeds');//en prceso
+//Preview-bedrooms
+$app->get('/service/parking/preview-bedrooms','ParkingController@GetOverviewsBedrooms');
+//preview-rules
+$app->get('/service/parking/preview-rules','ParkingController@GetOverviewsRules');
+//preview-amenities
+$app->get('/service/parking/preview-amenities','ParkingController@GetOverviewsAmenities');
+//preview note-emergency
+$app->get('/service/parking/preview-note-emergency','ParkingController@GetOverviewsEmergencyNote');
+//Retorna (Descripcion)
+$app->get('/service/parking/getDescription', 'ParkingController@getDescription');
+//Preview-price
+$app->get('/service/parking/preview-price','ParkingController@getPreviewPrice');
 
 //Preview 4 service
 //map neighborhood
@@ -528,6 +546,20 @@ $app->post('/service/workspace/step-2/beds/details','WorkspaceController@AddNewW
 $app->put('/service/workspace/step-3/bathroom','WorkspaceController@AddNewStep3');
 //Agregar un Location (workspace-step4)
 $app->post('/service/workspace/step-4/location','WorkspaceController@AddNewWorkspaceStep4');
+//Agregar un Amenities (workspace-step5)
+$app->post('/service/workspace/step-5/amenities','WorkspaceController@AddNewStep5');
+
+//Agregar un description service (space-step7)
+$app->post('/service/workspace/step-7/description','WorkspaceController@AddNewWorkspaceStep7');
+//Agregar un rules description (parking-step8)
+$app->post('/service/workspace/step-8/rules','WorkspaceController@AddNewWorkspaceStep8');
+//Agregar imagen (space-step9)
+$app->post('/service/workspace/step-9/image','ControllerService@AddNewWorkspaceStep9');
+//Agregar nuevo servicio (space-step10)
+$app->post('/service/workspace/step-10/service','ControllerService@AddNewWorkspaceStep10');
+//Agregar Notas de Emergencia (space-step11)
+$app->post('/service/workspace/step-11','ControllerService@AddNewWorkspaceStep11');
+//Agrega fecha en el calendario->16/5/2017
 
 //Agrega numero de emergencia
 $app->post('/service/workspace/step-11/emergency-add','WorkspaceController@AddNewEmergency');
@@ -553,10 +585,48 @@ $app->get('/service/workspace/step-2/beds/details','WorkspaceController@ReturnSt
 $app->get('/service/workspace/step-3/get-bathroom','WorkspaceController@ReturnStep3');
 //Retorna un location (workspace-step4)
 $app->get('/service/workspace/step-4/get-location','WorkspaceController@ReturnStep4');
+//Retorna un workspace (workspace-step5)
+$app->get('/service/workspace/step-5/get-aminites','WorkspaceController@ReturnStep5');
+//Muestra todos los GetAmenities
+$app->get('/amenities/get-workspace-amenities','WorkspaceController@GetWorkspaceAmenities');
+$app->post('/amenities/workspace-amenities','WorkspaceController@AddNewAmenities');
+//Retorna un parking (workspace-step6) en proceso
+$app->get('/service/workspace/step-6/get-hosting','WorkspaceController@ReturnStep6');
+//Retorna un parking (workspace-step7)
+$app->get('/service/workspace/step-7/get-basics','WorkspaceController@ReturnStep7');
+//Retorna description (space-step8)
+$app->get('/service/space/step-8/get-rules','WorkspaceController@ReturnStep8');
+//Retorna image (workspace-step9)
+$app->get('/service/space/step-9/get-image','WorkspaceController@ReturnStep9');
+//Retorn nuevo-servicio (workspace-step10)
+$app->get('/service/space/step-10/get-service','WorkspaceController@ReturnStep10');
+//Retorna (workspace-step11)
+$app->get('/service/workspace/step-11/number-emergency','WorkspaceController@ReturnStep11');
 
-//Retorna (space-step11)
-$app->get('/service/workspace/step-11/number-emergency','ControllerCombobox@ReturnStep11');
+//Preview 1 service
+$app->get('/service/workspace/preview-overviews','WorkspaceController@GetOverviews');
+//Preview-beds
+$app->get('/service/workspace/preview-beds','WorkspaceController@GetOverviewsBeds');//en prceso
+//Preview-bedrooms
+$app->get('/service/workspace/preview-bedrooms','WorkspaceController@GetOverviewsBedrooms');
+//preview-rules
+$app->get('/service/workspace/preview-rules','WorkspaceController@GetOverviewsRules');
+//preview-amenities
+$app->get('/service/workspace/preview-amenities','WorkspaceController@GetOverviewsAmenities');
+//preview note-emergency
+$app->get('/service/workspace/preview-note-emergency','WorkspaceController@GetOverviewsEmergencyNote');
+//Retorna (Descripcion)
+$app->get('/service/workspace/getDescription', 'WorkspaceController@getDescription');
+//Preview-price
+$app->get('/service/workspace/preview-price','WorkspaceController@getPreviewPrice');
 
+//Preview 4 service
+//map neighborhood
+$app->get('/service/workspace/preview-map-neighborhood','WorkspaceController@GetLocationMap');
+//map neighborhood longitude
+$app->get('/service/workspace/preview-map-neighborhood-longitude','WorkspaceController@GetLocationMapLongitude');
+//map neighborhood latitude
+$app->get('/service/workspace/preview-map-neighborhood-latitude','WorkspaceController@GetLocationMapLatitude');
 
 
 ////////////////////////////////////////////////////////////////////////////////////////

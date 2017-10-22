@@ -142,7 +142,6 @@
 	//Agregar Place type(parking-step1)-Web
 	    public function AddNewParkingStep1(Request $request){
 	        $rule=[
-	            // Comente esto, ya que aun no poseo ningun id service
 	            'service_id' => 'required|numeric|min:1',
 	            'type_code'=>'required|numeric|min:1',
 	            'live'=>'required|boolean'
@@ -240,12 +239,9 @@
             return response()->json($validator->errors()->all());
         } else {
             $servicespace=Service::select()->where('id',$request->input("service_id"))->first();
-            /* Buscas si existen habitaciones previamente y cuantas habitaciones hay y sus respectivos id, si el numero que se esta pasando es mayor entonces agregas el restante, si es menor debes eliminar las sobrantes */
-            // Habia un error, la variable se llama servicespace, no service
             if(count($servicespace)>0){
 
                 $servicespace->num_guest=$request->input("num_guest");
-                //$servicespace->save();
                 DB::table('service')->where('id',$servicespace->id)->update(
                             ['num_guest'=> $request->input("num_guest"),
                             ]);
@@ -253,7 +249,6 @@
                 if(count($val)==0){
                     for($i=1;$i<=$request->input("num_bedroom");$i++){
                         $bedroom=new Bedroom;
-                        // Habia un error, la variable se llama servicespace, no service
                         $bedroom->service_id=$servicespace->id;
                         $bedroom->save();
                     }
@@ -261,15 +256,10 @@
                     DB::table('bedroom')->where('service_id',$servicespace->id)->delete();
                     for($i=1;$i<=$request->input("num_bedroom");$i++){
                         $bedroom=new Bedroom;
-                        // Habia un error, la variable se llama servicespace, no service
                         $bedroom->service_id=$servicespace->id;
                         $bedroom->save();
                     }
                 }
-                /**
-                *   Envio como respuesta el servicio junto con el numero de habitaciones,
-                *   ya que para la vista siguiente son necesarios dichos datos
-                */
                 return response()->json("Add Space Bedroom");
 
             } else {
@@ -409,9 +399,8 @@
       }else{
             $getstep2 = DB::table('service')->join('bedroom','service.id','=','bedroom.service_id')
             ->where('service.id','=',$request->input("service_id"))
-            ->select('service.id','service.num_guest', DB::raw('count(*) as num_bedroom')/*'bedroom.id as num_bedroom'*/)
+            ->select('service.id','service.num_guest', DB::raw('count(*) as num_bedroom'))
             ->orderBy('bedroom.id','desc')
-            //->take(1)
             ->get();
             if(count($getstep2)>0){
                   return response()->json($getstep2);
@@ -448,12 +437,7 @@
                               ->where('bed.languaje','=',$request->input("languaje"))
                               ->select('bedroom_bed.*', 'bed.type as type')
                               ->get();
-          //if(count($newbedbedroomdata)>0){
           return response()->json($newbedbedroomdata);
-          /*}else{
-            return response()->json("The user does not have a room or user not found");
-
-          }*/
         }else{
           return response()->json("The user does not have a room or user not found");
 
@@ -504,9 +488,7 @@
 		public function AddNewParkingStep4(Request $request){
 		            $rule=[
 		           'service_id' => 'required|numeric|min:1',
-		          // 'country_id'=>'numeric|min:1',
 		           'city_id'=>'numeric|min:1',
-		        //   'state_id'=>'numeric|min:1',
 
 		      ];
 		      $validator=Validator::make($request->all(),$rule);
@@ -514,13 +496,9 @@
 		        return response()->json($validator->errors()->all());
 		        }else{
 		            $servicespace=Service::select()->where('id',$request->input("service_id"))->first();
-		        //    $country=Country::select()->where('id',$request->input("country_id"))->first();
-		          //  $state=State::select()->where('country_id',$country->id)->where('id',$request->input("state_id"))->first();
 		            $city=City::select()->where('id',$request->input("city_id"))->first();
 		            if(count($servicespace)>0){
 		                if(count($city)>0){
-		                   // if(count($state)>0){
-		                     //   if(count($country)>0){
 		                            $val=Service_Description::select()->where('service_id',$request->input("service_id"))->first();
 		                            if(count($val)==0){
 		                                  DB::table('service')->where('id',$servicespace->id)->update(
@@ -569,7 +547,6 @@
 		                                      }
 		                                    }
 		                                  }
-		                                  // DB::table('service_description')->where('service_id',$servicespace->id)->delete();
 		                                     DB::table('service')->where('id',$servicespace->id)->update(
 		                                    ['city_id'=>$request->input("city_id"),
 		                               ]);
@@ -608,13 +585,6 @@
 		                                $des_latitude->save();
 		                                return response()->json('Update Location');
 		                            }
-		                   /*     }else{
-		                           return response()->json('Country not found');
-		                        }
-
-		                    }else{
-		                         return response()->json('State not found');
-		                    } */
 		                }else{
 		                     return response()->json('City not found');
 		                }
@@ -645,7 +615,7 @@
 		            ->where('service.id','=',$request->input("service_id"))
 		            ->select('service.id','service.zipcode','city.name as city','state.name as state','state.id as state_id','country.name as country','country.id as country_id','description.type','service_description.content')
 		            ->get();
-		            if(count($getstep5)>0){
+		            if(count($getstep4)>0){
 		                 return response()->json($getstep4);
 		            }else{
 
@@ -778,7 +748,7 @@
 		        ->join('service_rules','service_rules.service_id','=','service.id')
 		        ->where('service.id','=',$request->input("service_id"))
 		        ->where('amenities.languaje','=',$request->input("languaje"))
-		        ->where('service_rules.rules_id',13)
+		        ->where('service_rules.rules_id','=',13)
 		        ->select('service.id','service_amenites.check as Check','service_amenites.amenite_id','service_rules.description')
 		        ->get();
 		        if(count($getstep5)>0){
@@ -850,6 +820,127 @@
 		    }
 
 		 }
+
+
+
+   public function AddNewWorkspaceStep7(Request $request){
+          $rule=[
+           'service_id' => 'required|numeric|min:1',
+           'bool_socialize'=>'boolean',
+           'bool_available'=>'boolean',
+           'des_title' => 'required',
+           'description' =>'required',
+
+           ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+        return response()->json($validator->errors()->all());
+        }else{
+            $service=Service::where('id',$request->input("service_id"))->first();
+            if(count($service)>0){
+                $valdescription=Service_Description::where('service_id',$service->id)->get();
+                if(count($valdescription)==0){
+                try{
+                  $des_title=new Service_Description;
+                  $des_title->service_id=$service->id;
+                  $des_title->description_id=1;
+                  $des_title->content=$request->input("des_title");
+                  $des_title->save();
+                  $des_description=new Service_Description;
+                  $des_description->service_id=$service->id;
+                  $des_description->description_id=8;
+                  $des_description->content=$request->input("description");
+                  $des_description->save();
+                  $des_crib=new Service_Description;
+                  $des_crib->service_id=$service->id;
+                  $des_crib->description_id=9;
+                  $des_crib->content=$request->input("desc_crib");
+                  $des_crib->save();
+                  $des_acc=new Service_Description;
+                  $des_acc->service_id=$service->id;
+                  $des_acc->description_id=10;
+                  $des_acc->content=$request->input("desc_acc");
+                  $des_acc->save();
+                  $socialize=new Service_Description;
+                  $socialize->service_id=$service->id;
+                  $socialize->description_id=11;
+                  $socialize->check=$request->input("bool_socialize");
+                  $socialize->save();
+                  $available=new Service_Description;
+                  $available->service_id=$service->id;
+                  $available->description_id=12;
+                  $available->check=$request->input("bool_available");
+                  $available->save();
+                  $des_guest=new Service_Description;
+                  $des_guest->service_id=$service->id;
+                  $des_guest->description_id=13;
+                  $des_guest->content=$request->input("desc_guest");
+                  $des_guest->save();
+                  $des_note=new Service_Description;
+                  $des_note->service_id=$service->id;
+                  $des_note->description_id=14;
+                  $des_note->content=$request->input("desc_note");
+                  $des_note->save();
+                  return response()->json('Add Step-7');
+                }catch(Exception $e){
+                    return response()->json($e);
+               }
+            }else{
+              $serv_des= Service_Description::get();
+              DB::table('service_description')->where('service_id',$service->id)->where('description_id','1')->delete();
+              foreach ($serv_des as $sd) {
+                if($sd->description_id >= 8){
+                  DB::table('service_description')->where('service_id',$service->id)->where('description_id',$sd->description_id)->delete();
+                }
+              }
+              
+                  $des_title=new Service_Description;
+                  $des_title->service_id=$service->id;
+                  $des_title->description_id=1;
+                  $des_title->content=$request->input("des_title");
+                  $des_title->save();
+                  $des_description=new Service_Description;
+                  $des_description->service_id=$service->id;
+                  $des_description->description_id=8;
+                  $des_description->content=$request->input("description");
+                  $des_description->save();
+                  $des_crib=new Service_Description;
+                  $des_crib->service_id=$service->id;
+                  $des_crib->description_id=9;
+                  $des_crib->content=$request->input("desc_crib");
+                  $des_crib->save();
+                  $des_acc=new Service_Description;
+                  $des_acc->service_id=$service->id;
+                  $des_acc->description_id=10;
+                  $des_acc->content=$request->input("desc_acc");
+                  $des_acc->save();
+                  $socialize=new Service_Description;
+                  $socialize->service_id=$service->id;
+                  $socialize->description_id=11;
+                  $socialize->check=$request->input("bool_socialize");
+                  $socialize->save();
+                  $available=new Service_Description;
+                  $available->service_id=$service->id;
+                  $available->description_id=12;
+                  $available->check=$request->input("bool_available");
+                  $available->save();
+                  $des_guest=new Service_Description;
+                  $des_guest->service_id=$service->id;
+                  $des_guest->description_id=13;
+                  $des_guest->content=$request->input("desc_guest");
+                  $des_guest->save();
+                  $des_note=new Service_Description;
+                  $des_note->service_id=$service->id;
+                  $des_note->description_id=14;
+                  $des_note->content=$request->input("desc_note");
+                  $des_note->save();
+                  return response()->json('Update Step-7');
+                }
+            }else{
+                return response()->json('Service not found');
+            }
+        }
+   }
 
 
 	    public function GetLocationMap(Request $request)
@@ -935,14 +1026,46 @@
 	    }
 
 	    public function ReturnStep6(Request $request){
-	    	//
+		    	$rule=[
+	           'service_id' => 'required|numeric'
+	      ];
+	    $validator=Validator::make($request->all(),$rule);
+	      if ($validator->fails()) {
+	            return response()->json($validator->errors()->all());
+	      }else{
+	         $getstep6=DB::table('service')
+	        ->join('service_payment','service_payment.service_id','=','service.id')
+	        ->join('payment','payment.code','=','service_payment.payment_id')
+	        ->join('price_history','price_history.service_id','=','service.id')
+	        ->join('price_history_has_duration','price_history_has_duration.price_history_service_id','=','price_history.service_id')
+	        ->join('duration','duration.id','=','price_history_has_duration.duration_id')
+	        ->join('check_in','check_in.service_id','=','service.id')
+	        ->join('check_out','check_out.service_id','=','service.id')
+	        ->join('currency','currency.id','=','price_history.currency_id')
+	        ->where('service.id','=',$request->input("service_id"))
+	        ->where('payment.languaje','=',$request->input("languaje"))
+	        ->where('duration.languaje','=',$request->input("languaje"))
+	        ->select('payment.type as Type-Payment','duration.type as Type-Duration'
+	        ,'price_history.price as Price','currency.currency_iso as Currency-Name'
+	        ,'check_in.time_entry as Time-Entry','check_in.until as Until'
+	        ,'check_out.departure_time as Departure-Time')
+	        ->get();
+	         if(count($getstep6)>0){
+	                return response()->json($getstep6);
+	        }else{
+	                return response()->json("Not Found");
+	        }
+	      }
 	    }
 
 		public function AddNewParkingStep7(Request $request){
 		          $rule=[
 		           'service_id' => 'required|numeric|min:1',
 		           'bool_socialize'=>'boolean',
-		           'bool_available'=>'boolean'
+		           'bool_available'=>'boolean',
+		           'des_title' =>'required',
+		           'description'=>'required',
+
 		           ];
 		      $validator=Validator::make($request->all(),$rule);
 		      if ($validator->fails()) {
@@ -1250,6 +1373,157 @@
           }else{
                 return response()->json("Not Found");
           }
+      }
+    }
+
+
+		     /*--------------PREVIEW 1-----------------*/
+		    public function GetOverviews(Request $request)
+		    {
+		    	$rule=[
+		           'service_id' => 'required|numeric',
+		           'languaje'=>'required',
+		        ];
+		      $validator=Validator::make($request->all(),$rule);
+		      if ($validator->fails()) {
+		            return response()->json($validator->errors()->all());
+		      }else{
+
+		             $previews=DB::table('service')
+		             ->join('user','user.id','=','service.user_id')
+		             ->join('city','service.city_id','=','city.id')
+		             ->join('state','city.state_id','=','state.id')
+		             ->join('country','country.id','=','state.country_id')
+		             ->join('service_description','service_description.service_id','=','service.id')
+		             ->join('description','description.id','=','service_description.description_id')
+		        //     ->join('check_in','check_in.service_id','=','service.id')
+		             ->join('service_category','service_category.service_id','=','service.id')
+		             ->join('category','category.id','=','service_category.category_id')
+		      //       ->join('service_payment','service_payment.service_id','=','service.id')
+		     //        ->join('payment','payment.id','=','service_payment.payment_id')
+             		 ->join('service_type','service_type.service_id','=','service.id')
+             		 ->join('type','type.id','=','service_type.type_id')
+		             ->where('service.id','=',$request->input("service_id"))
+		             ->where('category.languaje','=',$request->input("languaje"))
+		        //     ->where('payment.languaje','=',$request->input("languaje"))
+		             ->where('description.id','=',1)
+		             ->where('category.code','=',3)
+            		 ->where('type.languaje','=',$request->input("languaje"))
+		             ->select('service.user_id', 'user.id as userid','user.avatar','user.name','country.name as country',/*'payment.type as prices',*/'state.name as state','service_description.content as title',/*'check_in.time_entry as check_in',*/'category.name as category','user.lastname','service.id','city.name as city','service.num_space','type.name as type')
+		             ->first();
+		               if(count($previews)>0){
+		                  return response()->json($previews);
+		          }else{
+		                return response()->json("Not Found");
+		          }
+
+		      }
+
+		    }
+
+
+    public function GetOverviewsRules(Request $request)
+    {
+      $rule=[
+           'service_id' => 'required|numeric',
+        ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+      }else{
+              $previews=DB::table('service')
+                ->join('service_rules','service_rules.service_id','=','service.id')
+                ->join('house_rules','house_rules.id','=','service_rules.rules_id')
+                ->where('service.id','=',$request->input("service_id"))
+                ->select('house_rules.type','service_rules.description','service_rules.check')
+                ->get();
+                if(count($previews)>0){
+                  return response()->json($previews);
+          }else{
+                return response()->json("Not Found");
+          }
+
+
+      }
+    }
+
+    public function GetOverviewsAmenities(Request $request)
+    {
+          $rule=[
+           'service_id' => 'required|numeric',
+           'languaje'=>'required'
+        ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+      }else{
+
+              $previews=DB::table('service')
+                ->join('service_amenites','service_amenites.service_id','=','service.id')
+                ->join('amenities','amenities.id','=','service_amenites.amenite_id')
+                ->where('service.id','=',$request->input("service_id"))
+                ->where('amenities.languaje','=',$request->input("languaje"))
+              //  ->where('service_amenites.check',1)
+                ->select('amenities.name as amenities','amenities.code','amenities.type_amenities_id','service_amenites.check')
+                ->get();
+                  if(count($previews)>0){
+                  return response()->json($previews);
+          }else{
+                return response()->json("Not Found");
+          }
+
+      }
+
+    }
+
+    public function GetOverviewsEmergencyNote(Request $request)
+    { $rule=[
+           'service_id' => 'required|numeric',
+           'languaje'=>'required'
+        ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+      }else{
+              $previews=DB::table('service')
+                ->join('service_emergency','service_emergency.service_id','=','service.id')
+                ->join('note_emergency','note_emergency.id','=','service_emergency.emergency_id')
+                    ->where('service.id','=',$request->input("service_id"))
+                    ->where('note_emergency.languaje','=',$request->input("languaje"))
+                ->select('note_emergency.type','service_emergency.content','service_emergency.check')
+                ->get();
+                            if(count($previews)>0){
+                  return response()->json($previews);
+          }else{
+                return response()->json("Not Found");
+          }
+
+      }
+    }
+
+ public function getDescription(Request $request){
+           $rule=[
+           'service_id' => 'required|numeric'
+      ];
+    $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+      }else{
+        $des=DB::table('service')
+        ->join('service_description','service_description.service_id','=','service.id')
+        ->join('description','description.id','=','service_description.description_id')
+        ->where('service_description.service_id','=',$request->input("service_id"))
+        ->where('service_description.description_id', '=', 8)
+        ->orwhere('service_description.description_id', '=', 5)
+        ->where('service_description.service_id','=',$request->input("service_id"))
+        ->select('service_description.content','service_description.check','service_description.description_id')
+        ->get();
+          if(count($des)>0){
+                return response()->json($des);
+        }else{
+                return response()->json("Not Found");
+        }
+
       }
     }
 

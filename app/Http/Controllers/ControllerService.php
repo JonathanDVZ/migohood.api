@@ -268,9 +268,11 @@ class ControllerService extends Controller
             if(count($amenites)>0){
                 // Selecciono el service que posea el id recibido
                 $service=Service::select()->where('id',$request->input("service_id"))->first();
-                if(count($service)>0){
+                if(count($service)==0){
+                  
                     // Recorro el array amenities e inserto cada uno en la tabla interseccion Service_Amenite junto con el service correspondiente
                       foreach ($amenites as $amenite){
+
                        $newserviceame=new Service_Amenite;
                        $newserviceame->service_id=$service->id;
                        $newserviceame->amenite_id=$amenite->id;
@@ -280,7 +282,19 @@ class ControllerService extends Controller
                     return response()->json('Add Step 5');
                 }
                 else{
-                    return response()->json('Service not found');
+                /*  DB::table('service_amenites')
+                  ->where('service_id',$service->id)
+                //  ->where('service_amenites.amenite_id','=',$amenites->id)
+                  ->delete();*/
+
+                  foreach ($amenites as $amenite){
+
+                       $newserviceame=new Service_Amenite;
+                       $newserviceame->service_id=$service->id;
+                       $newserviceame->amenite_id=$amenite->id;
+                       $newserviceame->save();
+                      }
+                    return response()->json('Update Step 5');
                 }
             }
             else{
@@ -1293,6 +1307,8 @@ class ControllerService extends Controller
           // 'country_id'=>'numeric|min:1',
            'city_id'=>'numeric|min:1',
         //   'state_id'=>'numeric|min:1',
+           'address1'=>'required',
+           'zipcode' => 'required',
 
       ];
       $validator=Validator::make($request->all(),$rule);
@@ -1456,9 +1472,9 @@ class ControllerService extends Controller
     public function AddNewSpaceStep6(Request $request){
         $rule=[  'service_id'=>'required|numeric|min:1',
                   'currency_id'=>'required',
-                  'price'=>'numeric|min:0',
+                  'price'=>'required|numeric|min:0',
                   'duration_code'=>'required',
-                  'politic_payment_code'=>'numeric'
+                  'politic_payment_code'=>'required|numeric'
 
             ];
             $validator=Validator::make($request->all(),$rule);
@@ -1554,7 +1570,10 @@ class ControllerService extends Controller
           $rule=[
            'service_id' => 'required|numeric|min:1',
            'bool_socialize'=>'boolean',
-           'bool_available'=>'boolean'
+           'bool_available'=>'boolean',
+           'des_title' => 'required',
+           'description' =>'required',
+
            ];
       $validator=Validator::make($request->all(),$rule);
       if ($validator->fails()) {
@@ -1763,7 +1782,11 @@ class ControllerService extends Controller
                  $newrules=new Service_Rules;
                  $newrules->service_id=$service->id;
                  $newrules->rules_id=15;
+                 if($request->input("Password_Wifi") != ''){
                  $newrules->description=Crypt::encrypt($request->input("Password_Wifi"));
+                 }else{
+                  $newrules->description=$request->input("Password_Wifi");
+                 }
                  $newrules->save();
                  return response()->json('Add Step-8');
                 }catch(Exception $e){
@@ -1844,7 +1867,11 @@ class ControllerService extends Controller
                  $newrules=new Service_Rules;
                  $newrules->service_id=$service->id;
                  $newrules->rules_id=15;
+                 if($request->input("Password_Wifi") != ''){
                  $newrules->description=Crypt::encrypt($request->input("Password_Wifi"));
+                 }else{
+                  $newrules->description=$request->input("Password_Wifi");
+                 }
                  $newrules->save();
                  return response()->json('Update Step-8');
 

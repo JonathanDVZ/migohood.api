@@ -444,7 +444,7 @@ class ControllerCombobox extends Controller
       }else{
         $getstep5=DB::table('service')
         ->join('service_amenites','service_amenites.service_id','=','service.id')
-        ->join('amenities','amenities.code','=','service_amenites.amenite_id')
+        ->join('amenities','amenities.id','=','service_amenites.amenite_id')
         ->where('service.id','=',$request->input("service_id"))
         ->where('amenities.languaje','=',$request->input("languaje"))
         ->select('service.id','amenities.name', 'amenities.type_amenities_id', 'amenities.code')
@@ -645,12 +645,12 @@ class ControllerCombobox extends Controller
              ->join('description','description.id','=','service_description.description_id')
              ->join('check_in','check_in.service_id','=','service.id')
              ->join('service_category','service_category.service_id','=','service.id')
-             ->join('category','category.code','=','service_category.category_id')
+             ->join('category','category.id','=','service_category.category_id')
              ->join('bedroom','bedroom.service_id','=','service.id')
              ->join('service_type','service_type.service_id','=','service.id')
-             ->join('type','type.code','=','service_type.type_id')
+             ->join('type','type.id','=','service_type.type_id')
              ->join('service_payment','service_payment.service_id','=','service.id')
-             ->join('payment','payment.code','=','service_payment.payment_id')
+             ->join('payment','payment.id','=','service_payment.payment_id')
              ->where('service.id','=',$request->input("service_id"))
              ->where('category.languaje','=',$request->input("languaje"))
              ->where('accommodation.languaje','=',$request->input("languaje"))
@@ -765,7 +765,7 @@ class ControllerCombobox extends Controller
                 ->join('amenities','amenities.id','=','service_amenites.amenite_id')
                 ->where('service.id','=',$request->input("service_id"))
                 ->where('amenities.languaje','=',$request->input("languaje"))
-                ->select('amenities.name as amenities')
+                ->select('amenities.name as amenities','amenities.code','amenities.type_amenities_id','service_amenites.check')
                 ->get();
                   if(count($previews)>0){
                   return response()->json($previews);
@@ -812,10 +812,9 @@ class ControllerCombobox extends Controller
               $previews=DB::table('service')
                 ->join('service_emergency','service_emergency.service_id','=','service.id')
                 ->join('note_emergency','note_emergency.id','=','service_emergency.emergency_id')
-                ->where('service_emergency.check','=',0)
                     ->where('service.id','=',$request->input("service_id"))
                     ->where('note_emergency.languaje','=',$request->input("languaje"))
-                ->select('note_emergency.type')
+                ->select('note_emergency.type','service_emergency.content','service_emergency.check')
                 ->get();
                             if(count($previews)>0){
                   return response()->json($previews);
@@ -941,10 +940,12 @@ class ControllerCombobox extends Controller
         $des=DB::table('service')
         ->join('service_description','service_description.service_id','=','service.id')
         ->join('description','description.id','=','service_description.description_id')
-        ->where('service_id','=',$request->input("service_id"))
+        ->where('service_description.service_id','=',$request->input("service_id"))
         ->where('service_description.description_id', '=', 8)
+        ->orwhere('service_description.description_id', '=', 5)
+        ->where('service_description.service_id','=',$request->input("service_id"))
         ->select('service_description.content','service_description.check','service_description.description_id')
-        ->first();
+        ->get();
           if(count($des)>0){
                 return response()->json($des);
         }else{

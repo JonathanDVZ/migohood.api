@@ -260,7 +260,7 @@
 	    public function AddNewServiceStep2(Request $request){
 	        $rule=[  'service_id'=>'required|numeric|min:1',
 	                  'currency_id'=>'required',
-	                  'price'=>'numeric|min:0',
+	                  'price'=>'required|numeric|min:0',
 	                  'duration_code'=>'required',
 	                  'politic_payment_code'=>'numeric'
 
@@ -391,6 +391,9 @@
 	 	public function AddNewServiceStep3(Request $request){
 	          $rule=[
 	           'service_id' => 'required|numeric|min:1',
+	           'des_title' => 'required',
+	           'description' => 'required',
+	           'desc_guest' => 'required',
 	           'AptoDe2a12'=>'boolean',
 	           'AptoDe0a2'=>'boolean',
 	           'SeadmitenMascotas'=>'boolean',
@@ -591,11 +594,11 @@
 	        $getstep3=DB::table('service')
 	        ->join('service_rules','service_rules.service_id','=','service.id')
 	        ->join('house_rules','house_rules.id','=','service_rules.rules_id')
-	        ->join('service_description','service_description.service_id','=','service.id')
-        	->join('description','description.id','=','service_description.description_id')
 	        ->where('service.id','=',$request->input("service_id"))
-	        ->select('service_rules.description as Description','service_rules.check as Check','service_rules.rules_id','service_description.content','service_description.description_id')
+	        ->select('service_rules.description as Description','service_rules.check as Check','service_rules.rules_id')
 	        ->get();
+
+
 	        if(count($getstep3)>0){
 	                return response()->json($getstep3);
 	        }else{
@@ -604,6 +607,28 @@
 	      }
 	    }
 
+	    public function ReturnStep3a(Request $request){
+	            $rule=[
+	           'service_id' => 'required|numeric'
+	      ];
+	    $validator=Validator::make($request->all(),$rule);
+	      if ($validator->fails()) {
+	            return response()->json($validator->errors()->all());
+	      }else{
+	        $getstep3=DB::table('service')
+	        ->join('service_description','service_description.service_id','=','service.id')
+        	->join('description','description.id','=','service_description.description_id')
+        	->where('service.id','=',$request->input("service_id"))
+        	->select('service_description.content','service_description.description_id')
+        	->get();
+
+	        if(count($getstep3)>0){
+	                return response()->json($getstep3);
+	        }else{
+	                return response()->json("Not Found");
+	        }
+	      }
+	    }
 	   public function AddNewServiceStep4(Request $request){
 	        $rule=[
 	           'service_id' => 'required|numeric|min:1',
@@ -693,9 +718,10 @@
 	            $rule=[
 	           'service_id' => 'required|numeric|min:1',
 	          // 'country_id'=>'numeric|min:1',
-	           'city_id'=>'numeric|min:1',
+	           'city_id'=>'required|numeric|min:1',
 	        //   'state_id'=>'numeric|min:1',
-
+	           'address1' =>'required',
+	           'des_around' => 'required'
 	      ];
 	      $validator=Validator::make($request->all(),$rule);
 	      if ($validator->fails()) {
@@ -1049,15 +1075,15 @@
 		      if ($validator->fails()) {
 		            return response()->json($validator->errors()->all());
 		      }else{
-		             $getstep11=DB::table('service')
+		             $getstep6=DB::table('service')
 		                          ->join('service_emergency','service_emergency.service_id','=','service.id')
 		                          ->join('note_emergency','note_emergency.id','=','service_emergency.emergency_id')
 		                          ->where('service.id','=',$request->input("service_id"))
 		                          ->where('note_emergency.languaje','=',$request->input("languaje"))
 		                          ->select('service_emergency.content','service_emergency.check','note_emergency.type','service_emergency.emergency_id')
 		                          ->get();
-		          if(count($getstep11)>0){
-		                  return response()->json($getstep11);
+		          if(count($getstep6)>0){
+		                  return response()->json($getstep6);
 		          }else{
 		                return response()->json("Not Found");
 		          }
@@ -1126,7 +1152,7 @@
 		             ->where('service.id','=',$request->input("service_id"))
 		             ->where('category.languaje','=',$request->input("languaje"))
 		             ->where('category.code','=',4)
-		             ->select('description.type','service_description.content')
+		             ->select('description.type','service_description.content','service_description.description_id')
 		             ->get();
 		               if(count($previews)>0){
 		                  return response()->json($previews);
@@ -1138,7 +1164,7 @@
 		    }
 
 
-		public function getType(Request $request){
+		public function GetType(Request $request){
 		            $rule=[
 		           'service_id' => 'required|numeric|min:1',
 		      ];
@@ -1162,6 +1188,52 @@
 		      }
 		}
 
+		public function GetNotes(Request $request){
+			$rule=[
+		           'service_id' => 'required|numeric',
+		           'languaje'=>'required'
+		        ];
+		      $validator=Validator::make($request->all(),$rule);
+		      if ($validator->fails()) {
+		            return response()->json($validator->errors()->all());
+		      }else{
+		             $response=DB::table('service')
+		                          ->join('service_emergency','service_emergency.service_id','=','service.id')
+		                          ->join('note_emergency','note_emergency.id','=','service_emergency.emergency_id')
+		                          ->where('service.id','=',$request->input("service_id"))
+		                          ->where('note_emergency.languaje','=',$request->input("languaje"))
+		                          ->select('service_emergency.content','service_emergency.check','note_emergency.type','service_emergency.emergency_id')
+		                          ->get();
+		          if(count($response)>0){
+		                  return response()->json($response);
+		          }else{
+		                return response()->json("Not Found");
+		          }
+		      }
+		}
+
+
+		public function GetRules(Request $request){
+	            $rule=[
+	           'service_id' => 'required|numeric'
+	      ];
+	    $validator=Validator::make($request->all(),$rule);
+	      if ($validator->fails()) {
+	            return response()->json($validator->errors()->all());
+	      }else{
+	        $response=DB::table('service')
+	        ->join('service_rules','service_rules.service_id','=','service.id')
+	        ->join('house_rules','house_rules.id','=','service_rules.rules_id')
+	        ->where('service.id','=',$request->input("service_id"))
+	        ->select('house_rules.type','service_rules.description','service_rules.check','service.id')
+	        ->get();
+	        if(count($response)>0){
+	                return response()->json($response);
+	        }else{
+	                return response()->json("Not Found");
+	        }
+	      }
+	    }
 
 		    /*--------------PREVIEW 4-----------------*/
 		    public function GetLocationMap(Request $request)
