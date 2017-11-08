@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 use App\Models\Service;
-use App\Models\Imagen;
+use App\Models\Image;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Contracts\Encryption\DecryptException;
@@ -20,7 +20,7 @@ class ControllerImagen extends Controller
         }else{
             $service=Service::where('id','=',$request->input('service_id'))->first();
             if(count($service)>0){
-                 $imagen = DB::select('select * from imagen where service_id=?', [$service->id]);
+                 $imagen = DB::select('select * from image where service_id=?', [$service->id]);
                if(count($imagen)>0){
                     return response()->json($imagen);
                }else{
@@ -36,20 +36,21 @@ class ControllerImagen extends Controller
     public function AddImagen(Request $request){
           $rule=[
             'service_id'=>'required|numeric|min:1',
-            'ruta'=>'required|Image'
+            'ruta'=>'required'
             ];
         $validator=Validator::make($request->all(),$rule);
       if ($validator->fails()) {
         return response()->json($validator->errors()->all());
         }else{//Busca si el usuario se encuentra registrado
              $service=Service::where('id','=',$request->input('service_id'))->first();
-             $users = DB::table('imagen')->where('service_id','=',$service->id)->count();
+             $users = DB::table('image')->where('service_id','=',$service->id)->count();
              if($service!=null){
-                 $imagen = DB::table('imagen')->where('service_id','=',$service->id)->count();
+                 $imagen = DB::table('image')->where('service_id','=',$service->id)->count();
                  if($imagen<=10){
-                  $addimagen=new Imagen();
+                  $addimagen=new Image();
                   $addimagen->ruta=$request->input('ruta');
                   $addimagen->service_id=$service->id;
+                  $addimagen->description=$request->input('description');
                   if($addimagen->save()){
                        return response()->json('Add Imagen');
                    }
@@ -63,24 +64,45 @@ class ControllerImagen extends Controller
     }
 
     public function UpdateImagen(Request $request){
-         $rule=[
-           'imagen_id' => 'required|numeric|min:1',
-           'ruta'=>'required'
-      ];
-      $validator=Validator::make($request->all(),$rule);
-      if ($validator->fails()) {
-        return response()->json($validator->errors()->all());
-        }else{
-             $updateimagen=Imagen::where('id','=',$request->input('imagen_id'))->first();
-             if($updateimagen!=null){
-                  $updateimagen->ruta=$request->input('ruta');
-                  if($updateimagen->save()){
-                       return response()->json('Update Imagen');
-                   }
-              }else{
-                  return response()->json('Imagen not found ');
-              }
-       }
+           $rule=[
+             'service_id' => 'required|numeric|min:1',
+             'ruta'=>'required',
+            // 'description'=>'required'
+        ];
+        $validator=Validator::make($request->all(),$rule);
+        if ($validator->fails()) {
+          return response()->json($validator->errors()->all());
+          }else{
+            $service=Service::where('id','=',$request->input('service_id'))->first();
+               $updateimagen=Image::where('service_id','=',$service->id)->where('id','=',$request->input('id'))->first();
+               if($updateimagen!=null){
+                    $updateimagen->ruta=$request->input('ruta');
+                    $updateimagen->description=$request->input('description');
+                    if($updateimagen->save()){
+                         return response()->json('Update Imagen');
+                     }
+                }else{
+                        
+                     $users = DB::table('image')->where('service_id','=',$service->id)->count();
+                     if($service!=null){
+                         $imagen = DB::table('image')->where('service_id','=',$service->id)->count();
+                         if($imagen<=2){
+                          $addimagen=new Image();
+                          $addimagen->ruta=$request->input('ruta');
+                          $addimagen->service_id=$service->id;
+                          $addimagen->description=$request->input('description');
+                          if($addimagen->save()){
+                               return response()->json('Add Imagen');
+                           }
+                         }else{
+                              return response()->json('Imagen Limit!');
+                         }
+                      }else{
+                           return response()->json('Service not found ');
+                     }
+                    return response()->json('Imagen not found ');
+                }
+         }
        }
 
         public function DeleteImagen(Request $request){

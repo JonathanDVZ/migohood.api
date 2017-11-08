@@ -276,18 +276,16 @@ class ControllerService extends Controller
                        $newserviceame=new Service_Amenite;
                        $newserviceame->service_id=$service->id;
                        $newserviceame->amenite_id=$amenite->id;
+                       $newserviceame->check=$request->input('check');
                        $newserviceame->save();
                       }
 
                     return response()->json('Add Step 5');
                 }
                 else{
-                /*  DB::table('service_amenites')
-                  ->where('service_id',$service->id)
-                //  ->where('service_amenites.amenite_id','=',$amenites->id)
-                  ->delete();*/
 
                   foreach ($amenites as $amenite){
+                  DB::table('service_amenites')->where('service_id',$service->id)->where('service_amenites.amenite_id','=',$amenite->id)->delete();
 
                        $newserviceame=new Service_Amenite;
                        $newserviceame->service_id=$service->id;
@@ -1488,7 +1486,8 @@ class ControllerService extends Controller
                 try{
                       $newhistory=new Price_History;
                       $dt = new DateTime();
-                      $newhistory->starDate=$dt->format('Y-m-d (H:i:s)');
+                      $newhistory->starDate=$request->input('startDate');
+                      $newhistory->endDate=$request->input('endDate');
                       $newhistory->service_id=$service->id;
                       $newhistory->price=$request->input("price");
                       $newhistory->currency_id=$request->input("currency_id");
@@ -1529,7 +1528,8 @@ class ControllerService extends Controller
                       DB::table('price_history')->where('service_id',$service->id)->delete();
                       $newhistory=new Price_History;
                       $dt = new DateTime();
-                      $newhistory->starDate=$dt->format('Y-m-d (H:i:s)');
+                      $newhistory->starDate=$request->input('startDate');
+                      $newhistory->endDate=$request->input('endDate');
                       $newhistory->service_id=$service->id;
                       $newhistory->price=$request->input("price");
                       $newhistory->currency_id=$request->input("currency_id");
@@ -2039,6 +2039,87 @@ class ControllerService extends Controller
               }
         }
     }
+
+
+    public function AddNewSpaceStep10Service(Request $request){
+      $rule=[
+             'service_id' => 'required|numeric|min:1',
+             'ruta'=>'required',
+             'description'=>'required',
+             'duration_code'=>'required|numeric|min:1',
+             'price'=>'required|numeric|min:1',
+             'currency_id'=>'required|numeric|min:1'
+        ];
+        $validator=Validator::make($request->all(),$rule);
+        if ($validator->fails()) {
+          return response()->json($validator->errors()->all());
+          }else{
+            $service=Service::where('id','=',$request->input('service_id'))->first();
+           /*    $updateimagen=Image::where('service_id','=',$service->id)->first();
+               if($updateimagen!=null){
+                    $updateimagen->ruta=$request->input('ruta');
+                    $updateimagen->description=$request->input('description');
+                    $duration=Duration::select('id')->where('code',$request->input("duration_code"))->get();
+                    if(count($duration)>0){
+                     $dt = new DateTime();
+                    $newhistory=Price_History::where('service_id','=',$service->id)->first();
+                    $newhistory->starDate=$dt->format('Y-m-d (H:i:s)');
+                     $newhistory->service_id=$service->id;
+                     $newhistory->image_id=$updateimagen->id;
+                     $newhistory->price=$request->input("price");
+                     $newhistory->currency_id=$request->input("currency_id");
+                     $newhistory->save();
+                     foreach($duration as $durations){
+                         $imageduration=Image::where('image_id','=',$updateimagen->id)->first();
+                         $imageduration->image_id=$updateimagen->id;
+                         $imageduration->duration_id=$durations->id;
+                         $imageduration->save();
+                     }
+                    if($updateimagen->save()){
+                         return response()->json('Update Imagen');
+                     }
+                }else{*/
+                        
+                     $users = DB::table('image')->where('service_id','=',$service->id)->count();
+                     if($service!=null){
+                         $imagen = DB::table('image')->where('service_id','=',$service->id)->count();
+                         if($imagen<=10){
+                          $addimagen=new Image();
+                          $addimagen->ruta=$request->input('ruta');
+                          $addimagen->service_id=$service->id;
+                          $addimagen->description=$request->input('description');
+                          if($addimagen->save()){
+                           $duration=Duration::select('id')->where('code',$request->input("duration_code"))->get();
+                            if(count($duration)>0){
+                             $dt = new DateTime();
+                            $newhistory=new Price_History;
+                            $newhistory->starDate=$dt->format('Y-m-d H:i:s');
+                             $newhistory->service_id=$service->id;
+                             $newhistory->image_id=$addimagen->id;
+                             $newhistory->price=$request->input("price");
+                             $newhistory->currency_id=$request->input("currency_id");
+                             $newhistory->save();
+                             foreach($duration as $durations){
+                                 $imageduration=new Image_Duration;
+                                 $imageduration->image_id=$addimagen->id;
+                                 $imageduration->duration_id=$durations->id;
+                                 $imageduration->save();
+                             }
+                               return response()->json('Add Imagen');
+                           }
+                         }else{
+                              return response()->json('Imagen Limit!');
+                         }
+                      }else{
+                           return response()->json('Service not found ');
+                     }
+                    return response()->json('Imagen not found ');
+                }
+              }
+            }
+     //     }
+      //  }
+
 
     public function AddNewSpaceStep11(Request $request){
         $rule=[

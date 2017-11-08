@@ -447,7 +447,7 @@ class ControllerCombobox extends Controller
         ->join('amenities','amenities.id','=','service_amenites.amenite_id')
         ->where('service.id','=',$request->input("service_id"))
         ->where('amenities.languaje','=',$request->input("languaje"))
-        ->select('service.id','amenities.name', 'amenities.type_amenities_id', 'amenities.code')
+        ->select('service.id','amenities.name', 'amenities.type_amenities_id', 'amenities.code','service_amenites.check')
         ->get();
         if(count($getstep5)>0){
                 return response()->json($getstep5);
@@ -480,7 +480,7 @@ class ControllerCombobox extends Controller
         ->select('payment.type as Type-Payment','duration.type as Type-Duration'
         ,'price_history.price as Price','currency.currency_iso as Currency-Name'
         ,'check_in.time_entry as Time-Entry','check_in.until as Until'
-        ,'check_out.departure_time as Departure-Time')
+        ,'check_out.departure_time as Departure-Time','price_history.starDate as startDate','price_history.endDate')
         ->get();
          if(count($getstep6)>0){
                 return response()->json($getstep6);
@@ -588,7 +588,7 @@ class ControllerCombobox extends Controller
         ->join('currency','currency.id','=','price_history.currency_id')
         ->where('service.id','=',$request->input("service_id"))
         ->where('duration.languaje','=',$request->input("languaje"))
-        ->select('image.ruta','image.description','price_history.price','currency.money','currency.symbol','duration.type')
+        ->select('image.ruta','image.description','price_history.price','currency.money','currency.symbol','duration.type','currency.currency_iso')
         ->orderby('price_history.image_id','DESC')->take(1)->get();
            if(count($getstep10)>0){
                   return response()->json($getstep10);
@@ -1019,5 +1019,172 @@ class ControllerCombobox extends Controller
       }
 
     }
+
+    public function GetImages(Request $request){
+      $image=Image::all();
+      return response()->json($image);
+    }
+
+    public function GetSpaces(Request $request)
+    {$rule=[
+           
+        ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+      }else{
+             $previews=DB::table('service')
+             ->join('user','user.id','=','service.user_id')
+             ->join('service_description','service_description.service_id','=','service.id')
+             ->join('description','description.id','=','service_description.description_id')
+             ->join('service_category','service_category.service_id','=','service.id')
+             ->join('category','category.id','=','service_category.category_id')
+             ->join('service_type','service_type.service_id','=','service.id')
+             ->join('type','type.id','=','service_type.type_id')
+             ->join('price_history','price_history.service_id','=','service.id')
+             ->join('currency','currency.id','=','price_history.currency_id')
+             ->join('price_history_has_duration','price_history_has_duration.price_history_service_id','=','service.id')
+             ->join('duration','duration.id','=','price_history_has_duration.duration_id')
+             ->join('image','image.service_id','=','service.id')
+             ->where('category.languaje','=',$request->input("languaje"))
+             ->where('type.languaje','=',$request->input("languaje"))
+             ->where('currency.language','=',$request->input("languaje"))
+             ->where('duration.languaje','=',$request->input("languaje"))
+             ->where('description.id','=',1)
+              ->where('category.code','=',1)
+             ->select('service_description.service_id','service.user_id as servid','service_description.content as title','category.name as category','price_history.price','currency.currency_iso','duration.type as duration','image.ruta','image.description as imgdesc')
+             ->groupby('service_id')
+             ->orderby('service.id','DESC')
+             ->get();
+               if(count($previews)>0){
+                  return response()->json($previews);
+          }else{
+                return response()->json("Not Found");
+          }
+
+      }
+
+    }
+
+    public function GetServices(Request $request)
+    {$rule=[
+           
+        ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+      }else{
+
+
+             $previews=DB::table('service')
+             ->join('user','user.id','=','service.user_id')
+                 ->join('service_description','service_description.service_id','=','service.id')
+                 ->join('description','description.id','=','service_description.description_id')
+                 ->join('service_category','service_category.service_id','=','service.id')
+                 ->join('category','category.id','=','service_category.category_id')
+                 ->join('price_history','price_history.service_id','=','service.id')
+                 ->join('currency','currency.id','=','price_history.currency_id')
+                 ->join('price_history_has_duration','price_history_has_duration.price_history_service_id','=','service.id')
+                 ->join('duration','duration.id','=','price_history_has_duration.duration_id')
+                 ->join('image','image.service_id','=','service.id')
+                 ->where('currency.language','=',$request->input("languaje"))
+                 ->where('duration.languaje','=',$request->input("languaje"))
+                 ->where('category.languaje','=',$request->input("languaje"))
+                 ->where('description.id','=',1)
+                 ->where('category.code','=',4)
+                 ->select('service_description.service_id','service.user_id as servid','service_description.content as title','category.name as category','service.id','price_history.price','currency.currency_iso','duration.type as duration','image.ruta','image.description as imgdesc')
+                 ->groupby('service_id')
+                 ->orderby('service.id','DESC')
+                 ->get();
+               if(count($previews)>0){
+                  return response()->json($previews);
+          }else{
+                return response()->json("Not Found");
+          }
+
+      }
+
+    }
+
+    public function GetParkings(Request $request)
+    {$rule=[
+           
+        ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+      }else{
+
+
+             $previews=DB::table('service')
+             ->join('user','user.id','=','service.user_id')
+                 ->join('service_description','service_description.service_id','=','service.id')
+                 ->join('description','description.id','=','service_description.description_id')
+                 ->join('service_category','service_category.service_id','=','service.id')
+                 ->join('category','category.id','=','service_category.category_id')
+                 ->join('service_type','service_type.service_id','=','service.id')
+                 ->join('type','type.id','=','service_type.type_id')
+                 ->join('image','image.service_id','=','service.id')
+                 ->join('price_history','price_history.service_id','=','service.id')
+                 ->join('currency','currency.id','=','price_history.currency_id')
+                 ->join('price_history_has_duration','price_history_has_duration.price_history_service_id','=','service.id')
+                 ->join('duration','duration.id','=','price_history_has_duration.duration_id')
+                 ->where('currency.language','=',$request->input("languaje"))
+                 ->where('duration.languaje','=',$request->input("languaje"))
+                 ->where('category.languaje','=',$request->input("languaje"))
+                 ->where('description.id','=',1)
+                 ->where('category.code','=',3)
+                 ->where('type.languaje','=',$request->input("languaje"))
+                 ->select('service_description.service_id','service.user_id as servid','service_description.content as title','category.name as category','service.id','type.name as type','image.ruta','image.description as imgdesc','price_history.price','currency.currency_iso','duration.type as duration')
+             ->groupby('service_id')
+             ->orderby('id','DESC')
+             ->get();
+               if(count($previews)>0){
+                  return response()->json($previews);
+          }else{
+                return response()->json("Not Found");
+          }
+
+      }
+
+    }
+
+    public function GetWorkspaces(Request $request)
+    {$rule=[
+           
+        ];
+      $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+      }else{
+
+
+             $previews=DB::table('service')
+             ->join('user','user.id','=','service.user_id')
+             ->join('service_description','service_description.service_id','=','service.id')
+             ->join('description','description.id','=','service_description.description_id')
+             ->join('service_category','service_category.service_id','=','service.id')
+             ->join('category','category.id','=','service_category.category_id')
+             ->join('service_type','service_type.service_id','=','service.id')
+             ->join('type','type.id','=','service_type.type_id')
+             ->join('image','image.service_id','=','service.id')
+             ->where('category.languaje','=',$request->input("languaje"))
+             ->where('description.id','=',1)
+             ->where('category.code','=',2)
+             ->where('type.languaje','=',$request->input("languaje"))
+             ->select('service_description.service_id','service.user_id as servid', 'service_description.content as title','category.name as category','service.id','type.name as type','image.ruta','image.description as imgdesc')
+             ->orderby('id','DESC')
+             ->groupby('service_id')
+             ->get();
+               if(count($previews)>0){
+                  return response()->json($previews);
+          }else{
+                return response()->json("Not Found");
+          }
+
+      }
+
+    }
+
 
 }

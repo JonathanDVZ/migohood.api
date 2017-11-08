@@ -48,6 +48,7 @@
 	use App\Models\Service_Emergency;
 	use App\Models\Image_Duration;
 	use App\Models\Bedroom;
+	use App\Models\Service_Duration;
 
 	class WorkspaceController extends Controller {
 		//Muestra todo los service
@@ -632,7 +633,7 @@
 		            ->where('service.id','=',$request->input("service_id"))
 		            ->select('service.id','service.zipcode','city.name as city','state.name as state','state.id as state_id','country.name as country','country.id as country_id','description.type','service_description.content')
 		            ->get();
-		            if(count($getstep5)>0){
+		            if(count($getstep4)>0){
 		                 return response()->json($getstep4);
 		            }else{
 
@@ -643,7 +644,7 @@
 
  public function AddNewStep5(Request $request){
         $rule=[
-            'amenitie_code'=>'required|numeric|min:1',
+            'amenitie_code'=>'numeric|min:1',
             'service_id'=>'required|numeric|min:1'
         ];
         $validator=Validator::make($request->all(),$rule);
@@ -651,7 +652,9 @@
             return response()->json($validator->errors()->all());
         }else{
             // Selecciono los amenites que posean el código recibido
-            $amenites=Amenite::select('id')->where('category_id','=',2)->where('code',$request->input("amenitie_code"))->get();
+            $amenites=Amenite::select('id')->where('category_id','=',2)
+            //->where('code',$request->input("amenitie_code"))
+            ->get();
             if(count($amenites)>0){
                 // Selecciono el service que posea el id recibido
                 $service=Service::select()->where('id',$request->input("service_id"))->first();
@@ -670,10 +673,10 @@
                     return response()->json('Add Step 5');
                 }
                 else{
-                /*  DB::table('service_amenites')
+                  DB::table('service_amenites')
                   ->where('service_id',$service->id)
                 //  ->where('service_amenites.amenite_id','=',$amenites->id)
-                  ->delete();*/
+                  ->delete();
 
                   foreach ($amenites as $amenite){
 
@@ -739,8 +742,199 @@
     }
 
 
-	    public function AddNewWorkspaceStep6(Request $request){
-	    	//
+	    public function AddNewStep6(Request $request){
+	    	
+        $rule=[  'service_id'=>'required|numeric|min:1',
+                  'currency_id'=>'required',
+                  'price'=>'required|numeric|min:0',
+                  'duration_code'=>'required',
+                  'politic_payment_code'=>'required|numeric',
+                  'startDate' => 'required',
+                  'endDate' => 'required'
+
+            ];
+            //dd($request);
+            $validator=Validator::make($request->all(),$rule);
+            if ($validator->fails()) {
+                return response()->json($validator->errors()->all());
+            }else{
+                $service=Service::where('id',$request->input("service_id"))->first();
+                $payment=Payment::select('id')->where('code',$request->input("politic_payment_code"))->get();
+                $duration=Duration::select('id')->where('code',$request->input("duration_code"))->get();
+                if(count($service)==0 && count($payment)==0 && count($duration)==0){
+                try{
+                      $newhistory=new Price_History;
+                      $dt = new DateTime();
+                      $newhistory->starDate=$request->input('startDate');
+                      $newhistory->endDate=$request->input('endDate');
+                      $newhistory->service_id=$service->id;
+                      $newhistory->price=$request->input("price");
+                      $newhistory->currency_id=$request->input("currency_id");
+                      $newhistory->save();
+                      $newcheck_in=new Check_in;
+                      $newcheck_in->time_entry=$request->input("time_entry");
+                      $newcheck_in->until=$request->input("until");
+                      $newcheck_in->service_id=$service->id;
+                      $newcheck_in->save();
+                      $newcheck_out=new Check_out;
+                      $newcheck_out->departure_time=$request->input("departure_time");
+                      $newcheck_out->service_id=$service->id;
+                      $newcheck_out->save();
+                     foreach($payment as $payments){
+                         $newpayment=new Service_Payment;
+                         $newpayment->service_id=$service->id;
+                         $newpayment->payment_id=$payments->id;
+                         $newpayment->save();
+                       }
+                    foreach($duration as $durations){
+                         $newpriceduration=new Price_history_has_duration;
+                         $newpriceduration->price_history_starDate=$newhistory->starDate;
+                         $newpriceduration->price_history_service_id=$newhistory->service_id;
+                         $newpriceduration->duration_id=$durations->id;
+                         $newpriceduration->save();
+                       }
+                     /* $newoptionalprice=new SpecialDate;
+                      $newoptionalprice->service_id=$service->id;;
+                      $newoptionalprice->stardate=$request->input("stardate");
+                      $newoptionalprice->finishdate=$request->input("finishdate");
+                      $newoptionalprice->price=$request->input("price_optional");
+                      $newoptionalprice->save();*/
+                      DB::table('service_duration')->where('service_id',$service->id)->delete();
+                      $newservduration=new Service_Duration;
+                      $newservduration->service_id=$service->id;
+                      $newservduration->duration_id=14;
+                      $newservduration->currency_id=$request->input('currency_id');
+                      if($request->input('price1') != 'null'){
+                      $newservduration->price=$request->input('price1');
+                  	  }else{
+                  	  	$newservduration->price=0;
+                  	  }
+                      $newservduration->check=false;
+                      $newservduration->save();
+                      $newservduration=new Service_Duration;
+                      $newservduration->service_id=$service->id;
+                      $newservduration->duration_id=7;
+                      $newservduration->currency_id=$request->input('currency_id');
+                      if($request->input('price2') != 'null'){
+                      $newservduration->price=$request->input('price2');
+                  	  }else{
+                  	  	$newservduration->price=0;
+                  	  }
+                      $newservduration->check=false;
+                      $newservduration->save();
+                      $newservduration=new Service_Duration;
+                      $newservduration->service_id=$service->id;
+                      $newservduration->duration_id=8;
+                      $newservduration->currency_id=$request->input('currency_id');
+                      if($request->input('price3') != 'null'){
+                      $newservduration->price=$request->input('price3');
+                  	  }else{
+                  	  	$newservduration->price=0;
+                  	  }
+                      $newservduration->check=false;
+                      $newservduration->save();
+                      $newservduration=new Service_Duration;
+                      $newservduration->service_id=$service->id;
+                      $newservduration->duration_id=6;
+                      $newservduration->currency_id=$request->input('currency_id');
+                      if($request->input('price4') != 'null'){
+                      $newservduration->price=$request->input('price4');
+                  	  }else{
+                  	  	$newservduration->price=0;
+                  	  }
+                      $newservduration->check=false;
+                      $newservduration->save();
+                      return response()->json('Add Step-6');
+                    }catch(exception $e){
+                       return response()->json($e);
+                    }
+                }else{
+                      DB::table('price_history')->where('service_id',$service->id)->delete();
+                      $newhistory=new Price_History;
+                      $dt = new DateTime();
+                      $newhistory->starDate=$request->input('startDate');
+                      $newhistory->endDate=$request->input('endDate');
+                      $newhistory->service_id=$service->id;
+                      $newhistory->price=$request->input("price");
+                      $newhistory->currency_id=$request->input("currency_id");
+                      $newhistory->save();
+                      DB::table('check_in')->where('service_id',$service->id)->delete();
+                      $newcheck_in=new Check_in;
+                      $newcheck_in->time_entry=$request->input("time_entry");
+                      $newcheck_in->until=$request->input("until");
+                      $newcheck_in->service_id=$service->id;
+                      $newcheck_in->save();
+                      DB::table('check_out')->where('service_id',$service->id)->delete();
+                      $newcheck_out=new Check_out;
+                      $newcheck_out->departure_time=$request->input("departure_time");
+                      $newcheck_out->service_id=$service->id;
+                      $newcheck_out->save();
+                      DB::table('service_payment')->where('service_id',$service->id)->delete();
+                     foreach($payment as $payments){
+                         $newpayment=new Service_Payment;
+                         $newpayment->service_id=$service->id;
+                         $newpayment->payment_id=$payments->id;
+                         $newpayment->save();
+                       }
+                       DB::table('price_history_has_duration')->where('price_history_service_id',$service->id)->delete();
+                        foreach($duration as $durations){
+                         $newpriceduration=new Price_history_has_duration;
+                         $newpriceduration->price_history_starDate=$newhistory->starDate;
+                         $newpriceduration->price_history_service_id=$newhistory->service_id;
+                         $newpriceduration->duration_id=$durations->id;
+                         $newpriceduration->save();
+                    	 }
+                      DB::table('service_duration')->where('service_id',$service->id)->delete();
+                      $newservduration=new Service_Duration;
+                      $newservduration->service_id=$service->id;
+                      $newservduration->duration_id=14;
+                      $newservduration->currency_id=$request->input('currency_id');
+                      if($request->input('price1') != 'null'){
+                      $newservduration->price=$request->input('price1');
+                  	  }else{
+                  	  	$newservduration->price=0;
+                  	  }
+                      $newservduration->check=false;
+                      $newservduration->save();
+                      $newservduration=new Service_Duration;
+                      $newservduration->service_id=$service->id;
+                      $newservduration->duration_id=7;
+                      $newservduration->currency_id=$request->input('currency_id');
+                      if($request->input('price2') != 'null'){
+                      $newservduration->price=$request->input('price2');
+                  	  }else{
+                  	  	$newservduration->price=0;
+                  	  }
+                      $newservduration->check=false;
+                      $newservduration->save();
+                      $newservduration=new Service_Duration;
+                      $newservduration->service_id=$service->id;
+                      $newservduration->duration_id=8;
+                      $newservduration->currency_id=$request->input('currency_id');
+                      if($request->input('price3') != 'null'){
+                      $newservduration->price=$request->input('price3');
+                  	  }else{
+                  	  	$newservduration->price=0;
+                  	  }
+                      $newservduration->check=false;
+                      $newservduration->save();
+                      $newservduration=new Service_Duration;
+                      $newservduration->service_id=$service->id;
+                      $newservduration->duration_id=6;
+                      $newservduration->currency_id=$request->input('currency_id');
+                      if($request->input('price4') != 'null'){
+                      $newservduration->price=$request->input('price4');
+                  	  }else{
+                  	  	$newservduration->price=0;
+                  	  }
+                      $newservduration->check=false;
+                      $newservduration->save();
+                       
+                    return response()->json('Update Step 6');
+                }
+                return response()->json('Service not found');
+            }
+    
 	    }
 
 
@@ -1709,7 +1903,7 @@
 		             ->where('description.id','=',1)
 		             ->where('category.code','=',3)
             		 ->where('type.languaje','=',$request->input("languaje"))
-		             ->select('service.user_id', 'user.id as userid','user.avatar','user.name','country.name as country',/*'payment.type as prices',*/'state.name as state','service_description.content as title',/*'check_in.time_entry as check_in',*/'category.name as category','user.lastname','service.id','city.name as city','service.num_space','type.name as type')
+		             ->select('service.user_id as servid', 'user.id as userid','user.avatar','user.name','country.name as country',/*'payment.type as prices',*/'state.name as state','service_description.content as title',/*'check_in.time_entry as check_in',*/'category.name as category','user.lastname','service.id','city.name as city','service.num_space','type.name as type')
 		             ->first();
 		               if(count($previews)>0){
 		                  return response()->json($previews);

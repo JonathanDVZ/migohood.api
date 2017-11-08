@@ -8,6 +8,12 @@ $app->get('/home', function () use ($app){
     return 'Migohood API made with '.$app->version();
 });
 
+$app->get('/getspaces','ControllerCombobox@GetSpaces');
+$app->get('/getservices','ControllerCombobox@GetServices');
+$app->get('/getparkings','ControllerCombobox@GetParkings');
+$app->get('/getworkspaces','ControllerCombobox@GetWorkspaces');
+$app->get('/getimages','ControllerCombobox@GetImages');
+
 /*CRUD USER*//////////////////////////////////////////////////////////
 /*Create*/
 //Agrega un usuario
@@ -125,7 +131,7 @@ $app->post('/service/space/step-8/rules','ControllerService@AddNewSpaceStep8Rule
 //Agregar imagen (space-step9)
 $app->post('/service/space/step-9/image','ControllerService@AddNewSpaceStep9');
 //Agregar nuevo servicio (space-step10)
-$app->post('/service/space/step-10/service','ControllerService@AddNewSpaceStep10');
+$app->post('/service/space/step-10/service','ControllerService@AddNewSpaceStep10Service');
 //Agregar Notas de Emergencia (space-step11)
 $app->post('/service/space/step-11','ControllerService@AddNewSpaceStep11');
 //Agrega fecha en el calendario->16/5/2017
@@ -240,7 +246,9 @@ $app->put('/service/update-imagen','ControllerImagen@UpdateImagen');
 /*Delete*/
 $app->delete('/service/delete-imagen','ControllerImagen@DeleteImagen');
 /*Read*/
-$app->post('/service/get-imagen','ControllerImagen@GetImagen');
+$app->get('/service/get-imagen','ControllerImagen@GetImagen');
+/*create*/
+$app->post('/service/add-imagen','ControllerImagen@AddImagen');
 ////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -497,6 +505,10 @@ $app->get('/service/parking/step-6/get-hosting','ParkingController@ReturnStep6')
 $app->get('/service/parking/step-7/get-basics','ParkingController@ReturnStep7');
 //Retorna un parking (parking-step8)
 $app->get('/service/parking/step-8/get-listing','ParkingController@ReturnStep8');
+//Retorna un parking (parking-step8)
+$app->get('/service/parking/step-8/get-image','ParkingController@ReturnStep9');
+//Retorna un parking (parking-step8)
+$app->get('/service/parking/step-8/get-service','ParkingController@ReturnStep10');
 //Retorna note (parking-step11)
 $app->get('/service/parking/step-11/get-emergency','ParkingController@ReturnStep11');
 
@@ -548,7 +560,8 @@ $app->put('/service/workspace/step-3/bathroom','WorkspaceController@AddNewStep3'
 $app->post('/service/workspace/step-4/location','WorkspaceController@AddNewWorkspaceStep4');
 //Agregar un Amenities (workspace-step5)
 $app->post('/service/workspace/step-5/amenities','WorkspaceController@AddNewStep5');
-
+//Agregar un Amenities (workspace-step6)
+$app->post('/service/workspace/step-6/hosting','WorkspaceController@AddNewStep6');
 //Agregar un description service (space-step7)
 $app->post('/service/workspace/step-7/description','WorkspaceController@AddNewWorkspaceStep7');
 //Agregar un rules description (parking-step8)
@@ -595,11 +608,11 @@ $app->get('/service/workspace/step-6/get-hosting','WorkspaceController@ReturnSte
 //Retorna un parking (workspace-step7)
 $app->get('/service/workspace/step-7/get-basics','WorkspaceController@ReturnStep7');
 //Retorna description (space-step8)
-$app->get('/service/space/step-8/get-rules','WorkspaceController@ReturnStep8');
+$app->get('/service/workspace/step-8/get-rules','WorkspaceController@ReturnStep8');
 //Retorna image (workspace-step9)
-$app->get('/service/space/step-9/get-image','WorkspaceController@ReturnStep9');
+$app->get('/service/workspace/step-9/get-image','WorkspaceController@ReturnStep9');
 //Retorn nuevo-servicio (workspace-step10)
-$app->get('/service/space/step-10/get-service','WorkspaceController@ReturnStep10');
+$app->get('/service/workspace/step-10/get-service','WorkspaceController@ReturnStep10');
 //Retorna (workspace-step11)
 $app->get('/service/workspace/step-11/number-emergency','WorkspaceController@ReturnStep11');
 

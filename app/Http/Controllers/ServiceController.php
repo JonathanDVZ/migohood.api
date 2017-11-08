@@ -897,18 +897,18 @@
 		           $newnote3->service_id=$service->id;
 		           $newnote3->emergency_id=23;
 		           $newnote3->check=$request->input("bool_certification");
-		           $newnote3->content=$request->input("desc_requiments");
 		           $newnote3->save();
 
 		           $newnote4=new Service_Emergency;
 		           $newnote4->service_id=$service->id;
 		           $newnote4->emergency_id=24;
-		           $newnote4->check=$request->input("bool_aditional");
+		           $newnote4->content=$request->input("desc_requiments");
 		           $newnote4->save();
 
 		           $newnote5=new Service_Emergency;
 		           $newnote5->service_id=$service->id;
 		           $newnote5->emergency_id=25;
+		           $newnote5->check=$request->input("bool_aditional");
 		           $newnote5->content=$request->input("desc_aditional");
 		           $newnote5->save();
 
@@ -948,7 +948,7 @@
 
 		           $newnote11=new Service_Emergency;
 		           $newnote11->service_id=$service->id;
-		           $newnote10->emergency_id=31;
+		           $newnote11->emergency_id=31;
 		           $newnote11->check=$request->input("bool_accommodation");
 		           $newnote11->content=$request->input("desc_accommodation");
 		           $newnote11->save();
@@ -986,18 +986,18 @@
 		           $newnote3->service_id=$service->id;
 		           $newnote3->emergency_id=23;
 		           $newnote3->check=$request->input("bool_certification");
-		           $newnote3->content=$request->input("desc_requiments");
 		           $newnote3->save();
 
 		           $newnote4=new Service_Emergency;
 		           $newnote4->service_id=$service->id;
 		           $newnote4->emergency_id=24;
-		           $newnote4->check=$request->input("bool_aditional");
+		           $newnote4->content=$request->input("desc_requiments");
 		           $newnote4->save();
 
 		           $newnote5=new Service_Emergency;
 		           $newnote5->service_id=$service->id;
 		           $newnote5->emergency_id=25;
+		           $newnote5->check=$request->input("bool_aditional");
 		           $newnote5->content=$request->input("desc_aditional");
 		           $newnote5->save();
 
@@ -1037,7 +1037,7 @@
 
 		           $newnote11=new Service_Emergency;
 		           $newnote11->service_id=$service->id;
-		           $newnote10->emergency_id=31;
+		           $newnote11->emergency_id=31;
 		           $newnote11->check=$request->input("bool_accommodation");
 		           $newnote11->content=$request->input("desc_accommodation");
 		           $newnote11->save();
@@ -1121,7 +1121,7 @@
 		             ->where('payment.languaje','=',$request->input("languaje"))
 		             ->where('description.id','=',1)
 		             ->where('category.code','=',4)
-		             ->select('service.user_id', 'user.id as userid','user.avatar','user.name','country.name as country','payment.type as prices','state.name as state','service_description.content as title','check_in.time_entry as check_in','category.name as category','user.lastname','service.id','city.name as city')
+		             ->select('service.user_id as servid', 'user.id as userid','user.avatar','user.name','country.name as country','payment.type as prices','state.name as state','service_description.content as title','check_in.time_entry as check_in','category.name as category','user.lastname','service.id','city.name as city')
 		             ->first();
 		               if(count($previews)>0){
 		                  return response()->json($previews);
