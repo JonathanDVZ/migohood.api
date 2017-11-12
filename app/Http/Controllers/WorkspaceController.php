@@ -746,11 +746,12 @@
 	    	
         $rule=[  'service_id'=>'required|numeric|min:1',
                   'currency_id'=>'required',
-                  'price'=>'required|numeric|min:0',
+                  'price'=>'required_without_all:price2,price3,price4|numeric|min:0',
+                  'price2'=>'required_without_all:price,price3,price4|numeric|min:0',
+                  'price3'=>'required_without_all:price2,price,price4|numeric|min:0',
+                  'price4'=>'required_without_all:price2,price3,price|numeric|min:0',
                   'duration_code'=>'required',
                   'politic_payment_code'=>'required|numeric',
-                  'startDate' => 'required',
-                  'endDate' => 'required'
 
             ];
             //dd($request);
@@ -765,7 +766,7 @@
                 try{
                       $newhistory=new Price_History;
                       $dt = new DateTime();
-                      $newhistory->starDate=$request->input('startDate');
+                      $newhistory->starDate=$dt;
                       $newhistory->endDate=$request->input('endDate');
                       $newhistory->service_id=$service->id;
                       $newhistory->price=$request->input("price");
@@ -799,51 +800,43 @@
                       $newoptionalprice->finishdate=$request->input("finishdate");
                       $newoptionalprice->price=$request->input("price_optional");
                       $newoptionalprice->save();*/
-                      DB::table('service_duration')->where('service_id',$service->id)->delete();
+                    //  DB::table('service_duration')->where('service_id',$service->id)->delete();
+                      if($request->input('price') != 'null' AND $request->input('price')!= ''){
                       $newservduration=new Service_Duration;
                       $newservduration->service_id=$service->id;
                       $newservduration->duration_id=14;
                       $newservduration->currency_id=$request->input('currency_id');
-                      if($request->input('price1') != 'null'){
-                      $newservduration->price=$request->input('price1');
-                  	  }else{
-                  	  	$newservduration->price=0;
-                  	  }
+                      $newservduration->price=$request->input('price');
                       $newservduration->check=false;
                       $newservduration->save();
+                  	  }
+                      if($request->input('price2') != 'null' AND $request->input('price2') != ''){
                       $newservduration=new Service_Duration;
                       $newservduration->service_id=$service->id;
                       $newservduration->duration_id=7;
                       $newservduration->currency_id=$request->input('currency_id');
-                      if($request->input('price2') != 'null'){
                       $newservduration->price=$request->input('price2');
-                  	  }else{
-                  	  	$newservduration->price=0;
-                  	  }
                       $newservduration->check=false;
                       $newservduration->save();
+                  	  }
+                      if($request->input('price3') != 'null' AND $request->input('price3') != ''){
                       $newservduration=new Service_Duration;
                       $newservduration->service_id=$service->id;
                       $newservduration->duration_id=8;
                       $newservduration->currency_id=$request->input('currency_id');
-                      if($request->input('price3') != 'null'){
                       $newservduration->price=$request->input('price3');
-                  	  }else{
-                  	  	$newservduration->price=0;
-                  	  }
                       $newservduration->check=false;
                       $newservduration->save();
+                  	  }
+                      if($request->input('price4') != 'null' AND $request->input('price4') != ''){
                       $newservduration=new Service_Duration;
                       $newservduration->service_id=$service->id;
                       $newservduration->duration_id=6;
                       $newservduration->currency_id=$request->input('currency_id');
-                      if($request->input('price4') != 'null'){
                       $newservduration->price=$request->input('price4');
-                  	  }else{
-                  	  	$newservduration->price=0;
-                  	  }
                       $newservduration->check=false;
                       $newservduration->save();
+                  	  }
                       return response()->json('Add Step-6');
                     }catch(exception $e){
                        return response()->json($e);
@@ -852,7 +845,7 @@
                       DB::table('price_history')->where('service_id',$service->id)->delete();
                       $newhistory=new Price_History;
                       $dt = new DateTime();
-                      $newhistory->starDate=$request->input('startDate');
+                      $newhistory->starDate=$dt;
                       $newhistory->endDate=$request->input('endDate');
                       $newhistory->service_id=$service->id;
                       $newhistory->price=$request->input("price");
@@ -885,50 +878,42 @@
                          $newpriceduration->save();
                     	 }
                       DB::table('service_duration')->where('service_id',$service->id)->delete();
+                      if($request->input('price') != 'null' AND $request->input('price')!= ''){
                       $newservduration=new Service_Duration;
                       $newservduration->service_id=$service->id;
                       $newservduration->duration_id=14;
                       $newservduration->currency_id=$request->input('currency_id');
-                      if($request->input('price1') != 'null'){
-                      $newservduration->price=$request->input('price1');
-                  	  }else{
-                  	  	$newservduration->price=0;
-                  	  }
+                      $newservduration->price=$request->input('price');
                       $newservduration->check=false;
                       $newservduration->save();
+                  	  }
+                      if($request->input('price2') != 'null' AND $request->input('price2') != ''){
                       $newservduration=new Service_Duration;
                       $newservduration->service_id=$service->id;
                       $newservduration->duration_id=7;
                       $newservduration->currency_id=$request->input('currency_id');
-                      if($request->input('price2') != 'null'){
                       $newservduration->price=$request->input('price2');
-                  	  }else{
-                  	  	$newservduration->price=0;
-                  	  }
                       $newservduration->check=false;
                       $newservduration->save();
+                  	  }
+                      if($request->input('price3') != 'null' AND $request->input('price3') != ''){
                       $newservduration=new Service_Duration;
                       $newservduration->service_id=$service->id;
                       $newservduration->duration_id=8;
                       $newservduration->currency_id=$request->input('currency_id');
-                      if($request->input('price3') != 'null'){
                       $newservduration->price=$request->input('price3');
-                  	  }else{
-                  	  	$newservduration->price=0;
-                  	  }
                       $newservduration->check=false;
                       $newservduration->save();
+                  	  }
+                      if($request->input('price4') != 'null' AND $request->input('price4') != ''){
                       $newservduration=new Service_Duration;
                       $newservduration->service_id=$service->id;
                       $newservduration->duration_id=6;
                       $newservduration->currency_id=$request->input('currency_id');
-                      if($request->input('price4') != 'null'){
                       $newservduration->price=$request->input('price4');
-                  	  }else{
-                  	  	$newservduration->price=0;
-                  	  }
                       $newservduration->check=false;
                       $newservduration->save();
+                  	  }
                        
                     return response()->json('Update Step 6');
                 }
@@ -950,18 +935,20 @@
 		        ->join('service_payment','service_payment.service_id','=','service.id')
 		        ->join('payment','payment.code','=','service_payment.payment_id')
 		        ->join('price_history','price_history.service_id','=','service.id')
-		        ->join('price_history_has_duration','price_history_has_duration.price_history_service_id','=','price_history.service_id')
-		        ->join('duration','duration.id','=','price_history_has_duration.duration_id')
+		        ->join('price_history_has_duration','price_history_has_duration.price_history_service_id','=','service.id')
 		        ->join('check_in','check_in.service_id','=','service.id')
 		        ->join('check_out','check_out.service_id','=','service.id')
 		        ->join('currency','currency.id','=','price_history.currency_id')
+		        ->join('service_duration','service_duration.service_id','=','service.id')
+		        ->join('duration','duration.id','=','service_duration.duration_id')
 		        ->where('service.id','=',$request->input("service_id"))
 		        ->where('payment.languaje','=',$request->input("languaje"))
 		        ->where('duration.languaje','=',$request->input("languaje"))
-		        ->select('payment.type as Type-Payment','duration.type as Type-Duration'
-		        ,'price_history.price as Price','currency.currency_iso as Currency-Name'
+		        ->select('payment.type as Type-Payment','duration.code as code'
+		        ,'service_duration.price as Price','currency.currency_iso as Currency-Name'
 		        ,'check_in.time_entry as Time-Entry','check_in.until as Until'
-		        ,'check_out.departure_time as Departure-Time')
+		        ,'check_out.departure_time as Departure-Time','price_history.starDate as startDate','price_history.endDate')
+		        ->groupby('duration.code')
 		        ->get();
 		         if(count($getstep6)>0){
 		                return response()->json($getstep6);

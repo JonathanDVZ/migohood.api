@@ -490,6 +490,28 @@ class ControllerCombobox extends Controller
       }
     }
 
+    public function ReturnSpecialDate(Request $request){
+      $rule=[
+           'service_id' => 'required|numeric'
+      ];
+    $validator=Validator::make($request->all(),$rule);
+      if ($validator->fails()) {
+            return response()->json($validator->errors()->all());
+      }else{
+          $getspecialdate=DB::table('service')
+            ->join('specialdate','specialdate.service_id','=','service.id')
+            ->where('service.id','=',$request->input('service_id'))
+            ->select('specialdate.stardate as startDate','specialdate.finishdate as endDate','specialdate.price','specialdate.note')
+            ->first();
+             if(count($getspecialdate)>0){
+                      return response()->json($getspecialdate);
+              }else{
+                      return response()->json("Not Found");
+              }
+
+            }
+    }
+
     public function ReturnStep7Description(Request $request){
            $rule=[
            'service_id' => 'required|numeric'
@@ -1128,14 +1150,15 @@ class ControllerCombobox extends Controller
                  ->join('price_history','price_history.service_id','=','service.id')
                  ->join('currency','currency.id','=','price_history.currency_id')
                  ->join('price_history_has_duration','price_history_has_duration.price_history_service_id','=','service.id')
-                 ->join('duration','duration.id','=','price_history_has_duration.duration_id')
+                 ->join('service_duration','service_duration.service_id','=','service.id')
+                 ->join('duration','duration.id','=','service_duration.duration_id')
                  ->where('currency.language','=',$request->input("languaje"))
                  ->where('duration.languaje','=',$request->input("languaje"))
                  ->where('category.languaje','=',$request->input("languaje"))
                  ->where('description.id','=',1)
                  ->where('category.code','=',3)
                  ->where('type.languaje','=',$request->input("languaje"))
-                 ->select('service_description.service_id','service.user_id as servid','service_description.content as title','category.name as category','service.id','type.name as type','image.ruta','image.description as imgdesc','price_history.price','currency.currency_iso','duration.type as duration')
+                 ->select('service_description.service_id','service.user_id as servid','service_description.content as title','category.name as category','service.id','type.name as type','image.ruta','image.description as imgdesc','service_duration.price','currency.currency_iso','duration.type as duration')
              ->groupby('service_id')
              ->orderby('id','DESC')
              ->get();
@@ -1168,11 +1191,14 @@ class ControllerCombobox extends Controller
              ->join('service_type','service_type.service_id','=','service.id')
              ->join('type','type.id','=','service_type.type_id')
              ->join('image','image.service_id','=','service.id')
+             ->join('service_duration','service_duration.service_id','=','service.id')
+              ->join('currency','currency.id','=','service_duration.currency_id')
+             ->join('duration','duration.id','=','service_duration.duration_id')
              ->where('category.languaje','=',$request->input("languaje"))
              ->where('description.id','=',1)
              ->where('category.code','=',2)
              ->where('type.languaje','=',$request->input("languaje"))
-             ->select('service_description.service_id','service.user_id as servid', 'service_description.content as title','category.name as category','service.id','type.name as type','image.ruta','image.description as imgdesc')
+             ->select('currency.currency_iso','service_duration.price','service_description.service_id','service.user_id as servid', 'service_description.content as title','category.name as category','service.id','type.name as type','image.ruta','image.description as imgdesc','duration.type as duration')
              ->orderby('id','DESC')
              ->groupby('service_id')
              ->get();

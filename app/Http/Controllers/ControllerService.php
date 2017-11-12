@@ -1566,6 +1566,34 @@ class ControllerService extends Controller
             }
     }
 
+    public function AddSpecialDate(Request $request){
+      $service = Service::where('id',$request->input("service_id"))->first();
+      if(count($service)>0){
+        $specialdate = SpecialDate::where('service_id',$service->id)->first();
+        if(count($specialdate) == 0){
+            $newoptionalprice=new SpecialDate;
+            $newoptionalprice->service_id=$service->id;;
+            $newoptionalprice->stardate=$request->input("startDate");
+            $newoptionalprice->finishdate=$request->input("endDate");
+            $newoptionalprice->price=$request->input("price1");
+            $newoptionalprice->note=$request->input('note');
+            $newoptionalprice->save();
+             return response()->json('Add Special Date');
+        }else{
+          $newoptionalprice=SpecialDate::where('service_id',$service->id)->first();
+          $newoptionalprice->service_id=$service->id;;
+          $newoptionalprice->stardate=$request->input("startDate");
+          $newoptionalprice->finishdate=$request->input("endDate");
+          $newoptionalprice->price=$request->input("price1");
+          $newoptionalprice->note=$request->input('note');
+          $newoptionalprice->save();
+           return response()->json('Update Special Date');
+        }
+      }else{
+         return response()->json('Service not found');
+      }
+    }
+
    public function AddNewSpaceStep7Description(Request $request){
           $rule=[
            'service_id' => 'required|numeric|min:1',
